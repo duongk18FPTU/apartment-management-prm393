@@ -476,16 +476,16 @@ dependencies:
 
 ---
 
-## Open Questions
+## ✅ Open Questions (Đã giải quyết)
 
-> [!IMPORTANT]
-> 1. **Roles**: SRS liệt kê 6 roles (Admin, BQL Manager, BQL Staff, BQT Head, BQT Member, Resident) nhưng SWD chỉ dùng 3 (Admin, Staff, Resident). Kế hoạch này sử dụng **3 roles** theo SWD. Có đồng ý không?
+> [!NOTE]
+> 1. **Roles**: ✅ Team đồng ý dùng **3 roles** (Admin, Staff, Resident) theo SWD. Chấp nhận đơn giản hóa, bỏ bước Approve Invoice và không phân biệt BQT Head/Member. SRS cần cập nhật cho khớp.
 
-> [!IMPORTANT]
-> 2. **Team member roles**: Bảng Team Members trong README chưa điền. Kế hoạch phân chia dựa trên tên từ SRS. Cần xác nhận ai là Team Lead và vai trò cụ thể.
+> [!NOTE]
+> 2. **Team member roles**: ✅ Đã ghi Member 1–5. Mỗi thành viên tự đối chiếu phần việc của mình.
 
-> [!WARNING]
-> 3. **Firebase project**: Cần tạo Firebase project trên console.firebase.google.com và share access cho tất cả 5 members trước khi bắt đầu Sprint 0.
+> [!NOTE]
+> 3. **Firebase project**: ✅ Đã tạo project `apartment-mgmt-prm393`. Firestore + Auth (Email/Password) đã bật. Storage bật khi cần. Thành viên được add sẽ tự chạy `flutterfire configure` để sinh config files.
 
 ---
 
