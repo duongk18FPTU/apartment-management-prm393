@@ -460,6 +460,34 @@ dependencies:
   # Forms
   form_builder_validators: ^11.1.0
 ```
+---
+
+## 🗃️ Dữ liệu mẫu đã được Seed (Seed Data)
+
+Dự án đã được chạy script seed dữ liệu mẫu lên Firebase Cloud chung. Cả team dùng chung database này, không cần chạy lại script trừ khi muốn reset dữ liệu.
+
+### 🔑 Tài khoản thử nghiệm (Test Accounts):
+
+| Email | Mật khẩu | Vai trò (Role) | Mô tả |
+|-------|----------|----------------|-------|
+| `admin@apartment.com` | `Admin@123` | `admin` | Quản trị viên hệ thống |
+| `staff1@apartment.com` | `Staff@123` | `staff` | Nhân viên ban quản lý 1 |
+| `staff2@apartment.com` | `Staff@123` | `staff` | Nhân viên ban quản lý 2 |
+| `resident1@apartment.com` | `Resident@123` | `resident` | Cư dân phòng 301 |
+| `resident2@apartment.com` | `Resident@123` | `resident` | Cư dân phòng 302 |
+| `resident3@apartment.com` | `Resident@123` | `resident` | Cư dân phòng 501 |
+| `resident4@apartment.com` | `Resident@123` | `resident` | Cư dân phòng 702 |
+| `resident5@apartment.com` | `Resident@123` | `resident` | Cư dân phòng 1001 |
+
+### 📂 Các dữ liệu mẫu đã tạo sẵn trên Firestore:
+- **36 Căn hộ (apartments)**: Tầng 1 đến tầng 12 (3 phòng/tầng). Đã gắn sẵn chủ hộ và cư dân cho các phòng 301, 302, 501, 702, 1001.
+- **5 Hóa đơn (bills)**: Đủ các loại phí (điện, nước, dịch vụ, gửi xe) với các trạng thái thanh toán khác nhau (`unpaid`, `paid`, `overdue`).
+- **3 Yêu cầu sửa chữa (requests)**: Đủ các trạng thái (`pending`, `in_progress`, `completed`).
+- **3 Thông báo chung (notifications)**: Mẫu tin tức, lịch họp, nội quy.
+- **2 Khách viếng thăm (visitors)**: Đăng ký bởi cư dân.
+- **2 Khiếu nại (complaints)**: Trạng thái `submitted` và `resolved`.
+
+> ⚠️ **Lưu ý**: Nếu muốn chạy lại script reset dữ liệu về trạng thái ban đầu, chạy lệnh: `node scripts/seed_data.js`
 
 ---
 
