@@ -1,3 +1,4 @@
+
 # Quy Trình Làm Việc Với Git & GitHub (Git Workflow)
 
 Tài liệu này quy định quy trình làm việc với Git, cách quản lý nhánh (branch), và các quy tắc bảo vệ nhánh chính (`main`) đã được thiết lập trên GitHub cho dự án **Apartment Building Management System**. Tất cả 5 thành viên trong nhóm bắt buộc phải tuân thủ quy trình này để tránh xung đột mã nguồn (conflict) và mất mát dữ liệu.
