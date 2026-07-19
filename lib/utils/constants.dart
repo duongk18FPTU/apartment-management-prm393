@@ -35,6 +35,11 @@ class AppRoutes {
   static const String staffBills = '/staff/bills';
   static const String staffBillCreate = '/staff/bills/create';
   static const String staffBillDetail = '/staff/bills/:id';
+
+  // Hóa đơn của tôi (Resident - Sprint 2)
+  static const String residentBills = '/resident/bills';
+  static const String residentBillPay = '/resident/bills/:id/pay';
+  static const String residentPaymentHistory = '/resident/payments/history';
 }
 
 // ---------------------------------------------------------------------------

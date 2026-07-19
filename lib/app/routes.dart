@@ -19,6 +19,9 @@ import '../screens/staff/staff_home_screen.dart';
 import '../screens/staff/bill_management/bill_list_screen.dart';
 import '../screens/staff/bill_management/bill_create_screen.dart';
 import '../screens/staff/bill_management/bill_detail_screen.dart';
+import '../screens/resident/my_bills/my_bills_screen.dart';
+import '../screens/resident/my_bills/bill_payment_screen.dart';
+import '../screens/resident/my_bills/payment_history_screen.dart';
 import '../utils/constants.dart';
 
 /// Builds and returns the app-wide [GoRouter] instance.
@@ -174,6 +177,26 @@ final List<RouteBase> _routes = [
       final billId = state.pathParameters['id']!;
       return BillDetailScreen(billId: billId);
     },
+  ),
+
+  // Resident Bills & Payment (Sprint 2)
+  GoRoute(
+    path: AppRoutes.residentBills,
+    name: 'residentBills',
+    builder: (context, state) => const MyBillsScreen(),
+  ),
+  GoRoute(
+    path: AppRoutes.residentBillPay,
+    name: 'residentBillPay',
+    builder: (context, state) {
+      final billId = state.pathParameters['id']!;
+      return BillPaymentScreen(billId: billId);
+    },
+  ),
+  GoRoute(
+    path: AppRoutes.residentPaymentHistory,
+    name: 'residentPaymentHistory',
+    builder: (context, state) => const PaymentHistoryScreen(),
   ),
 ];
 
