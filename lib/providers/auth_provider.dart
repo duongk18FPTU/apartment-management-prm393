@@ -182,7 +182,15 @@ class AuthProvider extends ChangeNotifier {
 
       if (doc.exists && doc.data() != null) {
         _userModel = doc.data();
-        _setStatus(AuthStatus.authenticated);
+        if (_userModel!.isActive) {
+          _setStatus(AuthStatus.authenticated);
+        } else {
+          _errorMessage = 'Tài khoản đã bị vô hiệu hóa';
+          _currentUser = null;
+          _userModel = null;
+          _setStatus(AuthStatus.unauthenticated);
+          await _authService.logout();
+        }
       } else {
         debugPrint(
           '[AuthProvider] Firestore profile missing for uid=${user.uid}',
@@ -192,8 +200,17 @@ class AuthProvider extends ChangeNotifier {
       }
     } on FirebaseException catch (e) {
       debugPrint('[AuthProvider] Firestore error: ${e.code} — ${e.message}');
-      _errorMessage = e.message;
-      _setStatus(AuthStatus.error);
+      if (e.code == 'permission-denied') {
+        _errorMessage =
+            'Tài khoản đã bị vô hiệu hóa hoặc không có quyền truy cập';
+        _currentUser = null;
+        _userModel = null;
+        _setStatus(AuthStatus.unauthenticated);
+        await _authService.logout();
+      } else {
+        _errorMessage = e.message;
+        _setStatus(AuthStatus.error);
+      }
     }
   }
 

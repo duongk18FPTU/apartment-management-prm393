@@ -4,6 +4,9 @@ import 'package:provider/provider.dart';
 
 import '../providers/auth_provider.dart';
 import '../screens/admin/admin_home_screen.dart';
+import '../screens/admin/user_management/user_create_screen.dart';
+import '../screens/admin/user_management/user_edit_screen.dart';
+import '../screens/admin/user_management/user_list_screen.dart';
 import '../screens/auth/change_password_screen.dart';
 import '../screens/auth/login_screen.dart';
 import '../screens/auth/splash_screen.dart';
@@ -16,16 +19,6 @@ import '../screens/staff/staff_home_screen.dart';
 import '../utils/constants.dart';
 
 /// Builds and returns the app-wide [GoRouter] instance.
-///
-/// Navigation strategy:
-/// - [AppRoutes.splash] (`/`) is always the initial location.
-/// - [SplashScreen] checks [AuthProvider.status] and navigates automatically.
-/// - [_redirect] acts as a guard on every route to enforce auth state.
-///
-/// Adding new routes (Sprint 1+):
-/// 1. Add the path constant to [AppRoutes] in constants.dart.
-/// 2. Add a [GoRoute] entry in [_routes] below.
-/// 3. If the route requires auth, the existing redirect logic handles it.
 GoRouter buildAppRouter(AuthProvider authProvider) {
   return GoRouter(
     initialLocation: AppRoutes.splash,
@@ -37,11 +30,6 @@ GoRouter buildAppRouter(AuthProvider authProvider) {
   );
 }
 
-// ---------------------------------------------------------------------------
-// Redirect guard
-// ---------------------------------------------------------------------------
-
-/// Role-based redirect logic evaluated on every navigation event.
 String? _redirect(BuildContext context, GoRouterState state) {
   final auth = context.read<AuthProvider>();
   final location = state.matchedLocation;
@@ -63,7 +51,6 @@ String? _redirect(BuildContext context, GoRouterState state) {
     return _homeForRole(auth.role);
   }
 
-  // Residents cannot access admin/staff areas
   if (auth.role == UserRole.resident && location.startsWith('/admin')) {
     return AppRoutes.residentHome;
   }
@@ -71,7 +58,6 @@ String? _redirect(BuildContext context, GoRouterState state) {
     return AppRoutes.residentHome;
   }
 
-  // Staff cannot access admin-only routes
   if (auth.role == UserRole.staff && location.startsWith('/admin')) {
     return AppRoutes.staffHome;
   }
@@ -90,10 +76,6 @@ String _homeForRole(UserRole? role) {
       return AppRoutes.residentHome;
   }
 }
-
-// ---------------------------------------------------------------------------
-// Route definitions
-// ---------------------------------------------------------------------------
 
 final List<RouteBase> _routes = [
   GoRoute(
@@ -116,6 +98,25 @@ final List<RouteBase> _routes = [
     name: 'adminHome',
     builder: (context, state) => const AdminHomeScreen(),
   ),
+
+  // Member 1 — User Management
+  GoRoute(
+    path: AppRoutes.userList,
+    name: 'userList',
+    builder: (context, state) => const UserListScreen(),
+  ),
+  GoRoute(
+    path: AppRoutes.userCreate,
+    name: 'userCreate',
+    builder: (context, state) => const UserCreateScreen(),
+  ),
+  GoRoute(
+    path: AppRoutes.userEdit,
+    name: 'userEdit',
+    builder: (context, state) =>
+        UserEditScreen(userId: state.pathParameters['id']!),
+  ),
+
   GoRoute(
     path: AppRoutes.staffHome,
     name: 'staffHome',
@@ -152,10 +153,6 @@ final List<RouteBase> _routes = [
     },
   ),
 ];
-
-// ---------------------------------------------------------------------------
-// Error screen
-// ---------------------------------------------------------------------------
 
 class _RouterErrorScreen extends StatelessWidget {
   const _RouterErrorScreen({required this.error});

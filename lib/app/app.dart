@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../providers/auth_provider.dart';
 import '../providers/request_provider.dart';
+import '../providers/user_provider.dart';
 import 'routes.dart';
 import 'theme.dart';
 
@@ -15,10 +16,13 @@ class ApartmentApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<AuthProvider>(
-          create: (_) => AuthProvider()..listenToAuthState(),
+          create: (context) => AuthProvider()..listenToAuthState(),
+        ),
+        ChangeNotifierProvider<UserProvider>(
+          create: (context) => UserProvider(),
         ),
         ChangeNotifierProvider<RequestProvider>(
-          create: (_) => RequestProvider(),
+          create: (context) => RequestProvider(),
         ),
       ],
       child: Builder(

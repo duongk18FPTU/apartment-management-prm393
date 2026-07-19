@@ -158,13 +158,23 @@ lib/
 - [x] Role-based redirect sau login (Admin → Admin Home, Staff → Staff Home, Resident → Resident Home) *(done in Sprint 0)*
 
 #### Sprint 2 — User Management (Admin only)
-- [ ] `UserListScreen` — Danh sách users, search, filter by role
-- [ ] `UserCreateScreen` — Form tạo user mới (name, email, role, apartment)
-- [ ] `UserEditScreen` — Cập nhật thông tin user
-- [ ] `UserService` — CRUD operations trên Firestore `users` collection
-- [ ] `UserProvider` — State management cho user list
-- [ ] Update/Disable user status (Active/Inactive)
-- [ ] Assign role cho user
+- [x] `UserListScreen` — Danh sách users, search, filter by role/status
+- [x] `UserCreateScreen` — Form tạo user mới (name, email, role, apartment)
+- [x] `UserEditScreen` — Cập nhật thông tin user
+- [x] `UserService` — CRUD profile trên Firestore `users` collection (dùng disable thay cho hard delete)
+- [x] `UserProvider` — State management cho user list
+- [x] Update/Disable user status (Active/Inactive)
+- [x] Assign role cho user
+
+> [!NOTE]
+> **Tồn đọng Sprint 2 đã được giải quyết trong code**:
+> - Kiến trúc chỉ dùng Firebase Spark miễn phí, không phụ thuộc Cloud Functions, Cloud Run hoặc billing account.
+> - `UserService` tạo tài khoản bằng Firebase Auth instance phụ để giữ nguyên phiên Admin, tạo profile Firestore và gửi email đặt mật khẩu; Auth account được rollback nếu tạo profile thất bại.
+> - Role và trạng thái được quản lý trong Firestore. Active Admin được phép tạo/cập nhật profile; người dùng inactive bị chặn dữ liệu bởi Security Rules và bị ứng dụng đăng xuất.
+> - Giới hạn của Spark: trạng thái inactive không đặt cờ disabled trong Firebase Auth và không dùng custom claims; quyền truy cập ứng dụng dựa trên Firestore profile/rules.
+> - Giao diện tuân thủ `DESIGN.md` và Material 3; taste skill được dùng để audit hierarchy, spacing, contrast và đầy đủ trạng thái loading/empty/error theo phạm vi phù hợp với Flutter admin mobile.
+> - Đã xác minh: `dart analyze` **No issues found**, Flutter **5/5 tests pass**, Firestore rules emulator **7/7 tests pass** và `npm audit` **0 vulnerabilities**.
+> - Firestore rules Spark-compatible đã deploy production lên project `apartment-mgmt-prm393` ngày 19/07/2026.
 
 #### Sprint 3
 - [ ] Widget tests cho Authentication screens
