@@ -8,6 +8,8 @@ import '../../../models/request_model.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../providers/request_provider.dart';
 import '../../../utils/constants.dart';
+import '../../../widgets/empty_state.dart';
+import '../../../widgets/error_state.dart';
 import '../../../widgets/loading_indicator.dart';
 import '../../../widgets/request_status_chip.dart';
 
@@ -57,51 +59,25 @@ class _RequestListScreenState extends State<RequestListScreen> {
               )
             : provider.errorMessage != null && provider.requests.isEmpty
             ? ListView(
-                padding: const EdgeInsets.all(AppSpacing.lg),
                 children: [
-                  const SizedBox(height: 80),
-                  Icon(
-                    Icons.error_outline_rounded,
-                    size: 48,
-                    color: DesignTokens.error,
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                  Text(
-                    provider.errorMessage!,
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                  Center(
-                    child: ElevatedButton(
-                      onPressed: _load,
-                      child: const Text('Thử lại'),
+                  SizedBox(
+                    height: MediaQuery.sizeOf(context).height * 0.6,
+                    child: ErrorState(
+                      message: provider.errorMessage!,
+                      onRetry: _load,
                     ),
                   ),
                 ],
               )
             : provider.requests.isEmpty
             ? ListView(
-                padding: const EdgeInsets.all(AppSpacing.lg),
                 children: [
-                  const SizedBox(height: 80),
-                  Icon(
-                    Icons.handyman_outlined,
-                    size: 56,
-                    color: DesignTokens.neutralVariant,
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                  Text(
-                    'Chưa có yêu cầu nào',
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  Text(
-                    'Nhấn nút bên dưới để gửi yêu cầu sửa chữa.',
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: DesignTokens.neutralVariant,
+                  SizedBox(
+                    height: MediaQuery.sizeOf(context).height * 0.6,
+                    child: const EmptyState(
+                      icon: Icons.handyman_outlined,
+                      title: 'Chưa có yêu cầu nào',
+                      message: 'Nhấn nút bên dưới để gửi yêu cầu sửa chữa.',
                     ),
                   ),
                 ],

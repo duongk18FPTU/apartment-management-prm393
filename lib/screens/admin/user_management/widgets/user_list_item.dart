@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../app/theme.dart';
 import '../../../../models/user_model.dart';
-import '../../../../utils/constants.dart';
+import 'user_role_label.dart';
 import 'user_status_badge.dart';
 
 /// A tappable user summary with role, apartment and account state.
@@ -57,7 +57,7 @@ class UserListItem extends StatelessWidget {
                       runSpacing: AppSpacing.xs,
                       crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
-                        _RoleLabel(role: user.role),
+                        UserRoleLabel(role: user.role),
                         if (user.apartmentId != null)
                           Text(
                             'Căn hộ ${user.apartmentId}',
@@ -78,28 +78,6 @@ class UserListItem extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _RoleLabel extends StatelessWidget {
-  const _RoleLabel({required this.role});
-
-  final UserRole role;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final label = switch (role) {
-      UserRole.admin => 'Admin',
-      UserRole.staff => 'Nhân viên',
-      UserRole.resident => 'Cư dân',
-    };
-    return Text(
-      label,
-      style: Theme.of(
-        context,
-      ).textTheme.labelSmall?.copyWith(color: colorScheme.secondary),
     );
   }
 }

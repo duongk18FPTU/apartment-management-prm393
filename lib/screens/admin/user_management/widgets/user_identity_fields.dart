@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../app/theme.dart';
 import '../../../../utils/validators.dart';
 import '../../../../widgets/custom_text_field.dart';
 
@@ -33,7 +34,7 @@ class UserIdentityFields extends StatelessWidget {
           prefixIcon: Icons.person_outline_rounded,
           textInputAction: TextInputAction.next,
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: AppSpacing.md),
         CustomTextField(
           label: 'Email',
           hint: 'name@apartment.com',
@@ -47,7 +48,7 @@ class UserIdentityFields extends StatelessWidget {
               ? 'Email được quản lý bởi Firebase Auth'
               : null,
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: AppSpacing.md),
         CustomTextField(
           label: 'Số điện thoại',
           hint: '0901234567',
@@ -57,7 +58,7 @@ class UserIdentityFields extends StatelessWidget {
           prefixIcon: Icons.phone_outlined,
           textInputAction: TextInputAction.next,
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: AppSpacing.md),
         CustomTextField(
           label: 'Số CCCD',
           hint: 'Nhập số giấy tờ tùy thân',

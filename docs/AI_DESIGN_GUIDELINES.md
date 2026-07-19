@@ -6,7 +6,7 @@ Tài liệu này hướng dẫn cách áp dụng hệ thống thiết kế **Goo
 
 ## 🎨 1. Google DESIGN.md là gì?
 
-[DESIGN.md](DESIGN.md) là file đặc tả hệ thống thiết kế (Design System) kết hợp giữa:
+[DESIGN.md](../DESIGN.md) là file đặc tả hệ thống thiết kế (Design System) kết hợp giữa:
 1. **Dữ liệu máy đọc (YAML Front Matter):** Chứa các Design Tokens như bảng màu (colors), cỡ chữ (typography), góc bo tròn (rounded), khoảng cách (spacing), và các thông số của component.
 2. **Dữ liệu người đọc (Markdown Prose):** Giải thích lý do và cách áp dụng các token này trong thiết kế thực tế.
 
@@ -41,7 +41,7 @@ Giải thích cách sử dụng màu...
 
 ## ⚡ 2. Taste Skill là gì?
 
-**Taste Skill** là tập hợp các bộ quy tắc thẩm mỹ được cài đặt trực tiếp trong thư mục [.agents/skills/](.agents/skills/). Chúng định hướng và ép buộc AI Coding Agents phải từ bỏ thói quen sinh code UI mặc định, nhàm chán (AI template slop) để hướng tới các tiêu chuẩn giao diện hiện đại:
+**Taste Skill** là tập hợp các bộ quy tắc thẩm mỹ được cài đặt trực tiếp trong thư mục [.agents/skills/](../.agents/skills/). Chúng định hướng và ép buộc AI Coding Agents phải từ bỏ thói quen sinh code UI mặc định, nhàm chán (AI template slop) để hướng tới các tiêu chuẩn giao diện hiện đại:
 - **Tránh xa placeholder:** Bắt buộc AI sử dụng dữ liệu thực tế thay vì dùng text giả vô nghĩa.
 - **Micro-animations:** Tích hợp các chuyển động mượt mà khi người dùng tương tác.
 - **Layout hiện đại:** Sử dụng bento grid, cấu trúc bất đối xứng tinh tế, khoảng cách thoáng đãng.

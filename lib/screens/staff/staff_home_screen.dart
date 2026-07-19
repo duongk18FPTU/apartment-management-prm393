@@ -36,8 +36,6 @@ class StaffHomeScreen extends StatelessWidget {
               style: Theme.of(context).textTheme.headlineSmall,
             ),
             const SizedBox(height: AppSpacing.xl),
-
-            // 1. Quản lý yêu cầu (Member 3)
             _StaffTile(
               icon: Icons.assignment_outlined,
               title: 'Quản lý yêu cầu',

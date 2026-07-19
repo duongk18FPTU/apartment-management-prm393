@@ -8,10 +8,10 @@ import '../services/request_service.dart';
 
 /// State management for maintenance requests (Member 3 — Sprint 1).
 class RequestProvider extends ChangeNotifier {
-  RequestProvider({RequestService? requestService})
+  RequestProvider({RequestRepository? requestService})
     : _service = requestService ?? RequestService();
 
-  final RequestService _service;
+  final RequestRepository _service;
 
   List<RequestModel> _requests = [];
   RequestModel? _selected;
