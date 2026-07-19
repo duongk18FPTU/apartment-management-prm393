@@ -30,6 +30,11 @@ class AppRoutes {
   static const String requestCreate = '/resident/requests/create';
   static const String requestDetail = '/requests/:id';
   static const String requestManage = '/staff/requests';
+
+  // Quản lý hóa đơn (Staff - Sprint 1)
+  static const String staffBills = '/staff/bills';
+  static const String staffBillCreate = '/staff/bills/create';
+  static const String staffBillDetail = '/staff/bills/:id';
 }
 
 // ---------------------------------------------------------------------------

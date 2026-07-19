@@ -63,7 +63,9 @@ class StaffHomeScreen extends StatelessWidget {
                             Text(
                               'Xem và cập nhật trạng thái sửa chữa',
                               style: Theme.of(context).textTheme.bodySmall
-                                  ?.copyWith(color: DesignTokens.neutralVariant),
+                                  ?.copyWith(
+                                    color: DesignTokens.neutralVariant,
+                                  ),
                             ),
                           ],
                         ),
