@@ -4,56 +4,27 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
+import '../models/user_model.dart';
+import '../services/auth_service.dart';
 import '../utils/constants.dart';
-
-/// Lightweight user profile fetched from Firestore `users` collection.
-///
-/// TODO(member1): Replace this entire class with the real `UserModel` from
-/// Member 2 (lib/models/user_model.dart) once Sprint 0 models are merged.
-/// Steps:
-/// 1. `import '../models/user_model.dart';`
-/// 2. Replace `UserProfile` → `UserModel` everywhere in this file.
-/// 3. Delete this class.
-class UserProfile {
-  const UserProfile({
-    required this.uid,
-    required this.email,
-    required this.fullName,
-    required this.role,
-    this.avatarUrl,
-  });
-
-  final String uid;
-  final String email;
-  final String fullName;
-  final UserRole role;
-  final String? avatarUrl;
-
-  factory UserProfile.fromFirestore(Map<String, dynamic> data, String uid) {
-    return UserProfile(
-      uid: uid,
-      email: data['email'] as String? ?? '',
-      fullName: data['fullName'] as String? ?? '',
-      role: UserRole.fromString(data['role'] as String? ?? ''),
-      avatarUrl: data['avatarUrl'] as String?,
-    );
-  }
-}
 
 /// Manages the authentication lifecycle for the entire app.
 ///
-/// Sprint 0 scope:
-/// - Listens to Firebase Auth state changes via [listenToAuthState].
-/// - Fetches the user's role from Firestore on sign-in.
-/// - Exposes [status], [currentUser], and [userProfile] for GoRouter redirect.
+/// Provides auth state ([status], [currentUser], [userModel]) to the
+/// widget tree via [ChangeNotifier]. GoRouter uses [refreshListenable] to
+/// re-evaluate redirects whenever [notifyListeners] is called.
 ///
-/// Sprint 1 will add: [login], [logout], [changePassword] methods.
+/// Sprint 0 → Sprint 1 upgrades:
+/// - [UserProfile] replaced by real [UserModel] (Member 2 model).
+/// - [login], [logout], [changePassword] implemented via [AuthService].
+/// - Separate [isLoading] flag for button loading state (distinct from
+///   [AuthStatus.loading] which is for initial auth check).
 class AuthProvider extends ChangeNotifier {
-  AuthProvider({FirebaseAuth? auth, FirebaseFirestore? firestore})
-    : _auth = auth ?? FirebaseAuth.instance,
+  AuthProvider({AuthService? authService, FirebaseFirestore? firestore})
+    : _authService = authService ?? AuthService(),
       _firestore = firestore ?? FirebaseFirestore.instance;
 
-  final FirebaseAuth _auth;
+  final AuthService _authService;
   final FirebaseFirestore _firestore;
 
   // ---------------------------------------------------------------------------
@@ -62,8 +33,9 @@ class AuthProvider extends ChangeNotifier {
 
   AuthStatus _status = AuthStatus.initial;
   User? _currentUser;
-  UserProfile? _userProfile;
+  UserModel? _userModel;
   String? _errorMessage;
+  bool _isLoading = false;
   StreamSubscription<User?>? _authSubscription;
 
   // ---------------------------------------------------------------------------
@@ -76,32 +48,34 @@ class AuthProvider extends ChangeNotifier {
   /// The raw Firebase Auth [User] object, or null when unauthenticated.
   User? get currentUser => _currentUser;
 
-  /// Firestore-sourced profile including the user's [UserRole].
-  UserProfile? get userProfile => _userProfile;
+  /// Firestore-sourced user model including role, phone, status etc.
+  UserModel? get userModel => _userModel;
 
-  /// Convenience shorthand: true when the user is fully authenticated.
+  /// True when the user is fully authenticated and profile is loaded.
   bool get isAuthenticated => _status == AuthStatus.authenticated;
 
-  /// The role of the currently authenticated user, or null.
-  UserRole? get role => _userProfile?.role;
+  /// The role of the current user, or null when unauthenticated.
+  UserRole? get role => _userModel?.role;
 
-  /// The last error message, populated when [status] is [AuthStatus.error].
+  /// True during an explicit action (login / logout / changePassword).
+  /// Distinct from [AuthStatus.loading] which reflects initial auth check.
+  bool get isLoading => _isLoading;
+
+  /// The most recent user-facing error message.
   String? get errorMessage => _errorMessage;
 
   // ---------------------------------------------------------------------------
-  // Public API
+  // Auth state listener
   // ---------------------------------------------------------------------------
 
   /// Starts listening to Firebase Auth state changes.
   ///
-  /// Call this once from the app's initialisation path (e.g. inside [main]
-  /// after [Firebase.initializeApp]).  GoRouter's redirect will re-evaluate
-  /// every time [notifyListeners] is called.
+  /// Call once from [ApartmentApp] immediately after [Firebase.initializeApp].
   void listenToAuthState() {
     _setStatus(AuthStatus.loading);
 
     _authSubscription?.cancel();
-    _authSubscription = _auth.authStateChanges().listen(
+    _authSubscription = _authService.authStateChanges.listen(
       _onAuthStateChanged,
       onError: (Object error) {
         _errorMessage = error.toString();
@@ -110,11 +84,71 @@ class AuthProvider extends ChangeNotifier {
     );
   }
 
-  /// Releases the Firebase Auth subscription.
+  // ---------------------------------------------------------------------------
+  // Public auth actions
+  // ---------------------------------------------------------------------------
+
+  /// Signs in with [email] and [password].
   ///
-  /// Called automatically by [ChangeNotifier.dispose].
-  // TODO(member1): Sprint 1 — add login(), logout(), changePassword() methods.
-  // Depends on: AuthService (Member 3, Sprint 0).
+  /// Sets [isLoading] during the request. On failure, sets [errorMessage]
+  /// and returns false. On success, [listenToAuthState] auto-updates state.
+  Future<bool> login({required String email, required String password}) async {
+    _clearError();
+    _setLoading(true);
+
+    try {
+      await _authService.login(email: email, password: password);
+      return true;
+    } on AuthException catch (e) {
+      _errorMessage = e.message;
+      notifyListeners();
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  /// Signs out the current user and clears all local state.
+  Future<void> logout() async {
+    _setLoading(true);
+    try {
+      await _authService.logout();
+      _currentUser = null;
+      _userModel = null;
+    } on AuthException catch (e) {
+      _errorMessage = e.message;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  /// Changes the password for the currently signed-in user.
+  ///
+  /// Returns null on success, or a user-facing error message on failure.
+  Future<String?> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    _clearError();
+    _setLoading(true);
+
+    try {
+      await _authService.changePassword(
+        currentPassword: currentPassword,
+        newPassword: newPassword,
+      );
+      return null; // success
+    } on AuthException catch (e) {
+      return e.message; // caller shows error
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Lifecycle
+  // ---------------------------------------------------------------------------
+
   @override
   void dispose() {
     _authSubscription?.cancel();
@@ -128,7 +162,7 @@ class AuthProvider extends ChangeNotifier {
   Future<void> _onAuthStateChanged(User? user) async {
     if (user == null) {
       _currentUser = null;
-      _userProfile = null;
+      _userModel = null;
       _setStatus(AuthStatus.unauthenticated);
       return;
     }
@@ -140,17 +174,20 @@ class AuthProvider extends ChangeNotifier {
       final doc = await _firestore
           .collection(AppCollections.users)
           .doc(user.uid)
+          .withConverter<UserModel>(
+            fromFirestore: (snap, _) => UserModel.fromFirestore(snap),
+            toFirestore: (model, _) => model.toMap(),
+          )
           .get();
 
       if (doc.exists && doc.data() != null) {
-        _userProfile = UserProfile.fromFirestore(doc.data()!, user.uid);
+        _userModel = doc.data();
         _setStatus(AuthStatus.authenticated);
       } else {
-        // Auth record exists but no Firestore profile yet (edge case).
         debugPrint(
           '[AuthProvider] Firestore profile missing for uid=${user.uid}',
         );
-        _userProfile = null;
+        _userModel = null;
         _setStatus(AuthStatus.unauthenticated);
       }
     } on FirebaseException catch (e) {
@@ -163,5 +200,14 @@ class AuthProvider extends ChangeNotifier {
   void _setStatus(AuthStatus newStatus) {
     _status = newStatus;
     notifyListeners();
+  }
+
+  void _setLoading(bool value) {
+    _isLoading = value;
+    notifyListeners();
+  }
+
+  void _clearError() {
+    _errorMessage = null;
   }
 }
