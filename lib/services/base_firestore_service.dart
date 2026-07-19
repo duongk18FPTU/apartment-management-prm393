@@ -18,7 +18,7 @@ import 'package:flutter/foundation.dart';
 /// ```
 abstract class BaseFirestoreService {
   BaseFirestoreService({FirebaseFirestore? firestore})
-      : _firestore = firestore ?? FirebaseFirestore.instance;
+    : _firestore = firestore ?? FirebaseFirestore.instance;
 
   final FirebaseFirestore _firestore;
 
