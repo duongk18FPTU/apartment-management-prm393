@@ -50,18 +50,18 @@ class VisitorModel {
   }
 
   Map<String, dynamic> toJson({bool includeId = false}) => {
-        if (includeId) 'id': id,
-        'visitorName': visitorName,
-        'visitorPhone': visitorPhone,
-        'purpose': purpose,
-        'registeredBy': registeredBy,
-        'apartmentId': apartmentId,
-        'expectedTime': FirestoreValueParser.timestamp(expectedTime),
-        'checkInTime': FirestoreValueParser.timestamp(checkInTime),
-        'checkOutTime': FirestoreValueParser.timestamp(checkOutTime),
-        'status': status,
-        'checkedInBy': checkedInBy,
-        'createdAt': FirestoreValueParser.timestamp(createdAt),
-        'updatedAt': FirestoreValueParser.timestamp(updatedAt),
-      };
+    if (includeId) 'id': id,
+    'visitorName': visitorName,
+    'visitorPhone': visitorPhone,
+    'purpose': purpose,
+    'registeredBy': registeredBy,
+    'apartmentId': apartmentId,
+    'expectedTime': FirestoreValueParser.timestamp(expectedTime),
+    'checkInTime': FirestoreValueParser.timestamp(checkInTime),
+    'checkOutTime': FirestoreValueParser.timestamp(checkOutTime),
+    'status': status,
+    'checkedInBy': checkedInBy,
+    'createdAt': FirestoreValueParser.timestamp(createdAt),
+    'updatedAt': FirestoreValueParser.timestamp(updatedAt),
+  };
 }

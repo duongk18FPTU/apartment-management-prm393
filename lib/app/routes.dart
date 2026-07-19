@@ -25,9 +25,11 @@ import '../screens/staff/staff_home_screen.dart';
 import '../screens/staff/bill_management/bill_list_screen.dart';
 import '../screens/staff/bill_management/bill_create_screen.dart';
 import '../screens/staff/bill_management/bill_detail_screen.dart';
+import '../screens/staff/visitor_management/visitor_list_screen.dart';
 import '../screens/resident/my_bills/my_bills_screen.dart';
 import '../screens/resident/my_bills/bill_payment_screen.dart';
 import '../screens/resident/my_bills/payment_history_screen.dart';
+import '../screens/resident/visitors/register_visitor_screen.dart';
 import '../utils/constants.dart';
 
 /// Builds and returns the app-wide [GoRouter] instance.
@@ -195,6 +197,11 @@ final List<RouteBase> _routes = [
       return BillDetailScreen(billId: billId);
     },
   ),
+  GoRoute(
+    path: AppRoutes.staffVisitors,
+    name: 'staffVisitors',
+    builder: (context, state) => const VisitorListScreen(),
+  ),
 
   // Member 3 — Complaint / Feedback
   GoRoute(
@@ -239,6 +246,11 @@ final List<RouteBase> _routes = [
     path: AppRoutes.residentPaymentHistory,
     name: 'residentPaymentHistory',
     builder: (context, state) => const PaymentHistoryScreen(),
+  ),
+  GoRoute(
+    path: AppRoutes.residentVisitorRegister,
+    name: 'residentVisitorRegister',
+    builder: (context, state) => const RegisterVisitorScreen(),
   ),
 ];
 

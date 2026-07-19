@@ -9,11 +9,11 @@ import '../../../providers/apartment_provider.dart';
 import '../../../utils/constants.dart';
 
 class ApartmentDetailScreen extends StatefulWidget {
-  const ApartmentDetailScreen({
-    super.key,
-    this.apartmentId,
-    this.apartment,
-  }) : assert(apartmentId != null || apartment != null, 'Either apartmentId or apartment must be provided.');
+  const ApartmentDetailScreen({super.key, this.apartmentId, this.apartment})
+    : assert(
+        apartmentId != null || apartment != null,
+        'Either apartmentId or apartment must be provided.',
+      );
 
   final String? apartmentId;
   final ApartmentModel? apartment;
@@ -338,7 +338,10 @@ class _BentoHeroCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: apartment.isOccupied
                       ? const Color(0xFF85F8C4)
@@ -737,10 +740,7 @@ class _ResidentsSection extends StatelessWidget {
         OutlinedButton.icon(
           style: OutlinedButton.styleFrom(
             backgroundColor: Colors.transparent,
-            side: const BorderSide(
-              color: Color(0xFF75777D),
-              width: 1.5,
-            ),
+            side: const BorderSide(color: Color(0xFF75777D), width: 1.5),
             padding: const EdgeInsets.symmetric(vertical: 16),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
@@ -787,9 +787,7 @@ class _FixedFooter extends StatelessWidget {
         ),
         decoration: const BoxDecoration(
           color: Color(0xD9FFFFFF),
-          border: Border(
-            top: BorderSide(color: Color(0xFFE2E8F0), width: 1),
-          ),
+          border: Border(top: BorderSide(color: Color(0xFFE2E8F0), width: 1)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,

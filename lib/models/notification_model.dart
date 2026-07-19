@@ -35,13 +35,13 @@ class NotificationModel {
   }
 
   Map<String, dynamic> toJson({bool includeId = false}) => {
-        if (includeId) 'id': id,
-        'title': title,
-        'content': content,
-        'type': type,
-        'createdBy': createdBy,
-        'targetRoles': targetRoles,
-        'createdAt': FirestoreValueParser.timestamp(createdAt),
-        'updatedAt': FirestoreValueParser.timestamp(updatedAt),
-      };
+    if (includeId) 'id': id,
+    'title': title,
+    'content': content,
+    'type': type,
+    'createdBy': createdBy,
+    'targetRoles': targetRoles,
+    'createdAt': FirestoreValueParser.timestamp(createdAt),
+    'updatedAt': FirestoreValueParser.timestamp(updatedAt),
+  };
 }

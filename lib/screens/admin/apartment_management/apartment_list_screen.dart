@@ -72,8 +72,8 @@ class _ApartmentListContentState extends State<_ApartmentListContent> {
             child: provider.isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : list.isEmpty
-                    ? const _EmptyState()
-                    : _ApartmentGrid(apartments: list),
+                ? const _EmptyState()
+                : _ApartmentGrid(apartments: list),
           ),
         ],
       ),
@@ -150,12 +150,7 @@ class _SearchAndFilterBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: Colors.white,
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.md,
-        16,
-        AppSpacing.md,
-        8,
-      ),
+      padding: const EdgeInsets.fromLTRB(AppSpacing.md, 16, AppSpacing.md, 8),
       child: Column(
         children: [
           // Search Input
@@ -294,7 +289,11 @@ class _ApartmentCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ownerName = apartment.ownerId != null
-        ? context.watch<ApartmentProvider>().usersMap[apartment.ownerId]?.fullName ?? 'Chưa đăng ký'
+        ? context
+                  .watch<ApartmentProvider>()
+                  .usersMap[apartment.ownerId]
+                  ?.fullName ??
+              'Chưa đăng ký'
         : 'Chưa đăng ký';
 
     return GestureDetector(
