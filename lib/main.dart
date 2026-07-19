@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 import 'app/app.dart';
 import 'firebase_options.dart';
@@ -13,6 +14,9 @@ import 'firebase_options.dart';
 /// 3. Mount [ApartmentApp].
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialise locale date formatting for Vietnamese ('vi_VN')
+  await initializeDateFormatting('vi_VN', null);
 
   // Initialise Firebase with the generated config from `flutterfire configure`
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);

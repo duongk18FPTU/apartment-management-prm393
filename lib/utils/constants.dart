@@ -24,8 +24,14 @@ class AppRoutes {
   static const String userList = '/admin/users';
   static const String userCreate = '/admin/users/create';
   static const String userEdit = '/admin/users/:id/edit';
+
+  // Quản lý Căn hộ & Cư dân (Member 2 - Admin)
   static const String apartmentList = '/admin/apartments';
+  static const String apartmentForm = '/admin/apartments/form';
   static const String apartmentDetail = '/admin/apartments/:id';
+  static const String residentList = '/admin/residents';
+  static const String residentForm = '/admin/residents/form';
+  static const String residentProfile = '/admin/residents/profile';
 
   // Sprint 1 — Maintenance Request (Member 3)
   static const String requestList = '/resident/requests';

@@ -18,12 +18,8 @@ class ResidentService {
   }) {
     final timestamp = now ?? DateTime.now();
     return resident
-        .copyWith(
-          role: UserRole.resident,
-          createdAt: resident.createdAt,
-          updatedAt: timestamp,
-        )
-        .toJson();
+        .copyWith(role: UserRole.resident, updatedAt: timestamp)
+        .toMap();
   }
 
   Stream<List<UserModel>> watchResidents() {
@@ -32,7 +28,7 @@ class ResidentService {
         .snapshots()
         .map(
           (snapshot) => snapshot.docs
-              .map((doc) => UserModel.fromJson(doc.data(), id: doc.id))
+              .map((doc) => UserModel.fromMap(doc.data(), doc.id))
               .toList(),
         );
   }
@@ -42,26 +38,24 @@ class ResidentService {
         .where('role', isEqualTo: 'resident')
         .get();
     return snapshot.docs
-        .map((doc) => UserModel.fromJson(doc.data(), id: doc.id))
+        .map((doc) => UserModel.fromMap(doc.data(), doc.id))
         .toList();
   }
 
   Future<UserModel?> getResident(String id) async {
     final doc = await _collection.doc(id).get();
     final data = doc.data();
-    return doc.exists && data != null
-        ? UserModel.fromJson(data, id: doc.id)
-        : null;
+    return doc.exists && data != null ? UserModel.fromMap(data, doc.id) : null;
   }
 
   Future<void> createResident(UserModel resident) async {
-    await _collection.doc(resident.id).set(toDocumentData(resident));
+    await _collection.doc(resident.uid).set(toDocumentData(resident));
   }
 
   Future<void> updateResident(UserModel resident) {
     return _collection
-        .doc(resident.id)
-        .update(resident.copyWith(updatedAt: DateTime.now()).toJson());
+        .doc(resident.uid)
+        .update(resident.copyWith(updatedAt: DateTime.now()).toMap());
   }
 
   Future<void> setResidentStatus(String residentId, UserStatus status) {

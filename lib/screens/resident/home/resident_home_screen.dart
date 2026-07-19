@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../app/theme.dart';
 import '../../../providers/auth_provider.dart';
-import '../../../providers/bill_provider.dart';
 import '../../../utils/constants.dart';
-import '../../../utils/vietnamese_formatters.dart';
+import '../my_bills/my_bills_screen.dart';
+import '../my_requests/request_list_screen.dart';
+import '../complaints/complaint_list_screen.dart';
+import '../../profile/profile_screen.dart';
 
 class ResidentHomeScreen extends StatefulWidget {
   const ResidentHomeScreen({super.key});
@@ -15,418 +18,260 @@ class ResidentHomeScreen extends StatefulWidget {
 }
 
 class _ResidentHomeScreenState extends State<ResidentHomeScreen> {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _fetchMyBills();
-    });
-  }
-
-  void _fetchMyBills() {
-    final userModel = context.read<AuthProvider>().userModel;
-    if (userModel?.apartmentId != null) {
-      context.read<BillProvider>().loadBills(
-        apartmentId: userModel!.apartmentId,
-      );
-    }
-  }
+  int _selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
-    final user = context.watch<AuthProvider>().userModel;
-    final billProvider = context.watch<BillProvider>();
-    final allBills = billProvider.bills;
+    final userModel = context.watch<AuthProvider>().userModel;
+    final textTheme = Theme.of(context).textTheme;
 
-    // Filter unpaid/overdue bills
-    final unpaidBills = allBills
-        .where((b) => b.status == 'unpaid' || b.status == 'overdue')
-        .toList();
-    final unpaidSum = unpaidBills.fold(0.0, (sum, b) => sum + b.amount);
+    final List<Widget> tabs = [
+      _buildHomeTab(textTheme, userModel?.fullName ?? 'Cư dân'),
+      const MyBillsScreen(),
+      const RequestListScreen(),
+      const ComplaintListScreen(),
+      const UserProfileScreen(),
+    ];
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(64),
-        child: Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            border: Border(
-              bottom: BorderSide(color: Color(0xFFE2E8F0), width: 1),
-            ),
+      backgroundColor: DesignTokens.background,
+      body: IndexedStack(index: _selectedIndex, children: tabs),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _selectedIndex,
+        onDestinationSelected: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.home_outlined),
+            selectedIcon: Icon(Icons.home_rounded),
+            label: 'Trang chủ',
           ),
-          child: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 20,
-                        backgroundColor: const Color(0xFFE2E8F0),
-                        child: const Icon(
-                          Icons.person_rounded,
-                          color: Color(0xFF75777D),
-                          size: 24,
-                        ),
+          NavigationDestination(
+            icon: Icon(Icons.receipt_long_outlined),
+            selectedIcon: Icon(Icons.receipt_long_rounded),
+            label: 'Hóa đơn',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.build_outlined),
+            selectedIcon: Icon(Icons.build_rounded),
+            label: 'Yêu cầu',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.feedback_outlined),
+            selectedIcon: Icon(Icons.feedback_rounded),
+            label: 'Khiếu nại',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person_outline_rounded),
+            selectedIcon: Icon(Icons.person_rounded),
+            label: 'Cá nhân',
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHomeTab(TextTheme textTheme, String name) {
+    return Scaffold(
+      backgroundColor: DesignTokens.background,
+      appBar: AppBar(title: const Text('My Home')),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Welcome Header Card
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 28,
+                      backgroundColor: DesignTokens.secondary.withValues(
+                        alpha: 0.1,
                       ),
-                      const SizedBox(width: 12),
-                      Column(
+                      child: const Icon(
+                        Icons.person_rounded,
+                        color: DesignTokens.secondary,
+                        size: 28,
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.md),
+                    Expanded(
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text(
-                            'CĂN HỘ',
-                            style: TextStyle(
-                              color: Color(0xFF75777D),
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 0.5,
+                          Text(
+                            'Xin chào,',
+                            style: textTheme.bodyMedium?.copyWith(
+                              color: DesignTokens.neutralVariant,
                             ),
                           ),
                           Text(
-                            user?.apartmentId != null
-                                ? 'Phòng ${user!.apartmentId}'
-                                : 'Chưa thiết lập',
-                            style: const TextStyle(
-                              color: Color(0xFF091426),
-                              fontSize: 15,
+                            name,
+                            style: textTheme.titleLarge?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                         ],
                       ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      IconButton(
-                        icon: const Icon(
-                          Icons.logout_rounded,
-                          color: Color(0xFFBA1A1A),
-                        ),
-                        tooltip: 'Đăng xuất',
-                        onPressed: () => context.read<AuthProvider>().logout(),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-      body: SafeArea(
-        child: RefreshIndicator(
-          onRefresh: () async {
-            _fetchMyBills();
-          },
-          color: const Color(0xFF091426),
-          child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.symmetric(
-              horizontal: 20.0,
-              vertical: 24.0,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // Welcome Section
-                Text(
-                  'Xin chào, ${user?.fullName ?? 'Cư dân'}',
-                  style: const TextStyle(
-                    color: Color(0xFF091426),
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                const Text(
-                  'Chào mừng bạn quay trở lại ngôi nhà của mình.',
-                  style: TextStyle(color: Color(0xFF75777D), fontSize: 14),
-                ),
-
-                const SizedBox(height: 24),
-
-                // Unpaid Bill Card Banner
-                if (unpaidSum > 0)
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: const Color(0xFFE2E8F0)),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Color(0x05091426),
-                          offset: Offset(0, 4),
-                          blurRadius: 10,
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFFFFBEB),
-                                borderRadius: BorderRadius.circular(9999),
-                                border: Border.all(
-                                  color: const Color(0xFFFDE68A),
-                                ),
-                              ),
-                              child: const Text(
-                                'Chưa thanh toán',
-                                style: TextStyle(
-                                  color: Color(0xFFD97706),
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Kỳ tháng ${unpaidBills.first.billingMonth}',
-                              style: const TextStyle(
-                                color: Color(0xFF75777D),
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  'TỔNG TIỀN CẦN THANH TOÁN',
-                                  style: TextStyle(
-                                    color: Color(0xFF75777D),
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 0.5,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Row(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.baseline,
-                                  textBaseline: TextBaseline.alphabetic,
-                                  children: [
-                                    Text(
-                                      VietnameseFormatters.currency
-                                          .format(unpaidSum)
-                                          .replaceAll(' ₫', ''),
-                                      style: const TextStyle(
-                                        color: Color(0xFF091426),
-                                        fontSize: 28,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 4),
-                                    const Text(
-                                      'VND',
-                                      style: TextStyle(
-                                        color: Color(0xFF75777D),
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            ElevatedButton.icon(
-                              onPressed: () {
-                                context
-                                    .push(
-                                      '/resident/bills/${unpaidBills.first.billId}/pay',
-                                    )
-                                    .then((_) => _fetchMyBills());
-                              },
-                              icon: const Icon(
-                                Icons.payments_rounded,
-                                size: 16,
-                              ),
-                              label: const Text('Thanh toán ngay'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF091426),
-                                foregroundColor: Colors.white,
-                                elevation: 0,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 12,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  )
-                else
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFECFDF5),
-                      borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: const Color(0xFFA7F3D0)),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 40,
-                          height: 40,
-                          decoration: const BoxDecoration(
-                            color: Color(0xFFD1FAE5),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.celebration_rounded,
-                            color: Color(0xFF059669),
-                            size: 22,
-                          ),
-                        ),
-                        const SizedBox(width: 14),
-                        const Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Tuyệt vời!',
-                                style: TextStyle(
-                                  color: Color(0xFF065F46),
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              SizedBox(height: 2),
-                              Text(
-                                'Tất cả hóa đơn căn hộ đã được thanh toán.',
-                                style: TextStyle(
-                                  color: Color(0xFF047857),
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                const SizedBox(height: 32),
-
-                // Quick Actions Section
-                const Text(
-                  'TIỆN ÍCH NHANH',
-                  style: TextStyle(
-                    color: Color(0xFF75777D),
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                GridView.count(
-                  crossAxisCount: 2,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  childAspectRatio: 1.15,
-                  children: [
-                    _buildQuickActionItem(
-                      icon: Icons.handyman_outlined,
-                      label: 'Sửa chữa',
-                      onTap: () => context.push(AppRoutes.requestList),
-                    ),
-                    _buildQuickActionItem(
-                      icon: Icons.person_add_alt_1_outlined,
-                      label: 'Đăng ký khách',
-                      onTap: () =>
-                          context.push(AppRoutes.residentVisitorRegister),
-                    ),
-                    _buildQuickActionItem(
-                      icon: Icons.forum_outlined,
-                      label: 'Góp ý',
-                      onTap: () => context.push(AppRoutes.complaintList),
-                    ),
-                    _buildQuickActionItem(
-                      icon: Icons.history_edu_outlined,
-                      label: 'Lịch sử hóa đơn',
-                      onTap: () =>
-                          context.push(AppRoutes.residentPaymentHistory),
                     ),
                   ],
                 ),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+
+            Text(
+              'Dịch vụ chung cư',
+              style: textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.md),
+
+            // Bento Grid for Resident Quick Actions
+            GridView.count(
+              crossAxisCount: 2,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              crossAxisSpacing: AppSpacing.md,
+              mainAxisSpacing: AppSpacing.md,
+              children: [
+                _buildBentoCard(
+                  Icons.receipt_long_rounded,
+                  'Thanh toán',
+                  'Xem & thanh toán các hóa đơn căn hộ.',
+                  DesignTokens.secondary,
+                  () => setState(() => _selectedIndex = 1),
+                ),
+                _buildBentoCard(
+                  Icons.build_rounded,
+                  'Sửa chữa',
+                  'Gửi yêu cầu bảo trì bảo dưỡng căn hộ.',
+                  DesignTokens.tertiary,
+                  () => setState(() => _selectedIndex = 2),
+                ),
+                _buildBentoCard(
+                  Icons.feedback_outlined,
+                  'Khiếu nại',
+                  'Gửi khiếu nại và phản hồi của bạn.',
+                  const Color(0xFF3B82F6),
+                  () => setState(() => _selectedIndex = 3),
+                ),
+                _buildBentoCard(
+                  Icons.person_rounded,
+                  'Cá nhân',
+                  'Quản lý hồ sơ cư dân & thông tin phòng.',
+                  const Color(0xFF8B5CF6),
+                  () => setState(() => _selectedIndex = 4),
+                ),
               ],
             ),
-          ),
+            const SizedBox(height: AppSpacing.md),
+
+            // Quick Access card for Payment History
+            Card(
+              child: InkWell(
+                borderRadius: AppRadius.borderMd,
+                onTap: () => context.push(AppRoutes.residentPaymentHistory),
+                child: Padding(
+                  padding: const EdgeInsets.all(AppSpacing.md),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(AppSpacing.sm),
+                        decoration: BoxDecoration(
+                          color: DesignTokens.tertiary.withValues(alpha: 0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.history_rounded,
+                          color: DesignTokens.tertiary,
+                          size: 28,
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.md),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Lịch Sử Giao Dịch',
+                              style: textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              'Xem danh sách biên lai, lịch sử nộp tiền mặt hoặc chuyển khoản.',
+                              style: textTheme.bodySmall,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Icon(
+                        Icons.arrow_forward_ios_rounded,
+                        size: 16,
+                        color: DesignTokens.neutralVariant,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildQuickActionItem({
-    required IconData icon,
-    required String label,
-    required VoidCallback onTap,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x02091426),
-            offset: Offset(0, 4),
-            blurRadius: 10,
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(20),
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(20),
+  Widget _buildBentoCard(
+    IconData icon,
+    String title,
+    String description,
+    Color color,
+    VoidCallback onTap,
+  ) {
+    final textTheme = Theme.of(context).textTheme;
+    return Card(
+      child: InkWell(
+        borderRadius: AppRadius.borderMd,
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.md),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                width: 48,
-                height: 48,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFF1F5F9),
+                padding: const EdgeInsets.all(AppSpacing.sm),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(icon, color: const Color(0xFF091426), size: 22),
+                child: Icon(icon, color: color, size: 24),
               ),
-              const SizedBox(height: 12),
-              Text(
-                label,
-                style: const TextStyle(
-                  color: Color(0xFF091426),
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
-                ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.xs),
+                  Text(
+                    description,
+                    style: textTheme.bodySmall?.copyWith(fontSize: 11),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
               ),
             ],
           ),

@@ -7,8 +7,6 @@ import '../screens/admin/admin_home_screen.dart';
 import '../screens/admin/user_management/user_create_screen.dart';
 import '../screens/admin/user_management/user_edit_screen.dart';
 import '../screens/admin/user_management/user_list_screen.dart';
-import '../screens/admin/apartment_management/apartment_list_screen.dart';
-import '../screens/admin/apartment_management/apartment_detail_screen.dart';
 import '../screens/auth/change_password_screen.dart';
 import '../screens/auth/login_screen.dart';
 import '../screens/auth/splash_screen.dart';
@@ -25,11 +23,17 @@ import '../screens/staff/staff_home_screen.dart';
 import '../screens/staff/bill_management/bill_list_screen.dart';
 import '../screens/staff/bill_management/bill_create_screen.dart';
 import '../screens/staff/bill_management/bill_detail_screen.dart';
-import '../screens/staff/visitor_management/visitor_list_screen.dart';
 import '../screens/resident/my_bills/my_bills_screen.dart';
 import '../screens/resident/my_bills/bill_payment_screen.dart';
 import '../screens/resident/my_bills/payment_history_screen.dart';
-import '../screens/resident/visitors/register_visitor_screen.dart';
+import '../screens/admin/apartment_management/apartment_list_screen.dart';
+import '../screens/admin/apartment_management/apartment_form_screen.dart';
+import '../screens/admin/apartment_management/apartment_detail_screen.dart';
+import '../screens/admin/resident_management/resident_list_screen.dart';
+import '../screens/admin/resident_management/resident_form_screen.dart';
+import '../screens/admin/resident_management/resident_profile_screen.dart';
+import '../providers/apartment_provider.dart';
+import '../models/user_model.dart';
 import '../utils/constants.dart';
 
 /// Builds and returns the app-wide [GoRouter] instance.
@@ -130,16 +134,49 @@ final List<RouteBase> _routes = [
     builder: (context, state) =>
         UserEditScreen(userId: state.pathParameters['id']!),
   ),
+
+  // Member 2 — Apartment Management (Admin)
   GoRoute(
     path: AppRoutes.apartmentList,
     name: 'apartmentList',
     builder: (context, state) => const ApartmentListScreen(),
   ),
   GoRoute(
+    path: AppRoutes.apartmentForm,
+    name: 'apartmentForm',
+    builder: (context, state) => const ApartmentFormScreen(),
+  ),
+  GoRoute(
     path: AppRoutes.apartmentDetail,
     name: 'apartmentDetail',
-    builder: (context, state) =>
-        ApartmentDetailScreen(apartmentId: state.pathParameters['id']!),
+    builder: (context, state) {
+      final id = state.pathParameters['id']!;
+      final apartmentProvider = context.read<ApartmentProvider>();
+      final apartment = apartmentProvider.apartments.firstWhere(
+        (a) => a.id == id,
+      );
+      return ApartmentDetailScreen(apartment: apartment);
+    },
+  ),
+
+  // Member 2 — Resident Management (Admin)
+  GoRoute(
+    path: AppRoutes.residentList,
+    name: 'residentList',
+    builder: (context, state) => const ResidentListScreen(),
+  ),
+  GoRoute(
+    path: AppRoutes.residentForm,
+    name: 'residentForm',
+    builder: (context, state) => const ResidentFormScreen(),
+  ),
+  GoRoute(
+    path: AppRoutes.residentProfile,
+    name: 'residentProfile',
+    builder: (context, state) {
+      final resident = state.extra as UserModel;
+      return ResidentProfileScreen(resident: resident);
+    },
   ),
 
   GoRoute(
@@ -197,11 +234,6 @@ final List<RouteBase> _routes = [
       return BillDetailScreen(billId: billId);
     },
   ),
-  GoRoute(
-    path: AppRoutes.staffVisitors,
-    name: 'staffVisitors',
-    builder: (context, state) => const VisitorListScreen(),
-  ),
 
   // Member 3 — Complaint / Feedback
   GoRoute(
@@ -247,11 +279,6 @@ final List<RouteBase> _routes = [
     name: 'residentPaymentHistory',
     builder: (context, state) => const PaymentHistoryScreen(),
   ),
-  GoRoute(
-    path: AppRoutes.residentVisitorRegister,
-    name: 'residentVisitorRegister',
-    builder: (context, state) => const RegisterVisitorScreen(),
-  ),
 ];
 
 class _RouterErrorScreen extends StatelessWidget {
@@ -262,7 +289,7 @@ class _RouterErrorScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Không tìm thấy trang')),
+      appBar: AppBar(title: const Text('Page Not Found')),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -272,7 +299,7 @@ class _RouterErrorScreen extends StatelessWidget {
               const Icon(Icons.error_outline_rounded, size: 64),
               const SizedBox(height: 16),
               Text(
-                '404 — Không tìm thấy trang',
+                '404 — Page not found',
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               if (error != null) ...[
@@ -286,7 +313,7 @@ class _RouterErrorScreen extends StatelessWidget {
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: () => context.go(AppRoutes.splash),
-                child: const Text('Về trang chủ'),
+                child: const Text('Go to Home'),
               ),
             ],
           ),

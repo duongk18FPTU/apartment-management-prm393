@@ -60,7 +60,7 @@ class ResidentProvider extends ChangeNotifier {
   }
 
   Future<void> save(UserModel resident) async {
-    if (resident.id.isEmpty) {
+    if (resident.uid.isEmpty) {
       throw ArgumentError(
         'A resident id is required before creating a profile.',
       );
@@ -76,7 +76,7 @@ class ResidentProvider extends ChangeNotifier {
 
   Future<void> toggleStatus(UserModel resident) async {
     await _dataService.setResidentStatus(
-      resident.id,
+      resident.uid,
       resident.isActive ? UserStatus.inactive : UserStatus.active,
     );
     await loadResidents();

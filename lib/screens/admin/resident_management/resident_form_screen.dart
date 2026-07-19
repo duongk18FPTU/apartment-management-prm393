@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../models/user_model.dart';
-import '../../../utils/constants.dart';
 import '../../../providers/apartment_provider.dart';
 import '../../../providers/resident_provider.dart';
+import '../../../utils/constants.dart';
 import 'widgets/resident_form_fields.dart';
 
 class ResidentFormScreen extends StatefulWidget {
@@ -30,7 +30,7 @@ class _ResidentFormScreenState extends State<ResidentFormScreen> {
   void initState() {
     super.initState();
     final resident = widget.resident;
-    _idController = TextEditingController(text: resident?.id);
+    _idController = TextEditingController(text: resident?.uid);
     _nameController = TextEditingController(text: resident?.fullName);
     _emailController = TextEditingController(text: resident?.email);
     _phoneController = TextEditingController(text: resident?.phone);
@@ -68,11 +68,11 @@ class _ResidentFormScreenState extends State<ResidentFormScreen> {
       avatarUrl: old?.avatarUrl,
       status: UserStatus.values.byName(_status),
       createdAt: old?.createdAt ?? DateTime.now(),
-      updatedAt: old?.updatedAt ?? DateTime.now(),
+      updatedAt: DateTime.now(),
     );
     try {
       await _saveResident(resident);
-      await _syncApartment(oldApartmentId, resident.id);
+      await _syncApartment(oldApartmentId, resident.uid);
       if (mounted) Navigator.of(context).pop();
     } catch (error) {
       if (mounted)
