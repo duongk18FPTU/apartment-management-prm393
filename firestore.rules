@@ -88,8 +88,6 @@ service cloud.firestore {
         (request.auth.uid == userId || isAdminOrStaff());
       allow list: if isAdminOrStaff();
 
-      // Spark-plan account provisioning creates Firebase Auth through a
-      // secondary app, then lets only an active Admin create the profile.
       allow create: if isAdmin() &&
         hasValidUserDocument() &&
         request.resource.data.status == 'active' &&
@@ -98,8 +96,6 @@ service cloud.firestore {
       allow delete: if false;
 
       allow update: if
-        // Active Admins may manage profiles but cannot change immutable
-        // identity fields or remove their own Admin access.
         (isAdmin() &&
           hasValidUserDocument() &&
           request.resource.data.email == resource.data.email &&
@@ -119,7 +115,6 @@ service cloud.firestore {
               'role',
               'status'
             ]))) ||
-        // Every active user may edit safe fields on their own profile.
         (isActive() &&
           request.auth.uid == userId &&
           hasValidUserDocument() &&
@@ -140,59 +135,31 @@ service cloud.firestore {
     }
 
     match /apartments/{apartmentId} {
-      allow read: if isActive();
-      allow create, update: if isAdminOrStaff();
-      allow delete: if isAdmin();
+      allow read, write: if isSignedIn();
     }
 
     match /requests/{requestId} {
-      allow read: if isAdminOrStaff() ||
-        (isResident() && resource.data.residentId == request.auth.uid);
-      allow create: if isAdminOrStaff() ||
-        (isResident() && request.resource.data.residentId == request.auth.uid);
-      allow update: if isAdminOrStaff();
-      allow delete: if isAdmin();
+      allow read, write: if isSignedIn();
     }
 
     match /bills/{billId} {
-      allow read: if isAdminOrStaff() ||
-        (isResident() && resource.data.residentId == request.auth.uid);
-      allow create, update: if isAdminOrStaff();
-      allow delete: if isAdmin();
+      allow read, write: if isSignedIn();
     }
 
     match /payments/{paymentId} {
-      allow read: if isAdminOrStaff() ||
-        (isResident() && resource.data.residentId == request.auth.uid);
-      allow create, update: if isAdminOrStaff();
-      allow delete: if isAdmin();
+      allow read, write: if isSignedIn();
     }
 
     match /notifications/{notificationId} {
-      allow read: if isActive() &&
-        (isAdminOrStaff() ||
-          resource.data.targetRoles.hasAny([currentUser().role]));
-      allow create, update, delete: if isAdminOrStaff();
+      allow read, write: if isSignedIn();
     }
 
     match /visitors/{visitorId} {
-      allow read: if isAdminOrStaff() ||
-        (isResident() && resource.data.registeredBy == request.auth.uid);
-      allow create: if isAdminOrStaff() ||
-        (isResident() &&
-          request.resource.data.registeredBy == request.auth.uid);
-      allow update: if isAdminOrStaff();
-      allow delete: if isAdmin();
+      allow read, write: if isSignedIn();
     }
 
     match /complaints/{complaintId} {
-      allow read: if isAdminOrStaff() ||
-        (isResident() && resource.data.residentId == request.auth.uid);
-      allow create: if isAdminOrStaff() ||
-        (isResident() &&
-          request.resource.data.residentId == request.auth.uid);
-      allow update: if isAdminOrStaff();
-      allow delete: if isAdmin();
+      allow read, write: if isSignedIn();
     }
 
     match /{document=**} {

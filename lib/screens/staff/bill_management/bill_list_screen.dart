@@ -58,7 +58,10 @@ class _BillListScreenState extends State<BillListScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push('/staff/bills/create'),
+        onPressed: () async {
+          await context.push('/staff/bills/create');
+          _fetchBills();
+        },
         child: const Icon(Icons.add_rounded),
       ),
       body: Column(
@@ -121,7 +124,10 @@ class _BillListScreenState extends State<BillListScreen> {
         final bill = provider.bills[index];
         return BillCard(
           bill: bill,
-          onTap: () => context.push('/staff/bills/${bill.billId}'),
+          onTap: () async {
+            await context.push('/staff/bills/${bill.billId}');
+            _fetchBills();
+          },
         );
       },
     );
