@@ -4,6 +4,9 @@ import '../../../../app/theme.dart';
 import '../../../../models/user_model.dart';
 import '../../../../services/user_service.dart';
 import '../../../../utils/constants.dart';
+import 'user_apartment_control.dart';
+import 'user_role_control.dart';
+import 'user_status_control.dart';
 
 /// Role, apartment and status controls shared by user create and edit forms.
 class UserAccessFields extends StatelessWidget {
@@ -32,98 +35,31 @@ class UserAccessFields extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final options = List<ApartmentOption>.of(apartments);
-    if (apartmentId != null &&
-        !options.any((option) => option.id == apartmentId)) {
-      options.add(ApartmentOption(id: apartmentId!, number: apartmentId!));
-    }
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Vai trò', style: textTheme.labelLarge),
-        const SizedBox(height: AppSpacing.xs),
-        DropdownButtonFormField<UserRole>(
-          initialValue: role,
-          isExpanded: true,
-          decoration: const InputDecoration(
-            prefixIcon: Icon(Icons.shield_outlined),
-          ),
-          items: UserRole.values
-              .map(
-                (item) => DropdownMenuItem(
-                  value: item,
-                  child: Text(_roleLabel(item)),
-                ),
-              )
-              .toList(),
-          onChanged: isCurrentUser ? null : onRoleChanged,
+        UserRoleControl(
+          role: role,
+          isCurrentUser: isCurrentUser,
+          onChanged: onRoleChanged,
         ),
-        if (isCurrentUser) ...[
-          const SizedBox(height: AppSpacing.xs),
-          Text(
-            'Không thể thay đổi vai trò của tài khoản đang đăng nhập.',
-            style: textTheme.bodySmall,
-          ),
-        ],
         if (role == UserRole.resident) ...[
           const SizedBox(height: AppSpacing.md),
-          Text('Căn hộ', style: textTheme.labelLarge),
-          const SizedBox(height: AppSpacing.xs),
-          DropdownButtonFormField<String>(
-            initialValue: apartmentId,
-            isExpanded: true,
-            decoration: const InputDecoration(
-              hintText: 'Chọn căn hộ (không bắt buộc)',
-              prefixIcon: Icon(Icons.apartment_outlined),
-            ),
-            items: [
-              const DropdownMenuItem<String>(
-                value: null,
-                child: Text('Chưa gán căn hộ'),
-              ),
-              ...options.map(
-                (option) => DropdownMenuItem(
-                  value: option.id,
-                  child: Text('Căn hộ ${option.number}'),
-                ),
-              ),
-            ],
+          UserApartmentControl(
+            apartmentId: apartmentId,
+            apartments: apartments,
             onChanged: onApartmentChanged,
           ),
         ],
         if (showStatus) ...[
           const SizedBox(height: AppSpacing.md),
-          Container(
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest,
-              borderRadius: AppRadius.borderMd,
-            ),
-            child: SwitchListTile.adaptive(
-              value: status == UserStatus.active,
-              title: Text('Tài khoản hoạt động', style: textTheme.titleMedium),
-              subtitle: Text(
-                isCurrentUser
-                    ? 'Không thể tự vô hiệu hóa tài khoản đang đăng nhập.'
-                    : 'Tắt để ngăn người dùng truy cập ứng dụng.',
-                style: textTheme.bodySmall,
-              ),
-              onChanged: isCurrentUser
-                  ? null
-                  : (isActive) => onStatusChanged(
-                      isActive ? UserStatus.active : UserStatus.inactive,
-                    ),
-            ),
+          UserStatusControl(
+            status: status,
+            isCurrentUser: isCurrentUser,
+            onChanged: onStatusChanged,
           ),
         ],
       ],
     );
   }
-
-  String _roleLabel(UserRole value) => switch (value) {
-    UserRole.admin => 'Quản trị viên',
-    UserRole.staff => 'Nhân viên',
-    UserRole.resident => 'Cư dân',
-  };
 }

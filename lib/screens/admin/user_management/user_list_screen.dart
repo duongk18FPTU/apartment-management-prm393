@@ -7,6 +7,7 @@ import '../../../providers/user_provider.dart';
 import '../../../utils/constants.dart';
 import 'widgets/user_feedback_states.dart';
 import 'widgets/user_filter_bar.dart';
+import 'widgets/user_inline_error.dart';
 import 'widgets/user_list_item.dart';
 import 'widgets/user_list_skeleton.dart';
 
@@ -54,7 +55,7 @@ class _UserListScreenState extends State<UserListScreen> {
             onStatusChanged: provider.setStatusFilter,
           ),
           if (provider.errorMessage != null && provider.users.isNotEmpty)
-            _InlineError(message: provider.errorMessage!),
+            UserInlineError(message: provider.errorMessage!),
           Expanded(child: _buildContent(provider)),
         ],
       ),
@@ -83,7 +84,7 @@ class _UserListScreenState extends State<UserListScreen> {
           AppSpacing.md,
           AppSpacing.sm,
           AppSpacing.md,
-          96,
+          AppSpacing.xl * 3,
         ),
         itemCount: provider.filteredUsers.length,
         separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
@@ -94,37 +95,6 @@ class _UserListScreenState extends State<UserListScreen> {
             onTap: () => context.push('/admin/users/${user.uid}/edit'),
           );
         },
-      ),
-    );
-  }
-}
-
-class _InlineError extends StatelessWidget {
-  const _InlineError({required this.message});
-
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.fromLTRB(
-        AppSpacing.md,
-        0,
-        AppSpacing.md,
-        AppSpacing.sm,
-      ),
-      padding: const EdgeInsets.all(AppSpacing.sm),
-      decoration: BoxDecoration(
-        color: colorScheme.errorContainer,
-        borderRadius: AppRadius.borderSm,
-      ),
-      child: Text(
-        message,
-        style: Theme.of(
-          context,
-        ).textTheme.bodySmall?.copyWith(color: colorScheme.onErrorContainer),
       ),
     );
   }

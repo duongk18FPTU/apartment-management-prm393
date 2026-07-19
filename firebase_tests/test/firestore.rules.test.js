@@ -9,6 +9,7 @@ const {
 } = require("@firebase/rules-unit-testing");
 const {
   collection,
+  deleteField,
   doc,
   getDoc,
   getDocs,
@@ -141,10 +142,23 @@ describe("Firestore user security rules", {skip: !hasEmulator}, () => {
     await assertSucceeds(
       updateDoc(doc(database, "users/resident-1"), {
         phone: "0901234567",
+        updatedAt: serverTimestamp(),
       }),
     );
     await assertFails(
       updateDoc(doc(database, "users/resident-1"), {role: "admin"}),
+    );
+    await assertFails(
+      updateDoc(doc(database, "users/resident-1"), {
+        fullName: deleteField(),
+        updatedAt: serverTimestamp(),
+      }),
+    );
+    await assertFails(
+      updateDoc(doc(database, "users/resident-1"), {
+        phone: "0909999999",
+        updatedAt: "not-a-timestamp",
+      }),
     );
   });
 

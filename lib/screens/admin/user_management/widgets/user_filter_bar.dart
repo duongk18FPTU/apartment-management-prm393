@@ -4,6 +4,7 @@ import '../../../../app/theme.dart';
 import '../../../../models/user_model.dart';
 import '../../../../utils/constants.dart';
 import '../../../../widgets/custom_text_field.dart';
+import 'user_filter_dropdowns.dart';
 
 /// Search and compact role/status filters for the user list.
 class UserFilterBar extends StatelessWidget {
@@ -50,60 +51,12 @@ class UserFilterBar extends StatelessWidget {
             spacing: AppSpacing.sm,
             runSpacing: AppSpacing.sm,
             children: [
-              _RoleFilter(value: roleFilter, onChanged: onRoleChanged),
-              _StatusFilter(value: statusFilter, onChanged: onStatusChanged),
+              UserRoleFilter(value: roleFilter, onChanged: onRoleChanged),
+              UserStatusFilter(value: statusFilter, onChanged: onStatusChanged),
             ],
           ),
         ],
       ),
-    );
-  }
-}
-
-class _RoleFilter extends StatelessWidget {
-  const _RoleFilter({required this.value, required this.onChanged});
-
-  final UserRole? value;
-  final ValueChanged<UserRole?> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return DropdownButton<UserRole?>(
-      value: value,
-      underline: const SizedBox.shrink(),
-      borderRadius: AppRadius.borderMd,
-      onChanged: onChanged,
-      items: const [
-        DropdownMenuItem(value: null, child: Text('Tất cả vai trò')),
-        DropdownMenuItem(value: UserRole.admin, child: Text('Quản trị viên')),
-        DropdownMenuItem(value: UserRole.staff, child: Text('Nhân viên')),
-        DropdownMenuItem(value: UserRole.resident, child: Text('Cư dân')),
-      ],
-    );
-  }
-}
-
-class _StatusFilter extends StatelessWidget {
-  const _StatusFilter({required this.value, required this.onChanged});
-
-  final UserStatus? value;
-  final ValueChanged<UserStatus?> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return DropdownButton<UserStatus?>(
-      value: value,
-      underline: const SizedBox.shrink(),
-      borderRadius: AppRadius.borderMd,
-      onChanged: onChanged,
-      items: const [
-        DropdownMenuItem(value: null, child: Text('Tất cả trạng thái')),
-        DropdownMenuItem(value: UserStatus.active, child: Text('Hoạt động')),
-        DropdownMenuItem(
-          value: UserStatus.inactive,
-          child: Text('Đã vô hiệu hóa'),
-        ),
-      ],
     );
   }
 }

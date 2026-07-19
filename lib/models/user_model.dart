@@ -52,7 +52,7 @@ class UserModel {
       nationalId: data['nationalId'] as String? ?? '',
       dateOfBirth: (data['dateOfBirth'] as Timestamp?)?.toDate(),
       avatarUrl: data['avatarUrl'] as String?,
-      status: UserStatus.fromString(data['status'] as String? ?? 'active'),
+      status: UserStatus.fromString(data['status'] as String? ?? 'inactive'),
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       updatedAt: (data['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
@@ -72,7 +72,7 @@ class UserModel {
       nationalId: data['nationalId'] as String? ?? '',
       dateOfBirth: (data['dateOfBirth'] as Timestamp?)?.toDate(),
       avatarUrl: data['avatarUrl'] as String?,
-      status: UserStatus.fromString(data['status'] as String? ?? 'active'),
+      status: UserStatus.fromString(data['status'] as String? ?? 'inactive'),
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       updatedAt: (data['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
@@ -159,7 +159,7 @@ enum UserStatus {
   static UserStatus fromString(String value) {
     return UserStatus.values.firstWhere(
       (s) => s.name == value,
-      orElse: () => UserStatus.active,
+      orElse: () => UserStatus.inactive,
     );
   }
 }
