@@ -54,6 +54,13 @@ class AdminHomeScreen extends StatelessWidget {
               subtitle: 'Xem yêu cầu sửa chữa toàn tòa',
               onTap: () => context.push(AppRoutes.requestManage),
             ),
+            const SizedBox(height: AppSpacing.sm),
+            _AdminTile(
+              icon: Icons.feedback_outlined,
+              title: 'Quản lý khiếu nại',
+              subtitle: 'Xem và phản hồi khiếu nại / góp ý',
+              onTap: () => context.push(AppRoutes.complaintManage),
+            ),
           ],
         ),
       ),

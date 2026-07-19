@@ -51,6 +51,13 @@ class ResidentHomeScreen extends StatelessWidget {
               subtitle: 'Gửi và theo dõi yêu cầu của bạn',
               onTap: () => context.push(AppRoutes.requestList),
             ),
+            const SizedBox(height: AppSpacing.sm),
+            _HomeActionTile(
+              icon: Icons.feedback_outlined,
+              title: 'Khiếu nại / Góp ý',
+              subtitle: 'Gửi và theo dõi phản hồi từ Ban quản lý',
+              onTap: () => context.push(AppRoutes.complaintList),
+            ),
           ],
         ),
       ),
