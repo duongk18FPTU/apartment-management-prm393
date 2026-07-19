@@ -53,18 +53,21 @@ class RequestService extends BaseFirestoreService implements RequestRepository {
   // Reads
   // ---------------------------------------------------------------------------
 
+  @override
   Future<RequestModel?> getRequest(String id) async {
     final snap = await getById(id);
     if (!snap.exists || snap.data() == null) return null;
     return RequestModel.fromFirestore(snap);
   }
 
+  @override
   Future<List<RequestModel>> getRequestsByResident(String residentId) async {
     // Filter-only query + client sort — avoids composite index requirement.
     final snap = await where(field: 'residentId', isEqualTo: residentId);
     return _sorted(snap.docs.map(RequestModel.fromFirestore));
   }
 
+  @override
   Future<List<RequestModel>> getAllRequests({RequestStatus? status}) async {
     final QuerySnapshot<Map<String, dynamic>> snap;
     if (status != null) {
@@ -105,6 +108,7 @@ class RequestService extends BaseFirestoreService implements RequestRepository {
   // ---------------------------------------------------------------------------
 
   /// Creates a request and optionally uploads [imageFiles] to Storage.
+  @override
   Future<String> createRequest({
     required String title,
     required String description,
@@ -131,6 +135,7 @@ class RequestService extends BaseFirestoreService implements RequestRepository {
     });
   }
 
+  @override
   Future<void> updateStatus({
     required String requestId,
     required RequestStatus status,
@@ -149,6 +154,7 @@ class RequestService extends BaseFirestoreService implements RequestRepository {
     await update(requestId, data);
   }
 
+  @override
   Future<void> deleteRequest(String requestId) => delete(requestId);
 
   // ---------------------------------------------------------------------------

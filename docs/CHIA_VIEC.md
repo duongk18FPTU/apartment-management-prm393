@@ -175,7 +175,7 @@ lib/
 > - Giao diện tuân thủ `DESIGN.md` và Material 3; taste skill được dùng để audit hierarchy, spacing, contrast và đầy đủ trạng thái loading/empty/error theo phạm vi phù hợp với Flutter admin mobile.
 > - Audit Sprint 2 đã bổ sung rollback có cảnh báo khi không xóa được Auth account, test trực tiếp vòng đời Firebase app phụ, trạng thái không hợp lệ mặc định inactive, refresh chờ dữ liệu mới và màn hình edit có lỗi kèm retry.
 > - Firestore self-update bắt buộc giữ đủ schema, không đổi trường phân quyền và dùng server timestamp cho `updatedAt`; các widget lớn đã được tách nhỏ, spacing dùng token từ `DESIGN.md`.
-> - Đã xác minh: `flutter analyze` **No issues found**, Flutter **16/16 tests pass**, Firestore rules emulator **7/7 tests pass** và `npm audit` **0 vulnerabilities**.
+> - Đã xác minh trên `main` mới nhất: `flutter analyze` **No issues found**, Flutter **36/36 tests pass**, Firestore rules emulator **7/7 tests pass** và `npm audit` **0 vulnerabilities**.
 > - Firestore rules Spark-compatible nền đã deploy production lên project `apartment-mgmt-prm393` ngày 19/07/2026; phần siết self-update của audit đã pass emulator và chờ review/merge trước khi deploy.
 
 #### Sprint 3

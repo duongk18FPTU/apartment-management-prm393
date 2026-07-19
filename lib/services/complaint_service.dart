@@ -30,22 +30,25 @@ abstract class ComplaintRepository {
 
 /// CRUD for Firestore `complaints` collection.
 class ComplaintService extends BaseFirestoreService implements ComplaintRepository {
-  ComplaintService({FirebaseFirestore? firestore}) : super(firestore: firestore);
+  ComplaintService({super.firestore});
 
   @override
   String get collectionPath => AppCollections.complaints;
 
+  @override
   Future<ComplaintModel?> getComplaint(String id) async {
     final snap = await getById(id);
     if (!snap.exists || snap.data() == null) return null;
     return ComplaintModel.fromFirestore(snap);
   }
 
+  @override
   Future<List<ComplaintModel>> getComplaintsByResident(String residentId) async {
     final snap = await where(field: 'residentId', isEqualTo: residentId);
     return _sorted(snap.docs.map(ComplaintModel.fromFirestore));
   }
 
+  @override
   Future<List<ComplaintModel>> getAllComplaints({ComplaintStatus? status}) async {
     if (status != null) {
       final snap = await where(
@@ -58,6 +61,7 @@ class ComplaintService extends BaseFirestoreService implements ComplaintReposito
     return snap.docs.map(ComplaintModel.fromFirestore).toList(growable: false);
   }
 
+  @override
   Future<String> createComplaint({
     required String content,
     required String residentId,
@@ -74,6 +78,7 @@ class ComplaintService extends BaseFirestoreService implements ComplaintReposito
     });
   }
 
+  @override
   Future<void> respond({
     required String complaintId,
     required String response,
@@ -88,6 +93,7 @@ class ComplaintService extends BaseFirestoreService implements ComplaintReposito
     });
   }
 
+  @override
   Future<void> markInReview(String complaintId) {
     return update(complaintId, {
       'status': ComplaintStatus.inReview.firestoreValue,
