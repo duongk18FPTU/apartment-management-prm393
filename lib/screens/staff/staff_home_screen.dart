@@ -43,6 +43,17 @@ class StaffHomeScreen extends StatelessWidget {
               onTap: () => context.push(AppRoutes.requestManage),
             ),
             const SizedBox(height: AppSpacing.sm),
+
+            // 2. Quản lý hóa đơn (Member 4 - Sprint 1)
+            _StaffTile(
+              icon: Icons.receipt_long_rounded,
+              title: 'Quản lý hóa đơn',
+              subtitle: 'Tạo hóa đơn, xem danh sách và thu tiền',
+              onTap: () => context.push(AppRoutes.staffBills),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+
+            // 3. Quản lý khiếu nại (Member 3)
             _StaffTile(
               icon: Icons.feedback_outlined,
               title: 'Quản lý khiếu nại',

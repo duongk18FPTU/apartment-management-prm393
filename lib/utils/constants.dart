@@ -31,6 +31,11 @@ class AppRoutes {
   static const String requestDetail = '/requests/:id';
   static const String requestManage = '/staff/requests';
 
+  // Quản lý hóa đơn (Staff - Sprint 1)
+  static const String staffBills = '/staff/bills';
+  static const String staffBillCreate = '/staff/bills/create';
+  static const String staffBillDetail = '/staff/bills/:id';
+
   // Sprint 2 — Complaint / Feedback (Member 3)
   static const String complaintList = '/resident/complaints';
   static const String complaintCreate = '/resident/complaints/create';
