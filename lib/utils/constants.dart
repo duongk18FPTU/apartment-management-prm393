@@ -24,6 +24,12 @@ class AppRoutes {
   static const String userList = '/admin/users';
   static const String userCreate = '/admin/users/create';
   static const String userEdit = '/admin/users/:id/edit';
+
+  // Sprint 2 — Complaint / Feedback (Member 3)
+  static const String complaintList = '/resident/complaints';
+  static const String complaintCreate = '/resident/complaints/create';
+  static const String complaintDetail = '/complaints/:id';
+  static const String complaintManage = '/staff/complaints';
 }
 
 // ---------------------------------------------------------------------------

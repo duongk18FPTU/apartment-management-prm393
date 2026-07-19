@@ -11,6 +11,10 @@ import '../screens/auth/change_password_screen.dart';
 import '../screens/auth/login_screen.dart';
 import '../screens/auth/splash_screen.dart';
 import '../screens/resident/home/resident_home_screen.dart';
+import '../screens/resident/complaints/complaint_create_screen.dart';
+import '../screens/resident/complaints/complaint_detail_screen.dart';
+import '../screens/resident/complaints/complaint_list_screen.dart';
+import '../screens/staff/complaint_management/complaint_manage_screen.dart';
 import '../screens/staff/staff_home_screen.dart';
 import '../utils/constants.dart';
 
@@ -166,6 +170,31 @@ final List<RouteBase> _routes = [
     path: AppRoutes.residentHome,
     name: 'residentHome',
     builder: (context, state) => const ResidentHomeScreen(),
+  ),
+
+  // Member 3 — Complaint / Feedback
+  GoRoute(
+    path: AppRoutes.complaintList,
+    name: 'complaintList',
+    builder: (context, state) => const ComplaintListScreen(),
+  ),
+  GoRoute(
+    path: AppRoutes.complaintCreate,
+    name: 'complaintCreate',
+    builder: (context, state) => const ComplaintCreateScreen(),
+  ),
+  GoRoute(
+    path: AppRoutes.complaintManage,
+    name: 'complaintManage',
+    builder: (context, state) => const ComplaintManageScreen(),
+  ),
+  GoRoute(
+    path: AppRoutes.complaintDetail,
+    name: 'complaintDetail',
+    builder: (context, state) {
+      final id = state.pathParameters['id'] ?? '';
+      return ComplaintDetailScreen(complaintId: id);
+    },
   ),
 ];
 
