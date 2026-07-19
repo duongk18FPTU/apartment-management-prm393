@@ -237,33 +237,33 @@ class ApartmentProvider extends ChangeNotifier {
   }
 
   // Selected apartment operations (uses selectedApartment state)
-  Future<void> assignResident(String residentId) async {
+  Future<void> assignResidentToSelected(String residentId) async {
     if (_selectedApartment == null) return;
-    await _apartmentService.assignResident(
+    await assignResident(
       apartmentId: _selectedApartment!.id,
       residentId: residentId,
     );
   }
 
-  Future<void> removeResident(String residentId) async {
+  Future<void> removeResidentFromSelected(String residentId) async {
     if (_selectedApartment == null) return;
-    await _apartmentService.unassignResident(
+    await unassignResident(
       apartmentId: _selectedApartment!.id,
       residentId: residentId,
     );
   }
 
-  Future<void> assignOwner(String? ownerId) async {
+  Future<void> assignOwnerToSelected(String? ownerId) async {
     if (_selectedApartment == null) return;
-    await _apartmentService.assignOwner(
+    await assignOwner(
       apartmentId: _selectedApartment!.id,
       ownerId: ownerId,
     );
   }
 
-  Future<void> updateApartmentDetails({required double area, required String type}) async {
+  Future<void> updateSelectedApartmentDetails({required double area, required String type}) async {
     if (_selectedApartment == null) return;
-    await _apartmentService.updateApartmentDetails(
+    await updateApartmentDetails(
       apartmentId: _selectedApartment!.id,
       area: area,
       type: type,
@@ -290,7 +290,7 @@ class ApartmentProvider extends ChangeNotifier {
     await _apartmentService.deleteApartment(id);
   }
 
-  Future<void> assignResidentToApartment({
+  Future<void> assignResident({
     required String apartmentId,
     required String residentId,
     bool asOwner = false,
@@ -302,13 +302,35 @@ class ApartmentProvider extends ChangeNotifier {
     );
   }
 
-  Future<void> unassignResidentFromApartment({
+  Future<void> unassignResident({
     required String apartmentId,
     required String residentId,
   }) async {
     await _apartmentService.unassignResident(
       apartmentId: apartmentId,
       residentId: residentId,
+    );
+  }
+
+  Future<void> assignOwner({
+    required String apartmentId,
+    required String? ownerId,
+  }) async {
+    await _apartmentService.assignOwner(
+      apartmentId: apartmentId,
+      ownerId: ownerId,
+    );
+  }
+
+  Future<void> updateApartmentDetails({
+    required String apartmentId,
+    required double area,
+    required String type,
+  }) async {
+    await _apartmentService.updateApartmentDetails(
+      apartmentId: apartmentId,
+      area: area,
+      type: type,
     );
   }
 

@@ -6,6 +6,7 @@ import '../../../app/theme.dart';
 import '../../../models/apartment_model.dart';
 import '../../../models/user_model.dart';
 import '../../../providers/apartment_provider.dart';
+import '../../../utils/constants.dart';
 
 class ApartmentDetailScreen extends StatefulWidget {
   const ApartmentDetailScreen({
@@ -95,7 +96,7 @@ class _ApartmentDetailScreenState extends State<ApartmentDetailScreen> {
                         onAddResident: () =>
                             _showResidentAssignment(context, provider),
                         onRemoveResident: (residentId) =>
-                            provider.removeResident(residentId),
+                            provider.removeResidentFromSelected(residentId),
                       ),
                       const SizedBox(
                         height: 100,
@@ -150,7 +151,7 @@ class _ApartmentDetailScreenState extends State<ApartmentDetailScreen> {
             ElevatedButton(
               onPressed: () {
                 final area = double.tryParse(areaController.text) ?? apt.area;
-                provider.updateApartmentDetails(
+                provider.updateSelectedApartmentDetails(
                   area: area,
                   type: typeController.text,
                 );
@@ -210,7 +211,7 @@ class _ApartmentDetailScreenState extends State<ApartmentDetailScreen> {
                         title: Text(res.fullName),
                         subtitle: Text(res.phone),
                         onTap: () {
-                          provider.assignOwner(res.uid);
+                          provider.assignOwnerToSelected(res.uid);
                           Navigator.pop(context);
                         },
                       );
@@ -224,7 +225,7 @@ class _ApartmentDetailScreenState extends State<ApartmentDetailScreen> {
                 ),
                 title: const Text('Gỡ chủ hộ hiện tại'),
                 onTap: () {
-                  provider.assignOwner(null);
+                  provider.assignOwnerToSelected(null);
                   Navigator.pop(context);
                 },
               ),
@@ -293,7 +294,7 @@ class _ApartmentDetailScreenState extends State<ApartmentDetailScreen> {
                             title: Text(user.fullName),
                             subtitle: Text(user.phone),
                             onTap: () {
-                              provider.assignResident(user.uid);
+                              provider.assignResidentToSelected(user.uid);
                               Navigator.pop(context);
                             },
                           );

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../models/user_model.dart';
+import '../utils/constants.dart';
 
 class ResidentService {
   ResidentService({FirebaseFirestore? firestore})
@@ -19,7 +20,7 @@ class ResidentService {
     return resident
         .copyWith(
           role: UserRole.resident,
-          createdAt: resident.createdAt ?? timestamp,
+          createdAt: resident.createdAt,
           updatedAt: timestamp,
         )
         .toJson();

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../models/user_model.dart';
+import '../../../utils/constants.dart';
 import '../../../providers/apartment_provider.dart';
 import '../../../providers/resident_provider.dart';
 import 'widgets/resident_form_fields.dart';
@@ -54,7 +55,7 @@ class _ResidentFormScreenState extends State<ResidentFormScreen> {
     final old = widget.resident;
     final oldApartmentId = old?.apartmentId;
     final resident = UserModel(
-      id: _idController.text.trim(),
+      uid: _idController.text.trim(),
       email: _emailController.text.trim(),
       fullName: _nameController.text.trim(),
       phone: _phoneController.text.trim(),
@@ -64,8 +65,8 @@ class _ResidentFormScreenState extends State<ResidentFormScreen> {
       dateOfBirth: old?.dateOfBirth,
       avatarUrl: old?.avatarUrl,
       status: UserStatus.values.byName(_status),
-      createdAt: old?.createdAt,
-      updatedAt: old?.updatedAt,
+      createdAt: old?.createdAt ?? DateTime.now(),
+      updatedAt: old?.updatedAt ?? DateTime.now(),
     );
     try {
       await _saveResident(resident);
