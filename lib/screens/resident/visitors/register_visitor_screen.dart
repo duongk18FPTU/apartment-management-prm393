@@ -3,8 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../providers/auth_provider.dart';
-import '../../../models/visitor_model.dart';
-import '../../../services/visitor_service.dart';
+import '../../../providers/visitor_provider.dart';
 import '../../../utils/vietnamese_formatters.dart';
 
 class RegisterVisitorScreen extends StatefulWidget {
@@ -104,21 +103,24 @@ class _RegisterVisitorScreenState extends State<RegisterVisitorScreen> {
       final user = auth.userModel;
       if (user == null) throw Exception('User not logged in');
 
-      final visitor = VisitorModel(
-        id: '',
+      final apartmentId = user.apartmentId;
+      if (apartmentId == null || apartmentId.isEmpty) {
+        throw Exception('Tài khoản chưa được gán căn hộ');
+      }
+
+      final provider = context.read<VisitorProvider>();
+      final ok = await provider.registerVisitor(
         visitorName: _nameController.text.trim(),
         visitorPhone: _phoneController.text.trim(),
         purpose: _selectedPurpose ?? 'Gặp người thân',
         registeredBy: user.uid,
-        apartmentId: user.apartmentId ?? '301',
-        expectedTime: _expectedDateTime,
-        status: 'registered',
+        apartmentId: apartmentId,
+        expectedTime: _expectedDateTime!,
       );
 
-      final visitorService = VisitorService();
-      await visitorService.create(visitor.toJson());
+      if (!mounted) return;
 
-      if (mounted) {
+      if (ok) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Đăng ký khách thành công!'),
@@ -126,6 +128,13 @@ class _RegisterVisitorScreenState extends State<RegisterVisitorScreen> {
           ),
         );
         context.pop();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(provider.errorMessage ?? 'Đăng ký thất bại'),
+            backgroundColor: const Color(0xFFBA1A1A),
+          ),
+        );
       }
     } catch (e) {
       if (mounted) {

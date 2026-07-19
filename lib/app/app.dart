@@ -4,11 +4,13 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/bill_provider.dart';
 import '../providers/complaint_provider.dart';
+import '../providers/dashboard_provider.dart';
 import '../providers/request_provider.dart';
 import '../providers/user_provider.dart';
 import '../providers/apartment_provider.dart';
 import '../providers/resident_provider.dart';
 import '../providers/theme_provider.dart';
+import '../providers/visitor_provider.dart';
 import 'routes.dart';
 import 'theme.dart';
 
@@ -35,11 +37,14 @@ class ApartmentApp extends StatelessWidget {
         ChangeNotifierProvider<ComplaintProvider>(
           create: (context) => ComplaintProvider(),
         ),
+        ChangeNotifierProvider<VisitorProvider>(
+          create: (context) => VisitorProvider(),
+        ),
+        ChangeNotifierProvider<DashboardProvider>(
+          create: (context) => DashboardProvider(),
+        ),
         ChangeNotifierProvider<ApartmentProvider>(
           create: (context) => ApartmentProvider()..loadApartments(),
-        ),
-        ChangeNotifierProvider<ResidentProvider>(
-          create: (context) => ResidentProvider()..loadResidents(),
         ),
         ChangeNotifierProvider<ResidentProvider>(
           create: (context) => ResidentProvider()..loadResidents(),

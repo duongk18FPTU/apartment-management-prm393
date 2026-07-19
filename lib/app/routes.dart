@@ -26,6 +26,8 @@ import '../screens/staff/bill_management/bill_detail_screen.dart';
 import '../screens/resident/my_bills/my_bills_screen.dart';
 import '../screens/resident/my_bills/bill_payment_screen.dart';
 import '../screens/resident/my_bills/payment_history_screen.dart';
+import '../screens/resident/visitors/register_visitor_screen.dart';
+import '../screens/staff/visitor_management/visitor_list_screen.dart';
 import '../screens/admin/apartment_management/apartment_list_screen.dart';
 import '../screens/admin/apartment_management/apartment_form_screen.dart';
 import '../screens/admin/apartment_management/apartment_detail_screen.dart';
@@ -278,6 +280,18 @@ final List<RouteBase> _routes = [
     path: AppRoutes.residentPaymentHistory,
     name: 'residentPaymentHistory',
     builder: (context, state) => const PaymentHistoryScreen(),
+  ),
+
+  // Member 5 — Visitors
+  GoRoute(
+    path: AppRoutes.residentVisitorRegister,
+    name: 'residentVisitorRegister',
+    builder: (context, state) => const RegisterVisitorScreen(),
+  ),
+  GoRoute(
+    path: AppRoutes.staffVisitors,
+    name: 'staffVisitors',
+    builder: (context, state) => const VisitorListScreen(embedded: false),
   ),
 ];
 
