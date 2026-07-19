@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../app/theme.dart';
+import '../../utils/constants.dart';
 
 /// Admin Home Screen stub — will be fully implemented by Member 5 in Sprint 0.
 ///
@@ -31,6 +33,12 @@ class AdminHomeScreen extends StatelessWidget {
               Text(
                 'Admin Home',
                 style: Theme.of(context).textTheme.headlineSmall,
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              ElevatedButton.icon(
+                onPressed: () => context.go(AppRoutes.userList),
+                icon: const Icon(Icons.people_outline_rounded),
+                label: const Text('Quản lý người dùng'),
               ),
               const SizedBox(height: AppSpacing.sm),
               Text(
