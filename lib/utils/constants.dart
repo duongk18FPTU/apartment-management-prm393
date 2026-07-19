@@ -24,6 +24,11 @@ class AppRoutes {
   static const String userList = '/admin/users';
   static const String userCreate = '/admin/users/create';
   static const String userEdit = '/admin/users/:id/edit';
+
+  // Quản lý hóa đơn (Staff - Sprint 1)
+  static const String staffBills = '/staff/bills';
+  static const String staffBillCreate = '/staff/bills/create';
+  static const String staffBillDetail = '/staff/bills/:id';
 }
 
 // ---------------------------------------------------------------------------

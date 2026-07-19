@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/auth_provider.dart';
+import '../providers/bill_provider.dart';
 import 'routes.dart';
 import 'theme.dart';
 
@@ -17,8 +18,15 @@ class ApartmentApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<AuthProvider>(
-      create: (context) => AuthProvider()..listenToAuthState(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<AuthProvider>(
+          create: (context) => AuthProvider()..listenToAuthState(),
+        ),
+        ChangeNotifierProvider<BillProvider>(
+          create: (context) => BillProvider(),
+        ),
+      ],
       child: Builder(
         builder: (context) {
           // Router must be built after AuthProvider is in the tree so that
