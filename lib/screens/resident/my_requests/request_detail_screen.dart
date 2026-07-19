@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../../app/theme.dart';
@@ -8,6 +7,7 @@ import '../../../models/request_model.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../providers/request_provider.dart';
 import '../../../utils/constants.dart';
+import '../../../utils/vietnamese_formatters.dart';
 import '../../../widgets/custom_text_field.dart';
 import '../../../widgets/loading_indicator.dart';
 import '../../../widgets/request_status_chip.dart';
@@ -70,7 +70,7 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
     final role = context.watch<AuthProvider>().role;
     final isStaff = role == UserRole.staff || role == UserRole.admin;
     final request = provider.selected;
-    final dateFmt = DateFormat('dd/MM/yyyy HH:mm');
+    final dateFmt = VietnameseFormatters.dateTime;
 
     return Scaffold(
       backgroundColor: DesignTokens.background,
@@ -111,10 +111,7 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
                     value: request.assignedStaffId!,
                   ),
                 const SizedBox(height: AppSpacing.md),
-                Text(
-                  'Mô tả',
-                  style: Theme.of(context).textTheme.titleSmall,
-                ),
+                Text('Mô tả', style: Theme.of(context).textTheme.titleSmall),
                 const SizedBox(height: AppSpacing.xs),
                 Text(
                   request.description,

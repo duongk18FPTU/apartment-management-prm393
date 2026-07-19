@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 
 import '../../../app/theme.dart';
 import '../../../widgets/status_badge.dart';
@@ -9,6 +8,7 @@ import '../../../widgets/confirm_dialog.dart';
 import '../../../providers/bill_provider.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../models/bill_model.dart';
+import '../../../utils/vietnamese_formatters.dart';
 
 class BillPaymentScreen extends StatefulWidget {
   final String billId;
@@ -87,11 +87,6 @@ class _BillPaymentScreenState extends State<BillPaymentScreen> {
       );
     }
 
-    final currencyFormatter = NumberFormat.currency(
-      locale: 'vi_VN',
-      symbol: '₫',
-    );
-
     return Scaffold(
       backgroundColor: DesignTokens.background,
       appBar: AppBar(title: const Text('Thanh Toán Hóa Đơn')),
@@ -137,7 +132,7 @@ class _BillPaymentScreenState extends State<BillPaymentScreen> {
                           ),
                           _buildRow(
                             'Số tiền:',
-                            currencyFormatter.format(_bill!.amount),
+                            VietnameseFormatters.currency.format(_bill!.amount),
                             textTheme,
                             isPrice: true,
                           ),
@@ -174,7 +169,7 @@ class _BillPaymentScreenState extends State<BillPaymentScreen> {
                           ),
                           _buildRow(
                             'Chủ tài khoản:',
-                            'BAN QUAN LY CHUNG CU HAVEN',
+                            'BAN QUẢN LÝ CHUNG CƯ HAVEN',
                             textTheme,
                           ),
                           _buildRow(

@@ -4,7 +4,10 @@ import 'package:prm393_project/models/complaint_model.dart';
 void main() {
   group('ComplaintStatus', () {
     test('maps firestore values', () {
-      expect(ComplaintStatus.fromString('submitted'), ComplaintStatus.submitted);
+      expect(
+        ComplaintStatus.fromString('submitted'),
+        ComplaintStatus.submitted,
+      );
       expect(ComplaintStatus.fromString('in_review'), ComplaintStatus.inReview);
       expect(ComplaintStatus.fromString('resolved'), ComplaintStatus.resolved);
       expect(ComplaintStatus.fromString('???'), ComplaintStatus.submitted);

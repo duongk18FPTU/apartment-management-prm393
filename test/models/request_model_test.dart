@@ -20,7 +20,10 @@ void main() {
   group('RequestCategory', () {
     test('parses known categories with general fallback', () {
       expect(RequestCategory.fromString('plumbing'), RequestCategory.plumbing);
-      expect(RequestCategory.fromString('electrical'), RequestCategory.electrical);
+      expect(
+        RequestCategory.fromString('electrical'),
+        RequestCategory.electrical,
+      );
       expect(RequestCategory.fromString('xyz'), RequestCategory.general);
     });
   });

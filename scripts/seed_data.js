@@ -127,7 +127,7 @@ const USERS = [
     password: 'Admin@123',
     data: {
       email: 'admin@apartment.com',
-      fullName: 'System Administrator',
+      fullName: 'Quản trị viên hệ thống',
       phone: '0901000001',
       role: 'admin',
       apartmentId: null,
@@ -145,7 +145,7 @@ const USERS = [
     password: 'Staff@123',
     data: {
       email: 'staff1@apartment.com',
-      fullName: 'Nguyen Van An',
+      fullName: 'Nguyễn Văn An',
       phone: '0901000002',
       role: 'staff',
       apartmentId: null,
@@ -163,7 +163,7 @@ const USERS = [
     password: 'Staff@123',
     data: {
       email: 'staff2@apartment.com',
-      fullName: 'Tran Thi Binh',
+      fullName: 'Trần Thị Bình',
       phone: '0901000003',
       role: 'staff',
       apartmentId: null,
@@ -181,7 +181,7 @@ const USERS = [
     password: 'Resident@123',
     data: {
       email: 'resident1@apartment.com',
-      fullName: 'Le Hoang Cuong',
+      fullName: 'Lê Hoàng Cường',
       phone: '0912000001',
       role: 'resident',
       apartmentId: 'apt-0301',
@@ -199,7 +199,7 @@ const USERS = [
     password: 'Resident@123',
     data: {
       email: 'resident2@apartment.com',
-      fullName: 'Pham Minh Duc',
+      fullName: 'Phạm Minh Đức',
       phone: '0912000002',
       role: 'resident',
       apartmentId: 'apt-0302',
@@ -217,7 +217,7 @@ const USERS = [
     password: 'Resident@123',
     data: {
       email: 'resident3@apartment.com',
-      fullName: 'Vo Thi Hue',
+      fullName: 'Võ Thị Huệ',
       phone: '0912000003',
       role: 'resident',
       apartmentId: 'apt-0501',
@@ -235,7 +235,7 @@ const USERS = [
     password: 'Resident@123',
     data: {
       email: 'resident4@apartment.com',
-      fullName: 'Hoang Van Giang',
+      fullName: 'Hoàng Văn Giang',
       phone: '0912000004',
       role: 'resident',
       apartmentId: 'apt-0702',
@@ -253,7 +253,7 @@ const USERS = [
     password: 'Resident@123',
     data: {
       email: 'resident5@apartment.com',
-      fullName: 'Dang Thi Kim',
+      fullName: 'Đặng Thị Kim',
       phone: '0912000005',
       role: 'resident',
       apartmentId: 'apt-1001',
@@ -292,7 +292,7 @@ function generateApartments() {
         data: {
           number: number,
           floor: floor,
-          building: 'Building A',
+          building: 'Tòa A',
           area: 65.0 + room * 10,
           ownerId: mapping ? mapping.ownerId : null,
           status: mapping ? 'occupied' : 'vacant',
@@ -398,8 +398,8 @@ const REQUESTS = [
   {
     id: 'req-001',
     data: {
-      title: 'Ong nuoc bi ro ri',
-      description: 'Ong nuoc trong nha tam bi ro ri, can sua gap.',
+      title: 'Ống nước bị rò rỉ',
+      description: 'Ống nước trong nhà tắm bị rò rỉ, cần sửa gấp.',
       category: 'plumbing',
       imageUrls: [],
       residentId: 'resident-001',
@@ -414,8 +414,8 @@ const REQUESTS = [
   {
     id: 'req-002',
     data: {
-      title: 'Bong den hanh lang bi chay',
-      description: 'Bong den o hanh lang tang 3 bi chay, can thay moi.',
+      title: 'Bóng đèn hành lang bị cháy',
+      description: 'Bóng đèn ở hành lang tầng 3 bị cháy, cần thay mới.',
       category: 'electrical',
       imageUrls: [],
       residentId: 'resident-002',
@@ -430,15 +430,15 @@ const REQUESTS = [
   {
     id: 'req-003',
     data: {
-      title: 'Dieu hoa khong mat',
-      description: 'Dieu hoa phong khach khong lam mat, da ve sinh nhung khong cai thien.',
+      title: 'Điều hòa không mát',
+      description: 'Điều hòa phòng khách không làm mát, đã vệ sinh nhưng không cải thiện.',
       category: 'general',
       imageUrls: [],
       residentId: 'resident-003',
       apartmentId: 'apt-0501',
       status: 'completed',
       assignedStaffId: 'staff-002',
-      resolutionNote: 'Da thay gas dieu hoa. Hoat dong binh thuong.',
+      resolutionNote: 'Đã thay gas điều hòa. Thiết bị hoạt động bình thường.',
       createdAt: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000),
       updatedAt: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000),
     },
@@ -449,8 +449,8 @@ const NOTIFICATIONS = [
   {
     id: 'notif-001',
     data: {
-      title: 'Thong bao cat dien',
-      content: 'Toa nha se cat dien de bao tri tu 8h-12h ngay 20/07/2026. Xin cu dan thong cam.',
+      title: 'Thông báo cắt điện',
+      content: 'Tòa nhà sẽ cắt điện để bảo trì từ 8 giờ đến 12 giờ ngày 20/07/2026. Mong cư dân thông cảm.',
       type: 'announcement',
       createdBy: 'admin-001',
       targetRoles: ['resident', 'staff'],
@@ -461,8 +461,8 @@ const NOTIFICATIONS = [
   {
     id: 'notif-002',
     data: {
-      title: 'Hop cu dan thang 7',
-      content: 'Kinh moi cu dan tham du buoi hop dinh ky thang 7 vao 19h ngay 25/07/2026 tai sanh tang 1.',
+      title: 'Họp cư dân tháng 7',
+      content: 'Kính mời cư dân tham dự buổi họp định kỳ tháng 7 vào 19 giờ ngày 25/07/2026 tại sảnh tầng 1.',
       type: 'announcement',
       createdBy: 'admin-001',
       targetRoles: ['resident'],
@@ -473,8 +473,8 @@ const NOTIFICATIONS = [
   {
     id: 'notif-003',
     data: {
-      title: 'Noi quy gui xe moi',
-      content: 'Tu ngay 01/08/2026, ham gui xe ap dung quy dinh moi. Chi tiet xin xem tai bang tin tang 1.',
+      title: 'Nội quy gửi xe mới',
+      content: 'Từ ngày 01/08/2026, hầm gửi xe áp dụng quy định mới. Chi tiết được niêm yết tại bảng tin tầng 1.',
       type: 'announcement',
       createdBy: 'staff-001',
       targetRoles: ['resident'],
@@ -488,9 +488,9 @@ const VISITORS = [
   {
     id: 'visitor-001',
     data: {
-      visitorName: 'Nguyen Van Khach',
+      visitorName: 'Nguyễn Văn Khách',
       visitorPhone: '0987000001',
-      purpose: 'Tham nguoi than',
+      purpose: 'Thăm người thân',
       registeredBy: 'resident-001',
       apartmentId: 'apt-0301',
       expectedTime: new Date('2026-07-20T14:00:00'),
@@ -505,9 +505,9 @@ const VISITORS = [
   {
     id: 'visitor-002',
     data: {
-      visitorName: 'Tran Thi Lan',
+      visitorName: 'Trần Thị Lan',
       visitorPhone: '0987000002',
-      purpose: 'Giao hang',
+      purpose: 'Giao hàng',
       registeredBy: 'resident-002',
       apartmentId: 'apt-0302',
       expectedTime: new Date('2026-07-19T10:00:00'),
@@ -525,7 +525,7 @@ const COMPLAINTS = [
   {
     id: 'complaint-001',
     data: {
-      content: 'Tang 5 thuong xuyen co tieng on vao buoi toi muon, anh huong den giac ngu cua cu dan.',
+      content: 'Tầng 5 thường xuyên có tiếng ồn vào buổi tối muộn, ảnh hưởng đến giấc ngủ của cư dân.',
       residentId: 'resident-003',
       apartmentId: 'apt-0501',
       status: 'submitted',
@@ -539,11 +539,11 @@ const COMPLAINTS = [
   {
     id: 'complaint-002',
     data: {
-      content: 'Thang may tang 7 thuong xuyen bi ket, rat bat tien cho cu dan.',
+      content: 'Thang máy tầng 7 thường xuyên bị kẹt, gây bất tiện cho cư dân.',
       residentId: 'resident-004',
       apartmentId: 'apt-0702',
       status: 'resolved',
-      response: 'Da lien he don vi bao tri thang may. Thang may da duoc sua chua va hoat dong binh thuong.',
+      response: 'Đã liên hệ đơn vị bảo trì thang máy. Thang máy đã được sửa chữa và hoạt động bình thường.',
       respondedBy: 'admin-001',
       respondedAt: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000),
       createdAt: new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000),

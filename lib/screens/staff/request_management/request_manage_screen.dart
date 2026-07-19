@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../../app/theme.dart';
 import '../../../models/request_model.dart';
 import '../../../providers/request_provider.dart';
 import '../../../utils/constants.dart';
+import '../../../utils/vietnamese_formatters.dart';
 import '../../../widgets/loading_indicator.dart';
 import '../../../widgets/request_status_chip.dart';
 
@@ -39,7 +39,7 @@ class _RequestManageScreenState extends State<RequestManageScreen> {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<RequestProvider>();
-    final dateFmt = DateFormat('dd/MM/yyyy HH:mm');
+    final dateFmt = VietnameseFormatters.dateTime;
 
     return Scaffold(
       backgroundColor: DesignTokens.background,

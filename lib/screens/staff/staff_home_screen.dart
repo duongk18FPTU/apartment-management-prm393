@@ -17,7 +17,7 @@ class StaffHomeScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: DesignTokens.background,
       appBar: AppBar(
-        title: const Text('Staff Portal'),
+        title: const Text('Nhân viên'),
         actions: [
           IconButton(
             tooltip: 'Đăng xuất',

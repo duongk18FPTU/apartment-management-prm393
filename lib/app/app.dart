@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/auth_provider.dart';
@@ -6,6 +7,7 @@ import '../providers/bill_provider.dart';
 import '../providers/complaint_provider.dart';
 import '../providers/request_provider.dart';
 import '../providers/user_provider.dart';
+import '../providers/apartment_provider.dart';
 import 'routes.dart';
 import 'theme.dart';
 
@@ -22,6 +24,9 @@ class ApartmentApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<UserProvider>(
           create: (context) => UserProvider(),
+        ),
+        ChangeNotifierProvider<ApartmentProvider>(
+          create: (context) => ApartmentProvider()..initialize(),
         ),
         ChangeNotifierProvider<RequestProvider>(
           create: (context) => RequestProvider(),
@@ -42,6 +47,9 @@ class ApartmentApp extends StatelessWidget {
             title: 'Modern Haven',
             debugShowCheckedModeBanner: false,
             theme: buildAppTheme(),
+            locale: const Locale('vi', 'VN'),
+            supportedLocales: const [Locale('vi', 'VN')],
+            localizationsDelegates: GlobalMaterialLocalizations.delegates,
             routerConfig: router,
           );
         },

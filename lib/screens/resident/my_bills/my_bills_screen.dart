@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 
 import '../../../app/theme.dart';
 import '../../../widgets/status_badge.dart';
@@ -9,6 +8,7 @@ import '../../../widgets/empty_state.dart';
 import '../../../widgets/error_state.dart';
 import '../../../providers/bill_provider.dart';
 import '../../../providers/auth_provider.dart';
+import '../../../utils/vietnamese_formatters.dart';
 
 class MyBillsScreen extends StatefulWidget {
   const MyBillsScreen({super.key});
@@ -71,11 +71,6 @@ class _MyBillsScreenState extends State<MyBillsScreen> {
       );
     }
 
-    final currencyFormatter = NumberFormat.currency(
-      locale: 'vi_VN',
-      symbol: '₫',
-    );
-
     return ListView.builder(
       padding: const EdgeInsets.all(AppSpacing.md),
       itemCount: provider.bills.length,
@@ -105,7 +100,7 @@ class _MyBillsScreenState extends State<MyBillsScreen> {
                       ),
                       const SizedBox(height: AppSpacing.xs),
                       Text(
-                        'Hạn nộp: ${DateFormat('dd/MM/yyyy').format(bill.dueDate)}',
+                        'Hạn nộp: ${VietnameseFormatters.date.format(bill.dueDate)}',
                         style: textTheme.bodySmall,
                       ),
                     ],
@@ -114,10 +109,9 @@ class _MyBillsScreenState extends State<MyBillsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
-                        currencyFormatter.format(bill.amount),
+                        VietnameseFormatters.currency.format(bill.amount),
                         style: textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
-                          fontFamily: 'Outfit',
                         ),
                       ),
                       const SizedBox(height: AppSpacing.xs),

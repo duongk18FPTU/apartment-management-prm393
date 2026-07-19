@@ -53,9 +53,9 @@ class _ComplaintCreateScreenState extends State<ComplaintCreateScreen> {
     if (!mounted) return;
 
     if (ok) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Đã gửi khiếu nại / góp ý')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Đã gửi khiếu nại / góp ý')));
       context.pop();
     } else {
       ScaffoldMessenger.of(context).showSnackBar(

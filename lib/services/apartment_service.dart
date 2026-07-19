@@ -1,15 +1,43 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 import '../models/apartment_model.dart';
+import '../utils/constants.dart';
+import 'base_firestore_service.dart';
 
-class ApartmentService {
-  ApartmentService({FirebaseFirestore? firestore})
-      : _firestore = firestore ?? FirebaseFirestore.instance;
+abstract class ApartmentRepository {
+  Future<ApartmentModel?> getApartment(String id);
+  Future<List<ApartmentModel>> getAllApartments();
+  Stream<List<ApartmentModel>> watchApartments();
+  Future<void> assignResident({
+    required String apartmentId,
+    required String residentId,
+    bool asOwner = false,
+  });
+  Future<void> unassignResident({
+    required String apartmentId,
+    required String residentId,
+  });
+  Future<void> assignOwner({
+    required String apartmentId,
+    required String? ownerId,
+  });
+  Future<void> updateApartmentDetails({
+    required String apartmentId,
+    required double area,
+    required String type,
+  });
+  Future<String> createApartment(ApartmentModel apartment);
+  Future<void> updateApartment(ApartmentModel apartment);
+  Future<void> deleteApartment(String apartmentId);
+}
 
-  final FirebaseFirestore _firestore;
+class ApartmentService extends BaseFirestoreService implements ApartmentRepository {
+  ApartmentService({super.firestore});
+
+  @override
+  String get collectionPath => AppCollections.apartments;
 
   CollectionReference<Map<String, dynamic>> get _collection =>
-      _firestore.collection('apartments');
+      firestore.collection(AppCollections.apartments);
 
   static Map<String, dynamic> toDocumentData(
     ApartmentModel apartment, {
@@ -24,21 +52,7 @@ class ApartmentService {
         .toJson();
   }
 
-  Stream<List<ApartmentModel>> watchApartments() {
-    return _collection.snapshots().map(
-          (snapshot) => snapshot.docs
-              .map((doc) => ApartmentModel.fromJson(doc.data(), id: doc.id))
-              .toList(),
-        );
-  }
-
-  Future<List<ApartmentModel>> getApartments() async {
-    final snapshot = await _collection.get();
-    return snapshot.docs
-        .map((doc) => ApartmentModel.fromJson(doc.data(), id: doc.id))
-        .toList();
-  }
-
+  @override
   Future<ApartmentModel?> getApartment(String id) async {
     final doc = await _collection.doc(id).get();
     final data = doc.data();
@@ -47,36 +61,59 @@ class ApartmentService {
         : null;
   }
 
+  // Alias for provider
+  Future<ApartmentModel?> getApartmentById(String id) => getApartment(id);
+
+  @override
+  Future<List<ApartmentModel>> getAllApartments() async {
+    final snap = await _collection.orderBy('number').get();
+    return snap.docs.map((doc) => ApartmentModel.fromJson(doc.data(), id: doc.id)).toList();
+  }
+
+  // Alias for compatibility
+  Future<List<ApartmentModel>> getApartments() => getAllApartments();
+
+  @override
+  Stream<List<ApartmentModel>> watchApartments() {
+    return _collection
+        .orderBy('number')
+        .snapshots()
+        .map((snap) => snap.docs.map((doc) => ApartmentModel.fromJson(doc.data(), id: doc.id)).toList());
+  }
+
+  @override
   Future<String> createApartment(ApartmentModel apartment) async {
     final doc = apartment.id.isEmpty ? _collection.doc() : _collection.doc(apartment.id);
     await doc.set(toDocumentData(apartment));
     return doc.id;
   }
 
+  @override
   Future<void> updateApartment(ApartmentModel apartment) {
     return _collection.doc(apartment.id).update(
           apartment.copyWith(updatedAt: DateTime.now()).toJson(),
         );
   }
 
+  @override
   Future<void> deleteApartment(String apartmentId) {
     return _collection.doc(apartmentId).delete();
   }
 
-  /// Updates both sides of the apartment-resident relationship atomically.
+  @override
   Future<void> assignResident({
     required String apartmentId,
     required String residentId,
     bool asOwner = false,
   }) async {
     final apartmentRef = _collection.doc(apartmentId);
-    final residentRef = _firestore.collection('users').doc(residentId);
+    final residentRef = firestore.collection(AppCollections.users).doc(residentId);
 
-    await _firestore.runTransaction((transaction) async {
+    await firestore.runTransaction((transaction) async {
       final apartmentSnapshot = await transaction.get(apartmentRef);
       final residentSnapshot = await transaction.get(residentRef);
       if (!apartmentSnapshot.exists || !residentSnapshot.exists) {
-        throw StateError('Apartment or resident was not found.');
+        throw StateError('Căn hộ hoặc cư dân không tồn tại.');
       }
 
       final apartment = ApartmentModel.fromJson(
@@ -87,6 +124,7 @@ class ApartmentService {
         residentSnapshot.data() ?? <String, dynamic>{},
         id: residentId,
       );
+
       if (resident.apartmentId != null && resident.apartmentId != apartmentId) {
         final oldApartmentRef = _collection.doc(resident.apartmentId);
         transaction.update(oldApartmentRef, {
@@ -100,7 +138,7 @@ class ApartmentService {
       transaction.update(apartmentRef, {
         'residentIds': residentIds,
         if (asOwner) 'ownerId': residentId,
-        'status': 'occupied',
+        'status': ApartmentStatus.occupied.name,
         'updatedAt': Timestamp.now(),
       });
       transaction.update(residentRef, {
@@ -110,17 +148,18 @@ class ApartmentService {
     });
   }
 
+  @override
   Future<void> unassignResident({
     required String apartmentId,
     required String residentId,
   }) async {
     final apartmentRef = _collection.doc(apartmentId);
-    final residentRef = _firestore.collection('users').doc(residentId);
+    final residentRef = firestore.collection(AppCollections.users).doc(residentId);
 
-    await _firestore.runTransaction((transaction) async {
+    await firestore.runTransaction((transaction) async {
       final apartmentSnapshot = await transaction.get(apartmentRef);
       if (!apartmentSnapshot.exists) {
-        throw StateError('Apartment was not found.');
+        throw StateError('Căn hộ không tồn tại.');
       }
       final apartment = ApartmentModel.fromJson(
         apartmentSnapshot.data() ?? <String, dynamic>{},
@@ -132,7 +171,9 @@ class ApartmentService {
       transaction.update(apartmentRef, {
         'residentIds': remainingResidents,
         if (apartment.ownerId == residentId) 'ownerId': null,
-        'status': remainingResidents.isEmpty ? 'vacant' : 'occupied',
+        'status': remainingResidents.isEmpty
+            ? ApartmentStatus.vacant.name
+            : ApartmentStatus.occupied.name,
         'updatedAt': Timestamp.now(),
       });
       transaction.update(residentRef, {
@@ -141,10 +182,58 @@ class ApartmentService {
       });
     });
   }
+
+  @override
+  Future<void> assignOwner({
+    required String apartmentId,
+    required String? ownerId,
+  }) async {
+    final aptRef = _collection.doc(apartmentId);
+    await firestore.runTransaction((transaction) async {
+      final doc = await transaction.get(aptRef);
+      if (!doc.exists) return;
+
+      final data = doc.data()!;
+      final currentResidents = List<String>.from(data['residentIds'] ?? const []);
+
+      final newStatus = ownerId != null || currentResidents.isNotEmpty
+          ? ApartmentStatus.occupied.name
+          : ApartmentStatus.vacant.name;
+
+      transaction.update(aptRef, {
+        'ownerId': ownerId,
+        'status': newStatus,
+        'updatedAt': Timestamp.now(),
+      });
+
+      if (ownerId != null) {
+        final userRef = firestore.collection(AppCollections.users).doc(ownerId);
+        transaction.update(userRef, {
+          'apartmentId': apartmentId,
+          'updatedAt': Timestamp.now(),
+        });
+      }
+    });
+  }
+
+  @override
+  Future<void> updateApartmentDetails({
+    required String apartmentId,
+    required double area,
+    required String type,
+  }) async {
+    try {
+      await _collection.doc(apartmentId).update({
+        'area': area,
+        'type': type,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+    } on FirebaseException catch (e) {
+      throw FirestoreException('Không thể cập nhật thông tin căn hộ: ${e.message}');
+    }
+  }
 }
 
-// Kept private to this feature so the service does not create a dependency on
-// the full authentication/user-management implementation.
 class UserModelAdapter {
   const UserModelAdapter({this.apartmentId});
 

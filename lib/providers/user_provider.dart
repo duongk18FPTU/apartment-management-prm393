@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import '../models/user_model.dart';
 import '../services/user_service.dart';
 import '../utils/constants.dart';
+import '../utils/vietnamese_text.dart';
 
 /// Holds user management data, filters, and mutation states for Admin screens.
 class UserProvider extends ChangeNotifier {
@@ -38,13 +39,14 @@ class UserProvider extends ChangeNotifier {
 
   /// Returns the current list after applying client-side search and filters.
   List<UserModel> get filteredUsers {
-    final query = _searchQuery.trim().toLowerCase();
+    final query = normalizeVietnameseForSearch(_searchQuery);
     return _users.where((user) {
       final matchesQuery =
           query.isEmpty ||
-          user.fullName.toLowerCase().contains(query) ||
-          user.email.toLowerCase().contains(query) ||
-          (user.apartmentId?.toLowerCase().contains(query) ?? false);
+          normalizeVietnameseForSearch(user.fullName).contains(query) ||
+          normalizeVietnameseForSearch(user.email).contains(query) ||
+          (user.apartmentId != null &&
+              normalizeVietnameseForSearch(user.apartmentId!).contains(query));
       return matchesQuery &&
           (_roleFilter == null || user.role == _roleFilter) &&
           (_statusFilter == null || user.status == _statusFilter);

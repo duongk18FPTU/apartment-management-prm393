@@ -23,6 +23,7 @@ class UserModel {
   });
 
   final String uid;
+  String get id => uid;
   final String email;
   final String fullName;
   final String phone;
@@ -112,6 +113,7 @@ class UserModel {
     DateTime? dateOfBirth,
     String? avatarUrl,
     UserStatus? status,
+    DateTime? createdAt,
     DateTime? updatedAt,
   }) {
     return UserModel(
@@ -125,8 +127,8 @@ class UserModel {
       dateOfBirth: dateOfBirth ?? this.dateOfBirth,
       avatarUrl: avatarUrl ?? this.avatarUrl,
       status: status ?? this.status,
-      createdAt: createdAt,
-      updatedAt: updatedAt ?? DateTime.now(),
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
     );
   }
 
@@ -145,6 +147,12 @@ class UserModel {
   @override
   String toString() =>
       'UserModel(uid: $uid, email: $email, role: ${role.name})';
+
+  factory UserModel.fromJson(Map<String, dynamic> json, {String? id}) {
+    return UserModel.fromMap(json, id ?? json['id'] ?? json['uid'] ?? '');
+  }
+
+  Map<String, dynamic> toJson() => toMap();
 }
 
 // ---------------------------------------------------------------------------

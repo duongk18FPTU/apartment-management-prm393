@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import '../../../../app/theme.dart';
 import '../../../../models/bill_model.dart';
+import '../../../../utils/vietnamese_formatters.dart';
 import '../../../../widgets/status_badge.dart';
 
 class BillCard extends StatelessWidget {
@@ -13,11 +13,6 @@ class BillCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final currencyFormatter = NumberFormat.currency(
-      locale: 'vi_VN',
-      symbol: '₫',
-    );
-
     return Card(
       margin: const EdgeInsets.only(bottom: AppSpacing.md),
       child: InkWell(
@@ -56,17 +51,16 @@ class BillCard extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        'Tháng ${bill.billingMonth}',
+                        'Tháng ${VietnameseFormatters.billingMonth(bill.billingMonth)}',
                         style: textTheme.bodySmall,
                       ),
                     ],
                   ),
                   Text(
-                    currencyFormatter.format(bill.amount),
+                    VietnameseFormatters.currency.format(bill.amount),
                     style: textTheme.titleLarge?.copyWith(
                       color: DesignTokens.onBackground,
                       fontWeight: FontWeight.w700,
-                      fontFamily: 'Outfit',
                     ),
                   ),
                 ],

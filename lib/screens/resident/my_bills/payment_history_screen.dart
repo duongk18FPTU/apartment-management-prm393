@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
 
 import '../../../app/theme.dart';
 import '../../../widgets/status_badge.dart';
@@ -8,6 +7,7 @@ import '../../../widgets/empty_state.dart';
 import '../../../widgets/error_state.dart';
 import '../../../providers/bill_provider.dart';
 import '../../../providers/auth_provider.dart';
+import '../../../utils/vietnamese_formatters.dart';
 
 class PaymentHistoryScreen extends StatefulWidget {
   const PaymentHistoryScreen({super.key});
@@ -75,11 +75,6 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
       );
     }
 
-    final currencyFormatter = NumberFormat.currency(
-      locale: 'vi_VN',
-      symbol: '₫',
-    );
-
     return ListView.builder(
       padding: const EdgeInsets.all(AppSpacing.md),
       itemCount: provider.payments.length,
@@ -138,19 +133,18 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
                           style: textTheme.bodyMedium,
                         ),
                         Text(
-                          DateFormat(
-                            'dd/MM/yyyy HH:mm',
-                          ).format(payment.createdAt),
+                          VietnameseFormatters.dateTime.format(
+                            payment.createdAt,
+                          ),
                           style: textTheme.bodySmall,
                         ),
                       ],
                     ),
                     Text(
-                      currencyFormatter.format(payment.amount),
+                      VietnameseFormatters.currency.format(payment.amount),
                       style: textTheme.titleLarge?.copyWith(
                         color: DesignTokens.onBackground,
                         fontWeight: FontWeight.w700,
-                        fontFamily: 'Outfit',
                       ),
                     ),
                   ],

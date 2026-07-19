@@ -7,6 +7,8 @@ import '../screens/admin/admin_home_screen.dart';
 import '../screens/admin/user_management/user_create_screen.dart';
 import '../screens/admin/user_management/user_edit_screen.dart';
 import '../screens/admin/user_management/user_list_screen.dart';
+import '../screens/admin/apartment_management/apartment_list_screen.dart';
+import '../screens/admin/apartment_management/apartment_detail_screen.dart';
 import '../screens/auth/change_password_screen.dart';
 import '../screens/auth/login_screen.dart';
 import '../screens/auth/splash_screen.dart';
@@ -126,6 +128,17 @@ final List<RouteBase> _routes = [
     builder: (context, state) =>
         UserEditScreen(userId: state.pathParameters['id']!),
   ),
+  GoRoute(
+    path: AppRoutes.apartmentList,
+    name: 'apartmentList',
+    builder: (context, state) => const ApartmentListScreen(),
+  ),
+  GoRoute(
+    path: AppRoutes.apartmentDetail,
+    name: 'apartmentDetail',
+    builder: (context, state) =>
+        ApartmentDetailScreen(apartmentId: state.pathParameters['id']!),
+  ),
 
   GoRoute(
     path: AppRoutes.staffHome,
@@ -237,7 +250,7 @@ class _RouterErrorScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Page Not Found')),
+      appBar: AppBar(title: const Text('Không tìm thấy trang')),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -247,7 +260,7 @@ class _RouterErrorScreen extends StatelessWidget {
               const Icon(Icons.error_outline_rounded, size: 64),
               const SizedBox(height: 16),
               Text(
-                '404 — Page not found',
+                '404 — Không tìm thấy trang',
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               if (error != null) ...[
@@ -261,7 +274,7 @@ class _RouterErrorScreen extends StatelessWidget {
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: () => context.go(AppRoutes.splash),
-                child: const Text('Go to Home'),
+                child: const Text('Về trang chủ'),
               ),
             ],
           ),
