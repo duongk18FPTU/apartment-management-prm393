@@ -24,7 +24,7 @@ class _StaffHomeScreenState extends State<StaffHomeScreen> {
     final List<Widget> tabs = [
       const RequestManageScreen(),
       const BillListScreen(),
-      const VisitorListScreen(),
+      const VisitorListScreen(embedded: true),
       const ComplaintManageScreen(),
       const UserProfileScreen(),
     ];
