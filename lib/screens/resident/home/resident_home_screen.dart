@@ -45,6 +45,8 @@ class ResidentHomeScreen extends StatelessWidget {
               ),
             ],
             const SizedBox(height: AppSpacing.xl),
+
+            // 1. Yêu cầu sửa chữa (Member 3)
             _HomeActionTile(
               icon: Icons.handyman_outlined,
               title: 'Yêu cầu sửa chữa',
@@ -52,6 +54,26 @@ class ResidentHomeScreen extends StatelessWidget {
               onTap: () => context.push(AppRoutes.requestList),
             ),
             const SizedBox(height: AppSpacing.sm),
+
+            // 2. Hóa đơn của tôi (Member 4 - Sprint 2)
+            _HomeActionTile(
+              icon: Icons.receipt_long_rounded,
+              title: 'Hóa đơn của tôi',
+              subtitle: 'Xem và thanh toán hóa đơn căn hộ',
+              onTap: () => context.push(AppRoutes.residentBills),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+
+            // 3. Lịch sử giao dịch (Member 4 - Sprint 2)
+            _HomeActionTile(
+              icon: Icons.history_rounded,
+              title: 'Lịch sử giao dịch',
+              subtitle: 'Xem lịch sử nộp tiền và chuyển khoản',
+              onTap: () => context.push(AppRoutes.residentPaymentHistory),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+
+            // 4. Khiếu nại / Góp ý (Member 3)
             _HomeActionTile(
               icon: Icons.feedback_outlined,
               title: 'Khiếu nại / Góp ý',
