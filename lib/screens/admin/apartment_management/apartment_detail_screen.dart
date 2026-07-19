@@ -22,7 +22,9 @@ class ApartmentDetailScreen extends StatelessWidget {
           IconButton(
             tooltip: 'Edit apartment',
             onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => ApartmentFormScreen(apartment: apartment)),
+              MaterialPageRoute(
+                builder: (_) => ApartmentFormScreen(apartment: apartment),
+              ),
             ),
             icon: const Icon(Icons.edit_outlined),
           ),
@@ -38,13 +40,18 @@ class ApartmentDetailScreen extends StatelessWidget {
         children: [
           ApartmentDetails(apartment: apartment),
           const SizedBox(height: 24),
-          Text('Residents (${apartment.residentIds.length})', style: Theme.of(context).textTheme.titleLarge),
+          Text(
+            'Residents (${apartment.residentIds.length})',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
           const SizedBox(height: 12),
-          ...apartment.residentIds.map((id) => ListTile(
-                leading: const CircleAvatar(child: Icon(Icons.person_outline)),
-                title: Text(id),
-                subtitle: Text(id == apartment.ownerId ? 'Owner' : 'Resident'),
-              )),
+          ...apartment.residentIds.map(
+            (id) => ListTile(
+              leading: const CircleAvatar(child: Icon(Icons.person_outline)),
+              title: Text(id),
+              subtitle: Text(id == apartment.ownerId ? 'Owner' : 'Resident'),
+            ),
+          ),
           const SizedBox(height: 12),
           OutlinedButton.icon(
             onPressed: () => _assignResident(context),
@@ -67,10 +74,10 @@ class ApartmentDetailScreen extends StatelessWidget {
     if (resident == null || !context.mounted) return;
     try {
       await context.read<ApartmentProvider>().assignResident(
-            apartmentId: apartment.id,
-            residentId: resident.id,
-            asOwner: true,
-          );
+        apartmentId: apartment.id,
+        residentId: resident.uid,
+        asOwner: true,
+      );
       if (context.mounted) Navigator.of(context).pop();
     } catch (error) {
       if (context.mounted) {
@@ -88,8 +95,14 @@ class ApartmentDetailScreen extends StatelessWidget {
         title: const Text('Delete apartment?'),
         content: const Text('This action cannot be undone.'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Delete')),
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Delete'),
+          ),
         ],
       ),
     );

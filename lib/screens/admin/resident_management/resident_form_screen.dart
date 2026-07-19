@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../../models/user_model.dart';
 import '../../../providers/apartment_provider.dart';
 import '../../../providers/resident_provider.dart';
+import '../../../utils/constants.dart';
 import 'widgets/resident_form_fields.dart';
 
 class ResidentFormScreen extends StatefulWidget {
@@ -29,14 +30,16 @@ class _ResidentFormScreenState extends State<ResidentFormScreen> {
   void initState() {
     super.initState();
     final resident = widget.resident;
-    _idController = TextEditingController(text: resident?.id);
+    _idController = TextEditingController(text: resident?.uid);
     _nameController = TextEditingController(text: resident?.fullName);
     _emailController = TextEditingController(text: resident?.email);
     _phoneController = TextEditingController(text: resident?.phone);
     _nationalIdController = TextEditingController(text: resident?.nationalId);
     _status = resident?.status.name ?? 'active';
     _selectedApartmentId = resident?.apartmentId;
-    WidgetsBinding.instance.addPostFrameCallback((_) => context.read<ApartmentProvider>().loadApartments());
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => context.read<ApartmentProvider>().loadApartments(),
+    );
   }
 
   @override
@@ -54,7 +57,7 @@ class _ResidentFormScreenState extends State<ResidentFormScreen> {
     final old = widget.resident;
     final oldApartmentId = old?.apartmentId;
     final resident = UserModel(
-      id: _idController.text.trim(),
+      uid: _idController.text.trim(),
       email: _emailController.text.trim(),
       fullName: _nameController.text.trim(),
       phone: _phoneController.text.trim(),
@@ -64,30 +67,42 @@ class _ResidentFormScreenState extends State<ResidentFormScreen> {
       dateOfBirth: old?.dateOfBirth,
       avatarUrl: old?.avatarUrl,
       status: UserStatus.values.byName(_status),
-      createdAt: old?.createdAt,
-      updatedAt: old?.updatedAt,
+      createdAt: old?.createdAt ?? DateTime.now(),
+      updatedAt: DateTime.now(),
     );
     try {
       await _saveResident(resident);
-      await _syncApartment(oldApartmentId, resident.id);
+      await _syncApartment(oldApartmentId, resident.uid);
       if (mounted) Navigator.of(context).pop();
     } catch (error) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Unable to save resident profile.')));
+      if (mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Unable to save resident profile.')),
+        );
     }
   }
 
   Future<void> _saveResident(UserModel resident) {
     final provider = context.read<ResidentProvider>();
-    return widget.resident == null ? provider.create(resident) : provider.save(resident);
+    return widget.resident == null
+        ? provider.create(resident)
+        : provider.save(resident);
   }
 
   Future<void> _syncApartment(String? oldApartmentId, String residentId) async {
     if (oldApartmentId == _selectedApartmentId) return;
     final provider = context.read<ApartmentProvider>();
     if (_selectedApartmentId == null && oldApartmentId != null) {
-      await provider.unassignResident(apartmentId: oldApartmentId, residentId: residentId);
+      await provider.unassignResident(
+        apartmentId: oldApartmentId,
+        residentId: residentId,
+      );
     } else if (_selectedApartmentId != null) {
-      await provider.assignResident(apartmentId: _selectedApartmentId!, residentId: residentId, asOwner: true);
+      await provider.assignResident(
+        apartmentId: _selectedApartmentId!,
+        residentId: residentId,
+        asOwner: true,
+      );
     }
   }
 
@@ -95,7 +110,9 @@ class _ResidentFormScreenState extends State<ResidentFormScreen> {
   Widget build(BuildContext context) {
     final apartments = context.watch<ApartmentProvider>();
     return Scaffold(
-      appBar: AppBar(title: Text(widget.resident == null ? 'Add resident' : 'Edit resident')),
+      appBar: AppBar(
+        title: Text(widget.resident == null ? 'Add resident' : 'Edit resident'),
+      ),
       body: Form(
         key: _formKey,
         child: ListView(
@@ -111,13 +128,17 @@ class _ResidentFormScreenState extends State<ResidentFormScreen> {
               apartmentId: _selectedApartmentId,
               status: _status,
               idEnabled: widget.resident == null,
-              onApartmentChanged: (value) => setState(() => _selectedApartmentId = value),
-              onStatusChanged: (value) => setState(() => _status = value ?? _status),
+              onApartmentChanged: (value) =>
+                  setState(() => _selectedApartmentId = value),
+              onStatusChanged: (value) =>
+                  setState(() => _status = value ?? _status),
             ),
             const SizedBox(height: 32),
             FilledButton(
               onPressed: apartments.isLoading ? null : _submit,
-              child: Text(widget.resident == null ? 'Create profile' : 'Save changes'),
+              child: Text(
+                widget.resident == null ? 'Create profile' : 'Save changes',
+              ),
             ),
           ],
         ),

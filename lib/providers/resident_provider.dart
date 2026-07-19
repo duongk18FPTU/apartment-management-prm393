@@ -7,8 +7,8 @@ class ResidentProvider extends ChangeNotifier {
   ResidentProvider({
     ResidentService? service,
     List<UserModel> initialResidents = const [],
-  })  : _service = service,
-        _residents = initialResidents;
+  }) : _service = service,
+       _residents = initialResidents;
 
   ResidentService? _service;
   List<UserModel> _residents = const [];
@@ -26,7 +26,8 @@ class ResidentProvider extends ChangeNotifier {
   List<UserModel> get filteredResidents {
     final query = _searchQuery.trim().toLowerCase();
     return _residents.where((resident) {
-      final matchesQuery = query.isEmpty ||
+      final matchesQuery =
+          query.isEmpty ||
           resident.fullName.toLowerCase().contains(query) ||
           resident.phone.toLowerCase().contains(query) ||
           (resident.apartmentId ?? '').toLowerCase().contains(query);
@@ -59,8 +60,10 @@ class ResidentProvider extends ChangeNotifier {
   }
 
   Future<void> save(UserModel resident) async {
-    if (resident.id.isEmpty) {
-      throw ArgumentError('A resident id is required before creating a profile.');
+    if (resident.uid.isEmpty) {
+      throw ArgumentError(
+        'A resident id is required before creating a profile.',
+      );
     }
     await _dataService.updateResident(resident);
     await loadResidents();
@@ -73,7 +76,7 @@ class ResidentProvider extends ChangeNotifier {
 
   Future<void> toggleStatus(UserModel resident) async {
     await _dataService.setResidentStatus(
-      resident.id,
+      resident.uid,
       resident.isActive ? UserStatus.inactive : UserStatus.active,
     );
     await loadResidents();

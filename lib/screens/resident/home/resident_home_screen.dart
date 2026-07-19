@@ -1,134 +1,278 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../app/theme.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../utils/constants.dart';
+import '../my_bills/my_bills_screen.dart';
+import '../my_requests/request_list_screen.dart';
+import '../complaints/complaint_list_screen.dart';
+import '../profile/resident_profile_screen.dart';
 
-/// Resident Home — temporary hub until Member 5 lands bottom navigation.
-class ResidentHomeScreen extends StatelessWidget {
+class ResidentHomeScreen extends StatefulWidget {
   const ResidentHomeScreen({super.key});
 
   @override
+  State<ResidentHomeScreen> createState() => _ResidentHomeScreenState();
+}
+
+class _ResidentHomeScreenState extends State<ResidentHomeScreen> {
+  int _selectedIndex = 0;
+
+  @override
   Widget build(BuildContext context) {
-    final user = context.watch<AuthProvider>().userModel;
+    final userModel = context.watch<AuthProvider>().userModel;
+    final textTheme = Theme.of(context).textTheme;
+
+    final List<Widget> tabs = [
+      _buildHomeTab(textTheme, userModel?.fullName ?? 'Cư dân'),
+      const MyBillsScreen(),
+      const RequestListScreen(),
+      const ComplaintListScreen(),
+      const ResidentProfileScreen(),
+    ];
 
     return Scaffold(
       backgroundColor: DesignTokens.background,
-      appBar: AppBar(
-        title: const Text('My Home'),
-        actions: [
-          IconButton(
-            tooltip: 'Đăng xuất',
-            onPressed: () => context.read<AuthProvider>().logout(),
-            icon: const Icon(Icons.logout_rounded),
+      body: IndexedStack(index: _selectedIndex, children: tabs),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _selectedIndex,
+        onDestinationSelected: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.home_outlined),
+            selectedIcon: Icon(Icons.home_rounded),
+            label: 'Trang chủ',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.receipt_long_outlined),
+            selectedIcon: Icon(Icons.receipt_long_rounded),
+            label: 'Hóa đơn',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.build_outlined),
+            selectedIcon: Icon(Icons.build_rounded),
+            label: 'Yêu cầu',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.feedback_outlined),
+            selectedIcon: Icon(Icons.feedback_rounded),
+            label: 'Khiếu nại',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person_outline_rounded),
+            selectedIcon: Icon(Icons.person_rounded),
+            label: 'Cá nhân',
           ),
         ],
       ),
-      body: Padding(
+    );
+  }
+
+  Widget _buildHomeTab(TextTheme textTheme, String name) {
+    return Scaffold(
+      backgroundColor: DesignTokens.background,
+      appBar: AppBar(title: const Text('My Home')),
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Xin chào, ${user?.fullName ?? 'Cư dân'}',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            if (user?.apartmentId != null) ...[
-              const SizedBox(height: AppSpacing.xs),
-              Text(
-                'Căn hộ: ${user!.apartmentId}',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: DesignTokens.neutralVariant,
+            // Welcome Header Card
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 28,
+                      backgroundColor: DesignTokens.secondary.withValues(
+                        alpha: 0.1,
+                      ),
+                      child: const Icon(
+                        Icons.person_rounded,
+                        color: DesignTokens.secondary,
+                        size: 28,
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.md),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Xin chào,',
+                            style: textTheme.bodyMedium?.copyWith(
+                              color: DesignTokens.neutralVariant,
+                            ),
+                          ),
+                          Text(
+                            name,
+                            style: textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-            const SizedBox(height: AppSpacing.xl),
-
-            // 1. Yêu cầu sửa chữa (Member 3)
-            _HomeActionTile(
-              icon: Icons.handyman_outlined,
-              title: 'Yêu cầu sửa chữa',
-              subtitle: 'Gửi và theo dõi yêu cầu của bạn',
-              onTap: () => context.push(AppRoutes.requestList),
             ),
-            const SizedBox(height: AppSpacing.sm),
+            const SizedBox(height: AppSpacing.lg),
 
-            // 2. Hóa đơn của tôi (Member 4 - Sprint 2)
-            _HomeActionTile(
-              icon: Icons.receipt_long_rounded,
-              title: 'Hóa đơn của tôi',
-              subtitle: 'Xem và thanh toán hóa đơn căn hộ',
-              onTap: () => context.push(AppRoutes.residentBills),
+            Text(
+              'Dịch vụ chung cư',
+              style: textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            const SizedBox(height: AppSpacing.sm),
+            const SizedBox(height: AppSpacing.md),
 
-            // 3. Lịch sử giao dịch (Member 4 - Sprint 2)
-            _HomeActionTile(
-              icon: Icons.history_rounded,
-              title: 'Lịch sử giao dịch',
-              subtitle: 'Xem lịch sử nộp tiền và chuyển khoản',
-              onTap: () => context.push(AppRoutes.residentPaymentHistory),
+            // Bento Grid for Resident Quick Actions
+            GridView.count(
+              crossAxisCount: 2,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              crossAxisSpacing: AppSpacing.md,
+              mainAxisSpacing: AppSpacing.md,
+              children: [
+                _buildBentoCard(
+                  Icons.receipt_long_rounded,
+                  'Thanh toán',
+                  'Xem & thanh toán các hóa đơn căn hộ.',
+                  DesignTokens.secondary,
+                  () => setState(() => _selectedIndex = 1),
+                ),
+                _buildBentoCard(
+                  Icons.build_rounded,
+                  'Sửa chữa',
+                  'Gửi yêu cầu bảo trì bảo dưỡng căn hộ.',
+                  DesignTokens.tertiary,
+                  () => setState(() => _selectedIndex = 2),
+                ),
+                _buildBentoCard(
+                  Icons.feedback_outlined,
+                  'Khiếu nại',
+                  'Gửi khiếu nại và phản hồi của bạn.',
+                  const Color(0xFF3B82F6),
+                  () => setState(() => _selectedIndex = 3),
+                ),
+                _buildBentoCard(
+                  Icons.person_rounded,
+                  'Cá nhân',
+                  'Quản lý hồ sơ cư dân & thông tin phòng.',
+                  const Color(0xFF8B5CF6),
+                  () => setState(() => _selectedIndex = 4),
+                ),
+              ],
             ),
-            const SizedBox(height: AppSpacing.sm),
+            const SizedBox(height: AppSpacing.md),
 
-            // 4. Khiếu nại / Góp ý (Member 3)
-            _HomeActionTile(
-              icon: Icons.feedback_outlined,
-              title: 'Khiếu nại / Góp ý',
-              subtitle: 'Gửi và theo dõi phản hồi từ Ban quản lý',
-              onTap: () => context.push(AppRoutes.complaintList),
+            // Quick Access card for Payment History
+            Card(
+              child: InkWell(
+                borderRadius: AppRadius.borderMd,
+                onTap: () => context.push(AppRoutes.residentPaymentHistory),
+                child: Padding(
+                  padding: const EdgeInsets.all(AppSpacing.md),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(AppSpacing.sm),
+                        decoration: BoxDecoration(
+                          color: DesignTokens.tertiary.withValues(alpha: 0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.history_rounded,
+                          color: DesignTokens.tertiary,
+                          size: 28,
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.md),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Lịch Sử Giao Dịch',
+                              style: textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              'Xem danh sách biên lai, lịch sử nộp tiền mặt hoặc chuyển khoản.',
+                              style: textTheme.bodySmall,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Icon(
+                        Icons.arrow_forward_ios_rounded,
+                        size: 16,
+                        color: DesignTokens.neutralVariant,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
           ],
         ),
       ),
     );
   }
-}
 
-class _HomeActionTile extends StatelessWidget {
-  const _HomeActionTile({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.onTap,
-  });
-
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: DesignTokens.surface,
-      borderRadius: BorderRadius.circular(AppRadius.md),
+  Widget _buildBentoCard(
+    IconData icon,
+    String title,
+    String description,
+    Color color,
+    VoidCallback onTap,
+  ) {
+    final textTheme = Theme.of(context).textTheme;
+    return Card(
       child: InkWell(
+        borderRadius: AppRadius.borderMd,
         onTap: onTap,
-        borderRadius: BorderRadius.circular(AppRadius.md),
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.md),
-          child: Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Icon(icon, size: 32, color: DesignTokens.secondary),
-              const SizedBox(width: AppSpacing.md),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(title, style: Theme.of(context).textTheme.titleMedium),
-                    Text(
-                      subtitle,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: DesignTokens.neutralVariant,
-                      ),
-                    ),
-                  ],
+              Container(
+                padding: const EdgeInsets.all(AppSpacing.sm),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
                 ),
+                child: Icon(icon, color: color, size: 24),
               ),
-              const Icon(Icons.chevron_right_rounded),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.xs),
+                  Text(
+                    description,
+                    style: textTheme.bodySmall?.copyWith(fontSize: 11),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
             ],
           ),
         ),

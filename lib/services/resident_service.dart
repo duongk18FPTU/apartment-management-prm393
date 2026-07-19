@@ -1,10 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../models/user_model.dart';
+import '../utils/constants.dart';
 
 class ResidentService {
   ResidentService({FirebaseFirestore? firestore})
-      : _firestore = firestore ?? FirebaseFirestore.instance;
+    : _firestore = firestore ?? FirebaseFirestore.instance;
 
   final FirebaseFirestore _firestore;
 
@@ -17,45 +18,44 @@ class ResidentService {
   }) {
     final timestamp = now ?? DateTime.now();
     return resident
-        .copyWith(
-          role: UserRole.resident,
-          createdAt: resident.createdAt ?? timestamp,
-          updatedAt: timestamp,
-        )
-        .toJson();
+        .copyWith(role: UserRole.resident, updatedAt: timestamp)
+        .toMap();
   }
 
   Stream<List<UserModel>> watchResidents() {
-    return _collection.where('role', isEqualTo: 'resident').snapshots().map(
+    return _collection
+        .where('role', isEqualTo: 'resident')
+        .snapshots()
+        .map(
           (snapshot) => snapshot.docs
-              .map((doc) => UserModel.fromJson(doc.data(), id: doc.id))
+              .map((doc) => UserModel.fromMap(doc.data(), doc.id))
               .toList(),
         );
   }
 
   Future<List<UserModel>> getResidents() async {
-    final snapshot = await _collection.where('role', isEqualTo: 'resident').get();
+    final snapshot = await _collection
+        .where('role', isEqualTo: 'resident')
+        .get();
     return snapshot.docs
-        .map((doc) => UserModel.fromJson(doc.data(), id: doc.id))
+        .map((doc) => UserModel.fromMap(doc.data(), doc.id))
         .toList();
   }
 
   Future<UserModel?> getResident(String id) async {
     final doc = await _collection.doc(id).get();
     final data = doc.data();
-    return doc.exists && data != null
-        ? UserModel.fromJson(data, id: doc.id)
-        : null;
+    return doc.exists && data != null ? UserModel.fromMap(data, doc.id) : null;
   }
 
   Future<void> createResident(UserModel resident) async {
-    await _collection.doc(resident.id).set(toDocumentData(resident));
+    await _collection.doc(resident.uid).set(toDocumentData(resident));
   }
 
   Future<void> updateResident(UserModel resident) {
-    return _collection.doc(resident.id).update(
-          resident.copyWith(updatedAt: DateTime.now()).toJson(),
-        );
+    return _collection
+        .doc(resident.uid)
+        .update(resident.copyWith(updatedAt: DateTime.now()).toMap());
   }
 
   Future<void> setResidentStatus(String residentId, UserStatus status) {

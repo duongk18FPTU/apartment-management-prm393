@@ -27,17 +27,18 @@ class BillService {
       query = query.where('status', isEqualTo: status);
     }
 
-    // Sắp xếp giảm dần theo ngày tạo
-    query = query.orderBy('createdAt', descending: true);
-
     final snapshot = await query.get();
-    return snapshot.docs
+    final bills = snapshot.docs
         .map(
           (doc) => BillModel.fromFirestore(
             doc as DocumentSnapshot<Map<String, dynamic>>,
           ),
         )
         .toList();
+
+    // Sắp xếp cục bộ giảm dần theo ngày tạo (createdAt) để tránh lỗi Index Firestore
+    bills.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    return bills;
   }
 
   /// Lấy chi tiết một hóa đơn cụ thể
@@ -88,15 +89,37 @@ class BillService {
     final batch = _firestore.batch();
     final now = DateTime.now();
 
-    // 1. Cập nhật bản ghi payment thành 'approved'
     final paymentRef = _firestore.collection('payments').doc(paymentId);
-    batch.update(paymentRef, {
-      'status': 'approved',
-      'recordedBy': staffId,
-      'updatedAt': Timestamp.fromDate(now),
-    });
 
-    // 2. Cập nhật trạng thái hóa đơn thành 'paid'
+    if (method == 'cash') {
+      // 1. Nếu là Tiền mặt: Đọc thông tin hóa đơn và TẠO MỚI bản ghi thanh toán
+      final billDoc = await _firestore
+          .collection(AppCollections.bills)
+          .doc(billId)
+          .get();
+      final billData = billDoc.data() ?? {};
+
+      batch.set(paymentRef, {
+        'billId': billId,
+        'apartmentId': billData['apartmentId'] as String? ?? '',
+        'residentId': billData['residentId'] as String? ?? '',
+        'amount': (billData['amount'] as num? ?? 0.0).toDouble(),
+        'paymentMethod': 'cash',
+        'status': 'approved',
+        'recordedBy': staffId,
+        'createdAt': Timestamp.fromDate(now),
+        'updatedAt': Timestamp.fromDate(now),
+      });
+    } else {
+      // 2. Nếu là Chuyển khoản: CẬP NHẬT bản ghi chờ duyệt sẵn có
+      batch.update(paymentRef, {
+        'status': 'approved',
+        'recordedBy': staffId,
+        'updatedAt': Timestamp.fromDate(now),
+      });
+    }
+
+    // 3. Cập nhật trạng thái hóa đơn thành 'paid'
     final billRef = _firestore.collection(AppCollections.bills).doc(billId);
     batch.update(billRef, {
       'status': 'paid',
@@ -151,16 +174,18 @@ class BillService {
       query = query.where('residentId', isEqualTo: residentId);
     }
 
-    query = query.orderBy('createdAt', descending: true);
     final snapshot = await query.get();
-
-    return snapshot.docs
+    final payments = snapshot.docs
         .map(
           (doc) => PaymentModel.fromFirestore(
             doc as DocumentSnapshot<Map<String, dynamic>>,
           ),
         )
         .toList();
+
+    // Sắp xếp cục bộ giảm dần theo ngày tạo (createdAt) để tránh lỗi Index Firestore
+    payments.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    return payments;
   }
 
   /// Tìm giao dịch chờ duyệt cho một hóa đơn cụ thể

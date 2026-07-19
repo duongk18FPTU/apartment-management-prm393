@@ -145,6 +145,28 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  /// Cập nhật thông tin hồ sơ của người dùng đang đăng nhập
+  Future<bool> updateProfile(UserModel updatedUser) async {
+    _clearError();
+    _setLoading(true);
+
+    try {
+      await _firestore
+          .collection(AppCollections.users)
+          .doc(updatedUser.uid)
+          .update(updatedUser.toMap());
+      _userModel = updatedUser;
+      notifyListeners();
+      return true;
+    } on FirebaseException catch (e) {
+      _errorMessage = e.message;
+      notifyListeners();
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
   // ---------------------------------------------------------------------------
   // Lifecycle
   // ---------------------------------------------------------------------------

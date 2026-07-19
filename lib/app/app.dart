@@ -6,6 +6,9 @@ import '../providers/bill_provider.dart';
 import '../providers/complaint_provider.dart';
 import '../providers/request_provider.dart';
 import '../providers/user_provider.dart';
+import '../providers/apartment_provider.dart';
+import '../providers/resident_provider.dart';
+import '../providers/theme_provider.dart';
 import 'routes.dart';
 import 'theme.dart';
 
@@ -32,16 +35,28 @@ class ApartmentApp extends StatelessWidget {
         ChangeNotifierProvider<ComplaintProvider>(
           create: (context) => ComplaintProvider(),
         ),
+        ChangeNotifierProvider<ApartmentProvider>(
+          create: (context) => ApartmentProvider()..loadApartments(),
+        ),
+        ChangeNotifierProvider<ResidentProvider>(
+          create: (context) => ResidentProvider()..loadResidents(),
+        ),
+        ChangeNotifierProvider<ThemeProvider>(
+          create: (context) => ThemeProvider(),
+        ),
       ],
       child: Builder(
         builder: (context) {
           final authProvider = context.read<AuthProvider>();
+          final themeProvider = context.watch<ThemeProvider>();
           final router = buildAppRouter(authProvider);
 
           return MaterialApp.router(
             title: 'Modern Haven',
             debugShowCheckedModeBanner: false,
             theme: buildAppTheme(),
+            darkTheme: buildAppDarkTheme(),
+            themeMode: themeProvider.themeMode,
             routerConfig: router,
           );
         },
