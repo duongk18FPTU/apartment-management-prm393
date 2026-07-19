@@ -33,12 +33,7 @@ class UserFilterBar extends StatelessWidget {
 
     return Container(
       color: Colors.white,
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.md,
-        16,
-        AppSpacing.md,
-        12,
-      ),
+      padding: const EdgeInsets.fromLTRB(AppSpacing.md, 16, AppSpacing.md, 12),
       child: Column(
         children: [
           // Search Input Container

@@ -30,7 +30,8 @@ abstract class ApartmentRepository {
   Future<void> deleteApartment(String apartmentId);
 }
 
-class ApartmentService extends BaseFirestoreService implements ApartmentRepository {
+class ApartmentService extends BaseFirestoreService
+    implements ApartmentRepository {
   ApartmentService({super.firestore});
 
   @override
@@ -67,7 +68,9 @@ class ApartmentService extends BaseFirestoreService implements ApartmentReposito
   @override
   Future<List<ApartmentModel>> getAllApartments() async {
     final snap = await _collection.orderBy('number').get();
-    return snap.docs.map((doc) => ApartmentModel.fromJson(doc.data(), id: doc.id)).toList();
+    return snap.docs
+        .map((doc) => ApartmentModel.fromJson(doc.data(), id: doc.id))
+        .toList();
   }
 
   // Alias for compatibility
@@ -78,21 +81,27 @@ class ApartmentService extends BaseFirestoreService implements ApartmentReposito
     return _collection
         .orderBy('number')
         .snapshots()
-        .map((snap) => snap.docs.map((doc) => ApartmentModel.fromJson(doc.data(), id: doc.id)).toList());
+        .map(
+          (snap) => snap.docs
+              .map((doc) => ApartmentModel.fromJson(doc.data(), id: doc.id))
+              .toList(),
+        );
   }
 
   @override
   Future<String> createApartment(ApartmentModel apartment) async {
-    final doc = apartment.id.isEmpty ? _collection.doc() : _collection.doc(apartment.id);
+    final doc = apartment.id.isEmpty
+        ? _collection.doc()
+        : _collection.doc(apartment.id);
     await doc.set(toDocumentData(apartment));
     return doc.id;
   }
 
   @override
   Future<void> updateApartment(ApartmentModel apartment) {
-    return _collection.doc(apartment.id).update(
-          apartment.copyWith(updatedAt: DateTime.now()).toJson(),
-        );
+    return _collection
+        .doc(apartment.id)
+        .update(apartment.copyWith(updatedAt: DateTime.now()).toJson());
   }
 
   @override
@@ -107,7 +116,9 @@ class ApartmentService extends BaseFirestoreService implements ApartmentReposito
     bool asOwner = false,
   }) async {
     final apartmentRef = _collection.doc(apartmentId);
-    final residentRef = firestore.collection(AppCollections.users).doc(residentId);
+    final residentRef = firestore
+        .collection(AppCollections.users)
+        .doc(residentId);
 
     await firestore.runTransaction((transaction) async {
       final apartmentSnapshot = await transaction.get(apartmentRef);
@@ -154,7 +165,9 @@ class ApartmentService extends BaseFirestoreService implements ApartmentReposito
     required String residentId,
   }) async {
     final apartmentRef = _collection.doc(apartmentId);
-    final residentRef = firestore.collection(AppCollections.users).doc(residentId);
+    final residentRef = firestore
+        .collection(AppCollections.users)
+        .doc(residentId);
 
     await firestore.runTransaction((transaction) async {
       final apartmentSnapshot = await transaction.get(apartmentRef);
@@ -194,7 +207,9 @@ class ApartmentService extends BaseFirestoreService implements ApartmentReposito
       if (!doc.exists) return;
 
       final data = doc.data()!;
-      final currentResidents = List<String>.from(data['residentIds'] ?? const []);
+      final currentResidents = List<String>.from(
+        data['residentIds'] ?? const [],
+      );
 
       final newStatus = ownerId != null || currentResidents.isNotEmpty
           ? ApartmentStatus.occupied.name
@@ -229,7 +244,9 @@ class ApartmentService extends BaseFirestoreService implements ApartmentReposito
         'updatedAt': FieldValue.serverTimestamp(),
       });
     } on FirebaseException catch (e) {
-      throw FirestoreException('Không thể cập nhật thông tin căn hộ: ${e.message}');
+      throw FirestoreException(
+        'Không thể cập nhật thông tin căn hộ: ${e.message}',
+      );
     }
   }
 }

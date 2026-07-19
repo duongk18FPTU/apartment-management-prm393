@@ -145,28 +145,28 @@ class UserListItem extends StatelessWidget {
                       const SizedBox(width: 8),
                       // Details Label
                       Expanded(
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                detailsIcon,
-                                size: 14,
-                                color: const Color(0xFF75777D),
-                              ),
-                              const SizedBox(width: 4),
-                              Expanded(
-                                child: Text(
-                                  detailsLabel,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    color: Color(0xFF75777D),
-                                    fontSize: 12,
-                                  ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              detailsIcon,
+                              size: 14,
+                              color: const Color(0xFF75777D),
+                            ),
+                            const SizedBox(width: 4),
+                            Expanded(
+                              child: Text(
+                                detailsLabel,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  color: Color(0xFF75777D),
+                                  fontSize: 12,
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
+                      ),
                     ],
                   ),
                 ],

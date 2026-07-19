@@ -5,7 +5,7 @@ import '../utils/constants.dart';
 
 class ResidentService {
   ResidentService({FirebaseFirestore? firestore})
-      : _firestore = firestore ?? FirebaseFirestore.instance;
+    : _firestore = firestore ?? FirebaseFirestore.instance;
 
   final FirebaseFirestore _firestore;
 
@@ -27,7 +27,10 @@ class ResidentService {
   }
 
   Stream<List<UserModel>> watchResidents() {
-    return _collection.where('role', isEqualTo: 'resident').snapshots().map(
+    return _collection
+        .where('role', isEqualTo: 'resident')
+        .snapshots()
+        .map(
           (snapshot) => snapshot.docs
               .map((doc) => UserModel.fromJson(doc.data(), id: doc.id))
               .toList(),
@@ -35,7 +38,9 @@ class ResidentService {
   }
 
   Future<List<UserModel>> getResidents() async {
-    final snapshot = await _collection.where('role', isEqualTo: 'resident').get();
+    final snapshot = await _collection
+        .where('role', isEqualTo: 'resident')
+        .get();
     return snapshot.docs
         .map((doc) => UserModel.fromJson(doc.data(), id: doc.id))
         .toList();
@@ -54,9 +59,9 @@ class ResidentService {
   }
 
   Future<void> updateResident(UserModel resident) {
-    return _collection.doc(resident.id).update(
-          resident.copyWith(updatedAt: DateTime.now()).toJson(),
-        );
+    return _collection
+        .doc(resident.id)
+        .update(resident.copyWith(updatedAt: DateTime.now()).toJson());
   }
 
   Future<void> setResidentStatus(String residentId, UserStatus status) {

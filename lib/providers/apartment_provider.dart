@@ -255,13 +255,13 @@ class ApartmentProvider extends ChangeNotifier {
 
   Future<void> assignOwnerToSelected(String? ownerId) async {
     if (_selectedApartment == null) return;
-    await assignOwner(
-      apartmentId: _selectedApartment!.id,
-      ownerId: ownerId,
-    );
+    await assignOwner(apartmentId: _selectedApartment!.id, ownerId: ownerId);
   }
 
-  Future<void> updateSelectedApartmentDetails({required double area, required String type}) async {
+  Future<void> updateSelectedApartmentDetails({
+    required double area,
+    required String type,
+  }) async {
     if (_selectedApartment == null) return;
     await updateApartmentDetails(
       apartmentId: _selectedApartment!.id,

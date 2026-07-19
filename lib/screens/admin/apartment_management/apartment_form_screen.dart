@@ -27,7 +27,9 @@ class _ApartmentFormScreenState extends State<ApartmentFormScreen> {
     super.initState();
     final apartment = widget.apartment;
     _numberController = TextEditingController(text: apartment?.number);
-    _buildingController = TextEditingController(text: apartment?.building ?? 'Building A');
+    _buildingController = TextEditingController(
+      text: apartment?.building ?? 'Building A',
+    );
     _floorController = TextEditingController(text: apartment?.floor.toString());
     _areaController = TextEditingController(text: apartment?.area.toString());
     _status = apartment?.status ?? ApartmentStatus.vacant;
@@ -73,7 +75,11 @@ class _ApartmentFormScreenState extends State<ApartmentFormScreen> {
   Widget build(BuildContext context) {
     final loading = context.watch<ApartmentProvider>().isLoading;
     return Scaffold(
-      appBar: AppBar(title: Text(widget.apartment == null ? 'Add apartment' : 'Edit apartment')),
+      appBar: AppBar(
+        title: Text(
+          widget.apartment == null ? 'Add apartment' : 'Edit apartment',
+        ),
+      ),
       body: Form(
         key: _formKey,
         child: ListView(
@@ -85,7 +91,8 @@ class _ApartmentFormScreenState extends State<ApartmentFormScreen> {
               floorController: _floorController,
               areaController: _areaController,
               status: _status,
-              onStatusChanged: (value) => setState(() => _status = value ?? _status),
+              onStatusChanged: (value) =>
+                  setState(() => _status = value ?? _status),
             ),
             const SizedBox(height: 32),
             FilledButton(
