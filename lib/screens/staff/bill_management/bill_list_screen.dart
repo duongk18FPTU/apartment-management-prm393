@@ -19,6 +19,7 @@ class BillListScreen extends StatefulWidget {
 class _BillListScreenState extends State<BillListScreen> {
   String? _selectedStatus;
   String? _selectedMonth;
+  String? _selectedApartment;
 
   final List<String> _statuses = ['unpaid', 'paid', 'pending', 'overdue'];
   final List<String> _months = ['2026-05', '2026-06', '2026-07', '2026-08'];
@@ -33,6 +34,7 @@ class _BillListScreenState extends State<BillListScreen> {
 
   void _fetchBills() {
     context.read<BillProvider>().loadBills(
+      apartmentId: _selectedApartment,
       billingMonth: _selectedMonth,
       status: _selectedStatus,
     );
@@ -64,6 +66,7 @@ class _BillListScreenState extends State<BillListScreen> {
           BillFilterBar(
             selectedStatus: _selectedStatus,
             selectedMonth: _selectedMonth,
+            selectedApartment: _selectedApartment,
             statuses: _statuses,
             months: _months,
             onStatusChanged: (val) {
@@ -72,6 +75,13 @@ class _BillListScreenState extends State<BillListScreen> {
             },
             onMonthChanged: (val) {
               setState(() => _selectedMonth = val);
+              _fetchBills();
+            },
+            onApartmentChanged: (val) {
+              setState(
+                () =>
+                    _selectedApartment = val.trim().isEmpty ? null : val.trim(),
+              );
               _fetchBills();
             },
           ),
