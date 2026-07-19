@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
-import '../../../app/theme.dart';
-import '../../../providers/auth_provider.dart';
-import '../../../widgets/custom_text_field.dart';
+import '../../app/theme.dart';
+import '../../providers/auth_provider.dart';
+import '../../widgets/custom_text_field.dart';
 
-class ResidentProfileScreen extends StatefulWidget {
-  const ResidentProfileScreen({super.key});
+class UserProfileScreen extends StatefulWidget {
+  const UserProfileScreen({super.key});
 
   @override
-  State<ResidentProfileScreen> createState() => _ResidentProfileScreenState();
+  State<UserProfileScreen> createState() => _UserProfileScreenState();
 }
 
-class _ResidentProfileScreenState extends State<ResidentProfileScreen> {
+class _UserProfileScreenState extends State<UserProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();

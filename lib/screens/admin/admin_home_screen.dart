@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../app/theme.dart';
 import '../../providers/auth_provider.dart';
 import '../../utils/constants.dart';
+import '../profile/profile_screen.dart';
 import 'apartment_management/apartment_list_screen.dart';
 import 'resident_management/resident_list_screen.dart';
 
@@ -26,6 +27,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
       _buildDashboardTab(textTheme),
       const ApartmentListScreen(),
       const ResidentListScreen(),
+      const UserProfileScreen(),
     ];
 
     return Scaffold(
@@ -53,6 +55,11 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
             icon: Icon(Icons.people_alt_outlined),
             selectedIcon: Icon(Icons.people_alt_rounded),
             label: 'Cư dân',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person_outline_rounded),
+            selectedIcon: Icon(Icons.person_rounded),
+            label: 'Cá nhân',
           ),
         ],
       ),

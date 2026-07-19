@@ -8,7 +8,7 @@ import '../../../utils/constants.dart';
 import '../my_bills/my_bills_screen.dart';
 import '../my_requests/request_list_screen.dart';
 import '../complaints/complaint_list_screen.dart';
-import '../profile/resident_profile_screen.dart';
+import '../../profile/profile_screen.dart';
 
 class ResidentHomeScreen extends StatefulWidget {
   const ResidentHomeScreen({super.key});
@@ -30,7 +30,7 @@ class _ResidentHomeScreenState extends State<ResidentHomeScreen> {
       const MyBillsScreen(),
       const RequestListScreen(),
       const ComplaintListScreen(),
-      const ResidentProfileScreen(),
+      const UserProfileScreen(),
     ];
 
     return Scaffold(

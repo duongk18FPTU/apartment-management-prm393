@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../app/theme.dart';
 import '../../providers/auth_provider.dart';
+import '../profile/profile_screen.dart';
 import 'bill_management/bill_list_screen.dart';
 import 'request_management/request_manage_screen.dart';
 import 'complaint_management/complaint_manage_screen.dart';
@@ -28,6 +29,7 @@ class _StaffHomeScreenState extends State<StaffHomeScreen> {
         'BQL quản lý thông tin đăng ký, check-in, check-out khách viếng thăm (Member 5).',
       ),
       const ComplaintManageScreen(),
+      const UserProfileScreen(),
     ];
 
     return Scaffold(
@@ -60,6 +62,11 @@ class _StaffHomeScreenState extends State<StaffHomeScreen> {
             icon: Icon(Icons.campaign_outlined),
             selectedIcon: Icon(Icons.campaign_rounded),
             label: 'Khiếu nại',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person_outline_rounded),
+            selectedIcon: Icon(Icons.person_rounded),
+            label: 'Cá nhân',
           ),
         ],
       ),

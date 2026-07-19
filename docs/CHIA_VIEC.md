@@ -270,32 +270,32 @@ lib/
 - [ ] Tạo các shared widgets còn lại:
   - [x] `CustomTextField` — Styled text input theo Design System *(done by Member 1)*
   - [x] `LoadingIndicator` — Loading spinner/skeleton *(done by Member 1)*
-  - [ ] `StatusBadge` — Badge hiển thị trạng thái (Paid/Unpaid/Pending/...)
-  - [ ] `EmptyState` — Placeholder khi không có data
-  - [ ] `ErrorState` — Hiển thị lỗi + retry
-  - [ ] `ConfirmDialog` — Dialog xác nhận hành động nguy hiểm
+  - [x] `StatusBadge` — Badge hiển thị trạng thái (Paid/Unpaid/Pending/...)
+  - [x] `EmptyState` — Placeholder khi không có data
+  - [x] `ErrorState` — Hiển thị lỗi + retry
+  - [x] `ConfirmDialog` — Dialog xác nhận hành động nguy hiểm
 
 #### Sprint 1 — Bill Management (Staff side)
-- [ ] `BillListScreen` (Staff) — Danh sách bills, filter by apartment/month/status
-- [ ] `BillCreateScreen` (Staff) — Form tạo bill mới (Apartment, Type, Amount, Due Date)
-- [ ] `BillDetailScreen` — Xem chi tiết bill
-- [ ] `BillService` — CRUD trên Firestore `bills` collection
-- [ ] `BillProvider` — State management
-- [ ] Bill types: Electricity, Water, Service Fee, Parking
-- [ ] Bill status: Unpaid → Paid
+- [x] `BillListScreen` (Staff) — Danh sách bills, filter by apartment/month/status
+- [x] `BillCreateScreen` (Staff) — Form tạo bill mới (Apartment, Type, Amount, Due Date)
+- [x] `BillDetailScreen` — Xem chi tiết bill
+- [x] `BillService` — CRUD trên Firestore `bills` collection
+- [x] `BillProvider` — State management
+- [x] Bill types: Electricity, Water, Service Fee, Parking
+- [x] Bill status: Unpaid → Paid
 
 #### Sprint 2 — Bill/Payment (Resident side)
-- [ ] `MyBillsScreen` (Resident) — Xem danh sách bills của mình
-- [ ] `BillPaymentScreen` (Resident) — Xem chi tiết + xác nhận thanh toán (manual/simulated)
-- [ ] `PaymentHistoryScreen` — Lịch sử thanh toán
-- [ ] Record Cash Payment (Staff)
-- [ ] Confirm Bank Transfer (Staff)
-- [ ] Payment status tracking
+- [x] `MyBillsScreen` (Resident) — Xem danh sách bills của mình
+- [x] `BillPaymentScreen` (Resident) — Xem chi tiết + xác nhận thanh toán (manual/simulated)
+- [x] `PaymentHistoryScreen` — Lịch sử thanh toán
+- [x] Record Cash Payment (Staff)
+- [x] Confirm Bank Transfer (Staff)
+- [x] Payment status tracking
 
 #### Sprint 3
-- [ ] Widget tests cho Bill/Payment screens
-- [ ] Unit tests cho `BillService`
-- [ ] Fix bugs + polish
+- [x] Widget tests cho Bill/Payment screens
+- [x] Unit tests cho `BillService`
+- [x] Fix bugs + polish
 
 **Screens phụ trách**: Bill List/Create/Detail, My Bills, Payment, Payment History
 **Firestore collections**: `bills`, `payments`
@@ -307,14 +307,14 @@ lib/
 **Vai trò**: Project Setup + Announcement + Visitor Management + Notification
 
 #### Sprint 0
-- [ ] Firebase project creation & configuration
-- [ ] Add all Firebase dependencies to `pubspec.yaml`
+- [x] Firebase project creation & configuration
+- [x] Add all Firebase dependencies to `pubspec.yaml`
 - [x] Implement `ThemeData` + `ColorScheme` theo DESIGN.md *(done by Member 1)*
 - [x] Setup Google Fonts (Outfit + Inter) *(done by Member 1)*
-- [ ] Create `app.dart`, `theme.dart`, `routes.dart` *(theme.dart + routes.dart done by Member 1)*
-- [ ] Resident Home Screen layout (bottom navigation)
-- [ ] Staff Home Screen layout
-- [ ] Admin Home Screen layout
+- [X] Create `app.dart`, `theme.dart`, `routes.dart` *(theme.dart + routes.dart done by Member 1)*
+- [x] Resident Home Screen layout (bottom navigation)
+- [x] Staff Home Screen layout
+- [x] Admin Home Screen layout
 
 #### Sprint 1 — Announcement Management
 - [ ] `AnnouncementListScreen` — Xem danh sách thông báo (All users)
@@ -500,7 +500,7 @@ Dự án đã được chạy script seed dữ liệu mẫu lên Firebase Cloud 
 - **2 Khách viếng thăm (visitors)**: Đăng ký bởi cư dân.
 - **2 Khiếu nại (complaints)**: Trạng thái `submitted` và `resolved`.
 
-> ⚠️ **Lưu ý**: `node scripts/seed_data.js` dùng để tạo dữ liệu cho môi trường mới và sẽ bỏ qua document đã tồn tại. Để cập nhật an toàn các document mẫu trên Firebase Cloud sang nội dung tiếng Việt có dấu mà không đụng đến dữ liệu người dùng tự tạo, chạy: `node scripts/migrate_seed_vietnamese.js`.
+> ⚠️ **Lưu ý**: Nếu muốn chạy lại script reset dữ liệu về trạng thái ban đầu, chạy lệnh: `node scripts/seed_data.js`
 
 ---
 
