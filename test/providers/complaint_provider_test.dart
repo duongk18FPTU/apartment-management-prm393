@@ -103,11 +103,14 @@ class FakeComplaintRepository implements ComplaintRepository {
   Future<ComplaintModel?> getComplaint(String id) async => detail;
 
   @override
-  Future<List<ComplaintModel>> getComplaintsByResident(String residentId) async =>
-      byResident;
+  Future<List<ComplaintModel>> getComplaintsByResident(
+    String residentId,
+  ) async => byResident;
 
   @override
-  Future<List<ComplaintModel>> getAllComplaints({ComplaintStatus? status}) async {
+  Future<List<ComplaintModel>> getAllComplaints({
+    ComplaintStatus? status,
+  }) async {
     if (status == null) return all;
     return all.where((c) => c.status == status).toList();
   }

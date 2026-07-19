@@ -500,7 +500,7 @@ Dự án đã được chạy script seed dữ liệu mẫu lên Firebase Cloud 
 - **2 Khách viếng thăm (visitors)**: Đăng ký bởi cư dân.
 - **2 Khiếu nại (complaints)**: Trạng thái `submitted` và `resolved`.
 
-> ⚠️ **Lưu ý**: Nếu muốn chạy lại script reset dữ liệu về trạng thái ban đầu, chạy lệnh: `node scripts/seed_data.js`
+> ⚠️ **Lưu ý**: `node scripts/seed_data.js` dùng để tạo dữ liệu cho môi trường mới và sẽ bỏ qua document đã tồn tại. Để cập nhật an toàn các document mẫu trên Firebase Cloud sang nội dung tiếng Việt có dấu mà không đụng đến dữ liệu người dùng tự tạo, chạy: `node scripts/migrate_seed_vietnamese.js`.
 
 ---
 

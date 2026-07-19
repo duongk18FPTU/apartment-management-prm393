@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 /// Design System: Modern Haven
 ///
@@ -9,8 +8,8 @@ import 'package:google_fonts/google_fonts.dart';
 /// Rules enforced by this file:
 /// - NO widget in the codebase may use [Color], [Colors.*], or [Color(0xFF...)]
 ///   directly. Always consume tokens via [Theme.of(context).colorScheme].
-/// - All typographic styles use [GoogleFonts.outfit] (Display/Headline) or
-///   [GoogleFonts.inter] (Body/Label). No system fonts.
+/// - All typographic styles use the bundled Be Vietnam Pro family.
+///   Runtime font fetching and platform fallback fonts are not used.
 /// - Spacing follows an 8dp grid: xs=4, sm=8, md=16, lg=24, xl=32.
 
 // ---------------------------------------------------------------------------
@@ -91,103 +90,124 @@ abstract final class AppRadius {
 // TextTheme
 // ---------------------------------------------------------------------------
 
-/// Builds the [TextTheme] using Google Fonts:
-/// - Outfit  → Display, Headline, Title
-/// - Inter   → Body, Label
+/// Builds a Vietnamese-first [TextTheme] using the bundled Be Vietnam Pro
+/// family. Line heights leave sufficient room for stacked diacritics.
 TextTheme _buildTextTheme() {
-  return TextTheme(
-    // --- Display (Outfit, 700) ---
-    displayLarge: GoogleFonts.outfit(
+  return const TextTheme(
+    // --- Display (700) ---
+    displayLarge: TextStyle(
+      fontFamily: 'BeVietnamPro',
       fontSize: 57,
       fontWeight: FontWeight.w700,
       color: DesignTokens.onBackground,
       letterSpacing: -0.25,
+      height: 1.12,
     ),
-    displayMedium: GoogleFonts.outfit(
+    displayMedium: TextStyle(
+      fontFamily: 'BeVietnamPro',
       fontSize: 45,
       fontWeight: FontWeight.w700,
       color: DesignTokens.onBackground,
+      height: 1.15,
     ),
-    displaySmall: GoogleFonts.outfit(
+    displaySmall: TextStyle(
+      fontFamily: 'BeVietnamPro',
       fontSize: 36,
       fontWeight: FontWeight.w600,
       color: DesignTokens.onBackground,
+      height: 1.18,
     ),
 
-    // --- Headline (Outfit, 600) — screen titles, section headers ---
-    headlineLarge: GoogleFonts.outfit(
+    // --- Headline (600) — screen titles, section headers ---
+    headlineLarge: TextStyle(
+      fontFamily: 'BeVietnamPro',
       fontSize: 32,
       fontWeight: FontWeight.w600,
       color: DesignTokens.onBackground,
+      height: 1.2,
     ),
-    headlineMedium: GoogleFonts.outfit(
+    headlineMedium: TextStyle(
+      fontFamily: 'BeVietnamPro',
       fontSize: 28,
       fontWeight: FontWeight.w600,
       color: DesignTokens.onBackground,
+      height: 1.2,
     ),
-    headlineSmall: GoogleFonts.outfit(
+    headlineSmall: TextStyle(
+      fontFamily: 'BeVietnamPro',
       fontSize: 24,
       fontWeight: FontWeight.w600,
       color: DesignTokens.onBackground,
+      height: 1.25,
     ),
 
-    // --- Title (Outfit, 500) — card headers, list group titles ---
-    titleLarge: GoogleFonts.outfit(
+    // --- Title (500/600) — card headers, list group titles ---
+    titleLarge: TextStyle(
+      fontFamily: 'BeVietnamPro',
       fontSize: 22,
-      fontWeight: FontWeight.w500,
+      fontWeight: FontWeight.w600,
       color: DesignTokens.onBackground,
+      height: 1.3,
     ),
-    titleMedium: GoogleFonts.outfit(
+    titleMedium: TextStyle(
+      fontFamily: 'BeVietnamPro',
       fontSize: 16,
-      fontWeight: FontWeight.w500,
+      fontWeight: FontWeight.w600,
       color: DesignTokens.onSurface,
-      letterSpacing: 0.15,
+      height: 1.35,
     ),
-    titleSmall: GoogleFonts.outfit(
+    titleSmall: TextStyle(
+      fontFamily: 'BeVietnamPro',
       fontSize: 14,
       fontWeight: FontWeight.w500,
       color: DesignTokens.onSurface,
-      letterSpacing: 0.1,
+      height: 1.35,
     ),
 
-    // --- Body (Inter, 400) — readable prose, form fields ---
-    bodyLarge: GoogleFonts.inter(
+    // --- Body (400) — readable prose, form fields ---
+    bodyLarge: TextStyle(
+      fontFamily: 'BeVietnamPro',
       fontSize: 16,
       fontWeight: FontWeight.w400,
       color: DesignTokens.onBackground,
-      height: 1.6,
-    ),
-    bodyMedium: GoogleFonts.inter(
-      fontSize: 14,
-      fontWeight: FontWeight.w400,
-      color: DesignTokens.onSurface,
       height: 1.5,
     ),
-    bodySmall: GoogleFonts.inter(
+    bodyMedium: TextStyle(
+      fontFamily: 'BeVietnamPro',
+      fontSize: 14,
+      fontWeight: FontWeight.w400,
+      color: DesignTokens.onSurface,
+      height: 1.45,
+    ),
+    bodySmall: TextStyle(
+      fontFamily: 'BeVietnamPro',
       fontSize: 12,
       fontWeight: FontWeight.w400,
       color: DesignTokens.neutralVariant,
-      height: 1.4,
+      height: 1.45,
     ),
 
-    // --- Label (Inter, 500) — buttons, tags, dense UI labels ---
-    labelLarge: GoogleFonts.inter(
+    // --- Label (500/600) — buttons, tags, dense UI labels ---
+    labelLarge: TextStyle(
+      fontFamily: 'BeVietnamPro',
       fontSize: 14,
-      fontWeight: FontWeight.w500,
+      fontWeight: FontWeight.w600,
       color: DesignTokens.onBackground,
-      letterSpacing: 0.1,
+      height: 1.35,
     ),
-    labelMedium: GoogleFonts.inter(
+    labelMedium: TextStyle(
+      fontFamily: 'BeVietnamPro',
       fontSize: 12,
       fontWeight: FontWeight.w500,
       color: DesignTokens.neutralVariant,
-      letterSpacing: 0.5,
+      height: 1.35,
     ),
-    labelSmall: GoogleFonts.inter(
+    labelSmall: TextStyle(
+      fontFamily: 'BeVietnamPro',
       fontSize: 11,
       fontWeight: FontWeight.w500,
       color: DesignTokens.neutralVariant,
-      letterSpacing: 0.5,
+      height: 1.35,
     ),
   );
 }
@@ -430,6 +450,7 @@ ThemeData buildAppTheme() {
 
   return ThemeData(
     useMaterial3: true,
+    fontFamily: 'BeVietnamPro',
     colorScheme: _colorScheme,
     textTheme: textTheme,
     scaffoldBackgroundColor: DesignTokens.background,

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 
-import '../../../app/theme.dart';
 import '../../../widgets/status_badge.dart';
 import '../../../widgets/confirm_dialog.dart';
 import '../../../providers/bill_provider.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../models/bill_model.dart';
+import '../../../utils/vietnamese_formatters.dart';
 
 class BillPaymentScreen extends StatefulWidget {
   final String billId;
@@ -37,6 +37,17 @@ class _BillPaymentScreenState extends State<BillPaymentScreen> {
     });
   }
 
+  void _copyToClipboard(String text, String label) {
+    Clipboard.setData(ClipboardData(text: text));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Đã sao chép $label!'),
+        duration: const Duration(seconds: 2),
+        backgroundColor: const Color(0xFF091426),
+      ),
+    );
+  }
+
   void _submitPayment() async {
     final confirm = await ConfirmDialog.show(
       context,
@@ -55,7 +66,7 @@ class _BillPaymentScreenState extends State<BillPaymentScreen> {
         residentId: user?.uid ?? 'resident_temp_uid',
         amount: _bill!.amount,
         method: 'bank_transfer',
-        proofImageUrl: 'mock_proof_url.png', // Mô phỏng ảnh biên lai thanh toán
+        proofImageUrl: 'mock_proof_url.png',
       );
 
       if (success && mounted) {
@@ -64,7 +75,7 @@ class _BillPaymentScreenState extends State<BillPaymentScreen> {
             content: Text(
               'Yêu cầu thanh toán đã được gửi! Vui lòng chờ BQL đối soát và phê duyệt.',
             ),
-            backgroundColor: DesignTokens.tertiary,
+            backgroundColor: Color(0xFF0D9488),
           ),
         );
         context.pop();
@@ -74,47 +85,117 @@ class _BillPaymentScreenState extends State<BillPaymentScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final textTheme = theme.textTheme;
-
     if (_localLoading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return const Scaffold(
+        backgroundColor: Color(0xFFF8FAFC),
+        body: Center(child: CircularProgressIndicator()),
+      );
     }
 
     if (_bill == null) {
       return const Scaffold(
+        backgroundColor: Color(0xFFF8FAFC),
         body: Center(child: Text('Không tìm thấy hóa đơn')),
       );
     }
 
-    final currencyFormatter = NumberFormat.currency(
-      locale: 'vi_VN',
-      symbol: '₫',
-    );
+    final String accountNo = '9876543210';
+    final String transferRef =
+        'P${_bill!.apartmentId} Thanh toan ${_bill!.type.name}';
 
     return Scaffold(
-      backgroundColor: DesignTokens.background,
-      appBar: AppBar(title: const Text('Thanh Toán Hóa Đơn')),
-      body: Padding(
-        padding: const EdgeInsets.all(AppSpacing.lg),
+      backgroundColor: const Color(0xFFF8FAFC),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFFF8FAFC),
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF091426)),
+          onPressed: () => context.pop(),
+        ),
+        title: const Text(
+          'Thanh toán hóa đơn',
+          style: TextStyle(
+            color: Color(0xFF091426),
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
+        ),
+      ),
+      body: SafeArea(
         child: Column(
           children: [
             Expanded(
-              child: ListView(
-                children: [
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(AppSpacing.lg),
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20.0,
+                  vertical: 16.0,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Date Warning Banner
+                    if (_bill!.status == 'unpaid')
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 20.0),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0,
+                          vertical: 12.0,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFFFBEB),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: const Color(0xFFFDE68A)),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.priority_high_rounded,
+                              color: Color(0xFFD97706),
+                              size: 18,
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                'Hạn thanh toán: ${VietnameseFormatters.date.format(_bill!.dueDate)}',
+                                style: const TextStyle(
+                                  color: Color(0xFFB45309),
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                    // Bill Details Summary Card
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(24),
+                        border: Border.all(color: const Color(0xFFE2E8F0)),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Color(0x05091426),
+                            offset: Offset(0, 4),
+                            blurRadius: 10,
+                          ),
+                        ],
+                      ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                _bill!.type.label,
-                                style: textTheme.headlineSmall?.copyWith(
-                                  fontWeight: FontWeight.bold,
+                              const Text(
+                                'Tổng số tiền cần thanh toán',
+                                style: TextStyle(
+                                  color: Color(0xFF75777D),
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                               StatusBadge.bill(
@@ -124,76 +205,367 @@ class _BillPaymentScreenState extends State<BillPaymentScreen> {
                               ),
                             ],
                           ),
-                          const Divider(height: AppSpacing.lg),
-                          _buildRow(
-                            'Căn hộ:',
-                            'Phòng ${_bill!.apartmentId}',
-                            textTheme,
-                          ),
-                          _buildRow(
-                            'Tháng:',
-                            'Tháng ${_bill!.billingMonth}',
-                            textTheme,
-                          ),
-                          _buildRow(
-                            'Số tiền:',
-                            currencyFormatter.format(_bill!.amount),
-                            textTheme,
-                            isPrice: true,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-
-                  // Mock Bank Account Information (Dữ liệu mẫu thực tế của quản lý chung cư)
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(AppSpacing.lg),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
+                          const SizedBox(height: 8),
                           Text(
-                            'Thông tin chuyển khoản',
-                            style: textTheme.titleMedium?.copyWith(
+                            VietnameseFormatters.currency.format(_bill!.amount),
+                            style: const TextStyle(
+                              color: Color(0xFF091426),
+                              fontSize: 24,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const Divider(height: AppSpacing.md),
-                          _buildRow(
-                            'Ngân hàng:',
-                            'VPBank (Việt Nam Thịnh Vượng)',
-                            textTheme,
-                          ),
-                          _buildRow(
-                            'Số tài khoản:',
-                            '9876543210',
-                            textTheme,
-                            isBold: true,
-                          ),
-                          _buildRow(
-                            'Chủ tài khoản:',
-                            'BAN QUAN LY CHUNG CU HAVEN',
-                            textTheme,
-                          ),
-                          _buildRow(
-                            'Nội dung CK:',
-                            'Phòng ${_bill!.apartmentId} CK ${_bill!.type.label}',
-                            textTheme,
-                            isBold: true,
+                          const SizedBox(height: 20),
+                          const Divider(color: Color(0xFFF1F5F9), height: 1),
+                          const SizedBox(height: 16),
+                          _buildDetailRow(
+                            icon: _bill!.type == BillType.water
+                                ? Icons.water_drop_rounded
+                                : _bill!.type == BillType.electricity
+                                ? Icons.bolt_rounded
+                                : _bill!.type == BillType.parking
+                                ? Icons.local_parking_rounded
+                                : Icons.home_repair_service_rounded,
+                            title: 'Dịch vụ: ${_bill!.type.label}',
+                            amount: VietnameseFormatters.currency.format(
+                              _bill!.amount,
+                            ),
                           ),
                         ],
                       ),
                     ),
-                  ),
-                ],
+
+                    const SizedBox(height: 24),
+
+                    // Bank Transfer Instructions Card
+                    Row(
+                      children: const [
+                        Icon(
+                          Icons.account_balance_rounded,
+                          color: Color(0xFF091426),
+                          size: 20,
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          'Hướng dẫn chuyển khoản ngân hàng',
+                          style: TextStyle(
+                            color: Color(0xFF091426),
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(24),
+                        border: Border.all(color: const Color(0xFFE2E8F0)),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Color(0x05091426),
+                            offset: Offset(0, 4),
+                            blurRadius: 10,
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(20.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Bank info row
+                                const Text(
+                                  'NGÂN HÀNG',
+                                  style: TextStyle(
+                                    color: Color(0xFF75777D),
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Row(
+                                  children: [
+                                    Container(
+                                      width: 40,
+                                      height: 40,
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFFF1F5F9),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: const Icon(
+                                        Icons.account_balance_wallet_rounded,
+                                        color: Color(0xFF091426),
+                                        size: 20,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    const Text(
+                                      'VPBank (Việt Nam Thịnh Vượng)',
+                                      style: TextStyle(
+                                        color: Color(0xFF091426),
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+
+                                const SizedBox(height: 20),
+
+                                // Account number block
+                                Container(
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFF8FAFC),
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: const Color(0xFFE2E8F0),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          const Text(
+                                            'SỐ TÀI KHOẢN',
+                                            style: TextStyle(
+                                              color: Color(0xFF75777D),
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            accountNo,
+                                            style: const TextStyle(
+                                              color: Color(0xFF091426),
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                              letterSpacing: 1,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      TextButton.icon(
+                                        onPressed: () => _copyToClipboard(
+                                          accountNo,
+                                          'Số tài khoản',
+                                        ),
+                                        icon: const Icon(
+                                          Icons.content_copy_rounded,
+                                          size: 14,
+                                        ),
+                                        label: const Text('Sao chép'),
+                                        style: TextButton.styleFrom(
+                                          foregroundColor: const Color(
+                                            0xFF091426,
+                                          ),
+                                          backgroundColor: Colors.white,
+                                          side: const BorderSide(
+                                            color: Color(0xFFE2E8F0),
+                                          ),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
+                                          ),
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 12,
+                                            vertical: 8,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                const SizedBox(height: 20),
+
+                                // Account Owner name
+                                const Text(
+                                  'CHỦ TÀI KHOẢN',
+                                  style: TextStyle(
+                                    color: Color(0xFF75777D),
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                const Text(
+                                  'BAN QUẢN LÝ CHUNG CƯ HAVEN',
+                                  style: TextStyle(
+                                    color: Color(0xFF091426),
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+
+                                const SizedBox(height: 20),
+
+                                // Amount details
+                                const Text(
+                                  'SỐ TIỀN',
+                                  style: TextStyle(
+                                    color: Color(0xFF75777D),
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  VietnameseFormatters.currency.format(
+                                    _bill!.amount,
+                                  ),
+                                  style: const TextStyle(
+                                    color: Color(0xFF091426),
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+
+                                const SizedBox(height: 20),
+
+                                // Transfer reference block
+                                Container(
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0x04091426),
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: const Color(0xFFE2E8F0),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            const Text(
+                                              'NỘI DUNG CHUYỂN KHOẢN',
+                                              style: TextStyle(
+                                                color: Color(0xFF75777D),
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Text(
+                                              transferRef,
+                                              style: const TextStyle(
+                                                color: Color(0xFF091426),
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold,
+                                                fontFamily: 'monospace',
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      IconButton(
+                                        onPressed: () => _copyToClipboard(
+                                          transferRef,
+                                          'Nội dung chuyển khoản',
+                                        ),
+                                        icon: const Icon(
+                                          Icons.content_copy_rounded,
+                                          color: Color(0xFF091426),
+                                          size: 18,
+                                        ),
+                                        tooltip: 'Sao chép nội dung',
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          // Reconciliation notes footer
+                          Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: const BoxDecoration(
+                              color: Color(0xFFF1F5F9),
+                              borderRadius: BorderRadius.only(
+                                bottomLeft: Radius.circular(24),
+                                bottomRight: Radius.circular(24),
+                              ),
+                            ),
+                            child: const Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Icon(
+                                  Icons.info_outline_rounded,
+                                  color: Color(0xFF75777D),
+                                  size: 18,
+                                ),
+                                SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    'Hệ thống sẽ tự động cập nhật trạng thái thanh toán sau khi Ban quản lý đối soát khớp thông tin chuyển khoản. Vui lòng chụp và giữ lại biên lai để đối chiếu.',
+                                    style: TextStyle(
+                                      color: Color(0xFF75777D),
+                                      fontSize: 11,
+                                      height: 1.5,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+                  ],
+                ),
               ),
             ),
+
+            // Submit Button Action Bar
             if (_bill!.status == 'unpaid')
-              ElevatedButton(
-                onPressed: _submitPayment,
-                child: const Text('Tôi Đã Chuyển Khoản'),
+              Container(
+                padding: const EdgeInsets.fromLTRB(20.0, 16.0, 20.0, 24.0),
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  border: Border(
+                    top: BorderSide(color: Color(0xFFE2E8F0), width: 1),
+                  ),
+                ),
+                child: SizedBox(
+                  height: 54,
+                  child: ElevatedButton(
+                    onPressed: _submitPayment,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF091426),
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                    child: const Text(
+                      'Tôi đã chuyển khoản',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
               ),
           ],
         ),
@@ -201,44 +573,45 @@ class _BillPaymentScreenState extends State<BillPaymentScreen> {
     );
   }
 
-  Widget _buildRow(
-    String label,
-    String val,
-    TextTheme textTheme, {
-    bool isBold = false,
-    bool isPrice = false,
+  Widget _buildDetailRow({
+    required IconData icon,
+    required String title,
+    required String amount,
   }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment:
-            CrossAxisAlignment.start, // Tránh lệch hàng khi xuống dòng
-        children: [
-          Text(
-            label,
-            style: textTheme.bodyMedium?.copyWith(
-              color: DesignTokens.neutralVariant,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          children: [
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: const Color(0xFFF1F5F9),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(icon, color: const Color(0xFF091426), size: 16),
             ),
-          ),
-          const SizedBox(
-            width: AppSpacing.md,
-          ), // Tạo khoảng cách an toàn giữa cột trái và cột phải
-          Expanded(
-            child: Text(
-              val,
-              textAlign: TextAlign.end, // Canh đều lề phải cực đẹp
-              style: textTheme.bodyLarge?.copyWith(
-                fontWeight: (isBold || isPrice)
-                    ? FontWeight.bold
-                    : FontWeight.w600,
-                color: isPrice ? DesignTokens.secondary : null,
-                fontFamily: isPrice ? 'Outfit' : null,
+            const SizedBox(width: 10),
+            Text(
+              title,
+              style: const TextStyle(
+                color: Color(0xFF091426),
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
               ),
             ),
+          ],
+        ),
+        Text(
+          amount,
+          style: const TextStyle(
+            color: Color(0xFF091426),
+            fontSize: 13,
+            fontWeight: FontWeight.bold,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

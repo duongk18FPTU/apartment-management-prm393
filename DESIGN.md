@@ -18,23 +18,23 @@ colors:
   neutral-variant: "#64748B"
 typography:
   h1:
-    fontFamily: Outfit
+    fontFamily: Be Vietnam Pro
     fontSize: 2.25rem
     fontWeight: 700
   h2:
-    fontFamily: Outfit
+    fontFamily: Be Vietnam Pro
     fontSize: 1.75rem
     fontWeight: 600
   body-lg:
-    fontFamily: Inter
+    fontFamily: Be Vietnam Pro
     fontSize: 1.125rem
     fontWeight: 400
   body-md:
-    fontFamily: Inter
+    fontFamily: Be Vietnam Pro
     fontSize: 1rem
     fontWeight: 400
   label-sm:
-    fontFamily: Inter
+    fontFamily: Be Vietnam Pro
     fontSize: 0.75rem
     fontWeight: 500
 rounded:
@@ -84,10 +84,17 @@ The color system uses deep slate tones for primary structure, paired with a warm
 
 ## Typography
 
-We employ two typeface families to distinguish structural and editorial tone:
+Modern Haven uses **Be Vietnam Pro** across the product interface. The typeface
+was selected for its complete Vietnamese character set, clear diacritics, and
+consistent rendering on both Android and iOS.
 
-- **Outfit (Display):** A geometric sans-serif with a warm, friendly character. Used for all primary headings, metrics, and key numbers.
-- **Inter (Body/Label):** A highly legible workhorse typeface designed for screen interfaces. Used for body copy, form fields, and dense UI labels.
+- **Bold (700):** Primary screen titles and critical metrics.
+- **SemiBold (600):** Section titles, card titles, and primary actions.
+- **Medium (500):** Labels, filters, badges, and secondary actions.
+- **Regular (400):** Body copy, form values, helper text, and metadata.
+
+The font files are bundled with the application. Runtime font fetching and
+platform-dependent fallback fonts are not allowed.
 
 ---
 
@@ -137,7 +144,8 @@ Building modules and apartment cards use a white surface background, subtle `Lev
 
 ### Do:
 - Keep background clean and let whites/slate cards structure the page.
-- Apply `Outfit` strictly for metrics (e.g., "$150.00", "Room 402") to make numbers legible and elegant.
+- Use tabular number formatting and `Be Vietnam Pro` SemiBold for money and apartment metrics.
+- Preserve Vietnamese diacritics in all user-facing copy and seed data.
 - Use `spacing.md` (16dp) as the default spacing standard for all mobile margins.
 
 ### Don't:

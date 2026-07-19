@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../../app/theme.dart';
@@ -8,6 +7,7 @@ import '../../../providers/auth_provider.dart';
 import '../../../providers/complaint_provider.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/validators.dart';
+import '../../../utils/vietnamese_formatters.dart';
 import '../../../widgets/complaint_status_chip.dart';
 import '../../../widgets/custom_text_field.dart';
 import '../../../widgets/loading_indicator.dart';
@@ -92,7 +92,7 @@ class _ComplaintDetailScreenState extends State<ComplaintDetailScreen> {
     final role = context.watch<AuthProvider>().role;
     final canRespond = role == UserRole.staff || role == UserRole.admin;
     final item = provider.selected;
-    final dateFmt = DateFormat('dd/MM/yyyy HH:mm');
+    final dateFmt = VietnameseFormatters.dateTime;
 
     return Scaffold(
       backgroundColor: DesignTokens.background,
@@ -100,9 +100,7 @@ class _ComplaintDetailScreenState extends State<ComplaintDetailScreen> {
       body: provider.isLoading && item == null
           ? const Center(child: LoadingIndicator.circular())
           : item == null
-          ? Center(
-              child: Text(provider.errorMessage ?? 'Không tìm thấy'),
-            )
+          ? Center(child: Text(provider.errorMessage ?? 'Không tìm thấy'))
           : ListView(
               padding: const EdgeInsets.all(AppSpacing.md),
               children: [
@@ -133,7 +131,10 @@ class _ComplaintDetailScreenState extends State<ComplaintDetailScreen> {
                 const SizedBox(height: AppSpacing.md),
                 Text('Nội dung', style: Theme.of(context).textTheme.titleSmall),
                 const SizedBox(height: AppSpacing.xs),
-                Text(item.content, style: Theme.of(context).textTheme.bodyLarge),
+                Text(
+                  item.content,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
                 if (item.response != null && item.response!.isNotEmpty) ...[
                   const SizedBox(height: AppSpacing.lg),
                   Text(
@@ -181,8 +182,10 @@ class _ComplaintDetailScreenState extends State<ComplaintDetailScreen> {
                     hint: 'Nhập phản hồi gửi cư dân...',
                     controller: _responseController,
                     maxLines: 4,
-                    validator: (v) =>
-                        AppValidators.validateRequired(v, fieldName: 'Phản hồi'),
+                    validator: (v) => AppValidators.validateRequired(
+                      v,
+                      fieldName: 'Phản hồi',
+                    ),
                   ),
                   const SizedBox(height: AppSpacing.md),
                   SizedBox(

@@ -10,7 +10,7 @@ import '../../utils/constants.dart';
 ///
 /// Design references — DESIGN.md (Modern Haven):
 /// - Background: [DesignTokens.primary] (#1E293B) — deep slate
-/// - Logo text: Outfit 700, white
+/// - Logo text: Be Vietnam Pro 700, white
 /// - Accent shimmer: [DesignTokens.secondary] (#D97706) amber
 /// - Animation: fade-in + subtle scale-up (hardware-accelerated via
 ///   [AnimatedOpacity] / [AnimatedScale])
@@ -165,7 +165,7 @@ class _SplashScreenState extends State<SplashScreen>
               FadeTransition(
                 opacity: _taglineOpacity,
                 child: Text(
-                  'Apartment Building Management',
+                  'Quản lý chung cư',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: DesignTokens.onPrimary.withValues(alpha: 0.6),
                     letterSpacing: 0.5,

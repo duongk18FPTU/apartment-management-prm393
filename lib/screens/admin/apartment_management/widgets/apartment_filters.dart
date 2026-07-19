@@ -76,10 +76,7 @@ class _StatusFilter extends StatelessWidget {
           value: ApartmentStatus.occupied,
           child: Text('Occupied'),
         ),
-        DropdownMenuItem(
-          value: ApartmentStatus.vacant,
-          child: Text('Vacant'),
-        ),
+        DropdownMenuItem(value: ApartmentStatus.vacant, child: Text('Vacant')),
       ],
       onChanged: provider.setStatus,
     );

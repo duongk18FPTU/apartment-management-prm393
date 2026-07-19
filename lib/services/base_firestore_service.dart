@@ -18,9 +18,12 @@ import 'package:flutter/foundation.dart';
 /// ```
 abstract class BaseFirestoreService {
   BaseFirestoreService({FirebaseFirestore? firestore})
-      : _firestore = firestore ?? FirebaseFirestore.instance;
+    : _firestore = firestore ?? FirebaseFirestore.instance;
 
   final FirebaseFirestore _firestore;
+
+  /// Exposes the Firestore instance to subclasses for custom batch/transaction logic.
+  FirebaseFirestore get firestore => _firestore;
 
   /// Name of the Firestore collection this service manages.
   String get collectionPath;
