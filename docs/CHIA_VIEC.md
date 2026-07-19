@@ -118,7 +118,7 @@ lib/
 | Task | Người phụ trách | Mô tả |
 |------|----------------|-------|
 | Project setup + Firebase config | **Member 5** | Thêm Firebase dependencies, `firebase_core`, `firebase_auth`, `cloud_firestore`, `firebase_storage`, `firebase_messaging` vào `pubspec.yaml`. Config Firebase project. |
-| Theme & Design System | **Member 5** | Implement `ThemeData` + `ColorScheme` dựa trên DESIGN.md (Modern Haven). Fonts: Outfit + Inter. |
+| Theme & Design System | **Member 5** ~~→ Done by Member 1~~ | ✅ Implement `ThemeData` + `ColorScheme` dựa trên DESIGN.md (Modern Haven). Fonts: Outfit + Inter. |
 | Navigation & Routing | **Member 1** | Setup `go_router` hoặc named routes. Role-based navigation (Admin/Staff/Resident → different home screens). |
 | Models | **Member 2** | Tạo tất cả data models (`UserModel`, `ApartmentModel`, `RequestModel`, `BillModel`, `NotificationModel`, `VisitorModel`, `ComplaintModel`) với `fromJson`/`toJson`. |
 | Base Services | **Member 3** | Tạo base service class cho Firestore CRUD operations. Setup `AuthService` cơ bản. |
@@ -144,10 +144,10 @@ lib/
 **Vai trò**: Team Lead + Foundation + Authentication + User Management
 
 #### Sprint 0
-- [ ] Setup navigation & routing (GoRouter)
-- [ ] Role-based route guards (Admin/Staff/Resident)
-- [ ] Setup state management (Provider)
-- [ ] Tạo `AuthProvider`
+- [x] Setup navigation & routing (GoRouter)
+- [x] Role-based route guards (Admin/Staff/Resident)
+- [x] Setup state management (Provider)
+- [x] Tạo `AuthProvider`
 
 #### Sprint 1 — Authentication Module
 - [ ] `LoginScreen` — Email/Password login via Firebase Auth
@@ -296,9 +296,9 @@ lib/
 #### Sprint 0
 - [ ] Firebase project creation & configuration
 - [ ] Add all Firebase dependencies to `pubspec.yaml`
-- [ ] Implement `ThemeData` + `ColorScheme` theo DESIGN.md
-- [ ] Setup Google Fonts (Outfit + Inter)
-- [ ] Create `app.dart`, `theme.dart`, `routes.dart`
+- [x] Implement `ThemeData` + `ColorScheme` theo DESIGN.md *(done by Member 1)*
+- [x] Setup Google Fonts (Outfit + Inter) *(done by Member 1)*
+- [ ] Create `app.dart`, `theme.dart`, `routes.dart` *(theme.dart + routes.dart done by Member 1)*
 - [ ] Resident Home Screen layout (bottom navigation)
 - [ ] Staff Home Screen layout
 - [ ] Admin Home Screen layout
