@@ -9,8 +9,35 @@ import '../models/request_model.dart';
 import '../utils/constants.dart';
 import 'base_firestore_service.dart';
 
+/// Contract for maintenance-request data access (testable via fakes).
+abstract class RequestRepository {
+  Future<RequestModel?> getRequest(String id);
+
+  Future<List<RequestModel>> getRequestsByResident(String residentId);
+
+  Future<List<RequestModel>> getAllRequests({RequestStatus? status});
+
+  Future<String> createRequest({
+    required String title,
+    required String description,
+    required RequestCategory category,
+    required String residentId,
+    required String apartmentId,
+    List<File> imageFiles = const [],
+  });
+
+  Future<void> updateStatus({
+    required String requestId,
+    required RequestStatus status,
+    String? staffId,
+    String? resolutionNote,
+  });
+
+  Future<void> deleteRequest(String requestId);
+}
+
 /// CRUD + image upload for Firestore `requests` collection.
-class RequestService extends BaseFirestoreService {
+class RequestService extends BaseFirestoreService implements RequestRepository {
   RequestService({
     FirebaseFirestore? firestore,
     FirebaseStorage? storage,

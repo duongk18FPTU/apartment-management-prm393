@@ -8,6 +8,8 @@ import '../../../providers/auth_provider.dart';
 import '../../../providers/complaint_provider.dart';
 import '../../../utils/constants.dart';
 import '../../../widgets/complaint_status_chip.dart';
+import '../../../widgets/empty_state.dart';
+import '../../../widgets/error_state.dart';
 import '../../../widgets/loading_indicator.dart';
 
 /// Resident — list of their complaints / feedback.
@@ -56,15 +58,12 @@ class _ComplaintListScreenState extends State<ComplaintListScreen> {
               )
             : provider.errorMessage != null && provider.complaints.isEmpty
             ? ListView(
-                padding: const EdgeInsets.all(AppSpacing.lg),
                 children: [
-                  const SizedBox(height: 80),
-                  Text(provider.errorMessage!, textAlign: TextAlign.center),
-                  const SizedBox(height: AppSpacing.md),
-                  Center(
-                    child: ElevatedButton(
-                      onPressed: _load,
-                      child: const Text('Thử lại'),
+                  SizedBox(
+                    height: MediaQuery.sizeOf(context).height * 0.6,
+                    child: ErrorState(
+                      message: provider.errorMessage!,
+                      onRetry: _load,
                     ),
                   ),
                 ],
@@ -72,17 +71,13 @@ class _ComplaintListScreenState extends State<ComplaintListScreen> {
             : provider.complaints.isEmpty
             ? ListView(
                 children: [
-                  const SizedBox(height: 100),
-                  Icon(
-                    Icons.feedback_outlined,
-                    size: 56,
-                    color: DesignTokens.neutralVariant,
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                  Text(
-                    'Chưa có khiếu nại nào',
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.titleMedium,
+                  SizedBox(
+                    height: MediaQuery.sizeOf(context).height * 0.6,
+                    child: const EmptyState(
+                      icon: Icons.feedback_outlined,
+                      title: 'Chưa có khiếu nại nào',
+                      message: 'Nhấn nút bên dưới để gửi khiếu nại / góp ý.',
+                    ),
                   ),
                 ],
               )
