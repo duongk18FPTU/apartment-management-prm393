@@ -56,6 +56,11 @@ class AppRoutes {
   static const String residentBillPay = '/resident/bills/:id/pay';
   static const String residentPaymentHistory = '/resident/payments/history';
   static const String residentVisitorRegister = '/resident/visitors/register';
+
+  // Member 5 — Announcement (notifications collection)
+  static const String announcementList = '/announcements';
+  static const String announcementCreate = '/announcements/create';
+  static const String announcementDetail = '/announcements/:id';
 }
 
 // ---------------------------------------------------------------------------

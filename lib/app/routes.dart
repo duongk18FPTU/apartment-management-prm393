@@ -26,6 +26,9 @@ import '../screens/staff/bill_management/bill_detail_screen.dart';
 import '../screens/resident/my_bills/my_bills_screen.dart';
 import '../screens/resident/my_bills/bill_payment_screen.dart';
 import '../screens/resident/my_bills/payment_history_screen.dart';
+import '../screens/resident/announcements/announcement_detail_screen.dart';
+import '../screens/resident/announcements/announcement_list_screen.dart';
+import '../screens/staff/announcement/announcement_create_screen.dart';
 import '../screens/admin/apartment_management/apartment_list_screen.dart';
 import '../screens/admin/apartment_management/apartment_form_screen.dart';
 import '../screens/admin/apartment_management/apartment_detail_screen.dart';
@@ -278,6 +281,29 @@ final List<RouteBase> _routes = [
     path: AppRoutes.residentPaymentHistory,
     name: 'residentPaymentHistory',
     builder: (context, state) => const PaymentHistoryScreen(),
+  ),
+
+  // Member 5 — Announcement
+  GoRoute(
+    path: AppRoutes.announcementList,
+    name: 'announcementList',
+    builder: (context, state) => const AnnouncementListScreen(),
+  ),
+  GoRoute(
+    path: AppRoutes.announcementCreate,
+    name: 'announcementCreate',
+    builder: (context, state) {
+      final editId = state.uri.queryParameters['id'];
+      return AnnouncementCreateScreen(editId: editId);
+    },
+  ),
+  GoRoute(
+    path: AppRoutes.announcementDetail,
+    name: 'announcementDetail',
+    builder: (context, state) {
+      final id = state.pathParameters['id'] ?? '';
+      return AnnouncementDetailScreen(announcementId: id);
+    },
   ),
 ];
 

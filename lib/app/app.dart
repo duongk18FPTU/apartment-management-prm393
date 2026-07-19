@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../providers/announcement_provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/bill_provider.dart';
 import '../providers/complaint_provider.dart';
@@ -35,11 +36,11 @@ class ApartmentApp extends StatelessWidget {
         ChangeNotifierProvider<ComplaintProvider>(
           create: (context) => ComplaintProvider(),
         ),
+        ChangeNotifierProvider<AnnouncementProvider>(
+          create: (context) => AnnouncementProvider(),
+        ),
         ChangeNotifierProvider<ApartmentProvider>(
           create: (context) => ApartmentProvider()..loadApartments(),
-        ),
-        ChangeNotifierProvider<ResidentProvider>(
-          create: (context) => ResidentProvider()..loadResidents(),
         ),
         ChangeNotifierProvider<ResidentProvider>(
           create: (context) => ResidentProvider()..loadResidents(),
