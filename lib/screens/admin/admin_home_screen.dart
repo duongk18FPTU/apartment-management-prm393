@@ -33,19 +33,85 @@ class AdminHomeScreen extends StatelessWidget {
               'Admin Home',
               style: Theme.of(context).textTheme.headlineSmall,
             ),
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              'Layout stub — Member 5 Sprint 0',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: DesignTokens.neutralVariant,
+              ),
+            ),
             const SizedBox(height: AppSpacing.xl),
-            ElevatedButton.icon(
-              onPressed: () => context.push(AppRoutes.userList),
-              icon: const Icon(Icons.people_outline_rounded),
-              label: const Text('Quản lý người dùng'),
+            _AdminTile(
+              icon: Icons.people_outline_rounded,
+              title: 'Quản lý người dùng',
+              subtitle: 'CRUD tài khoản Admin / Staff / Resident',
+              onTap: () => context.push(AppRoutes.userList),
             ),
             const SizedBox(height: AppSpacing.sm),
-            ElevatedButton.icon(
-              onPressed: () => context.push(AppRoutes.complaintManage),
-              icon: const Icon(Icons.feedback_outlined),
-              label: const Text('Quản lý khiếu nại'),
+            _AdminTile(
+              icon: Icons.assignment_outlined,
+              title: 'Quản lý yêu cầu',
+              subtitle: 'Xem yêu cầu sửa chữa toàn tòa',
+              onTap: () => context.push(AppRoutes.requestManage),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            _AdminTile(
+              icon: Icons.feedback_outlined,
+              title: 'Quản lý khiếu nại',
+              subtitle: 'Xem và phản hồi khiếu nại / góp ý',
+              onTap: () => context.push(AppRoutes.complaintManage),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AdminTile extends StatelessWidget {
+  const _AdminTile({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: DesignTokens.surface,
+      borderRadius: BorderRadius.circular(AppRadius.md),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          child: Row(
+            children: [
+              Icon(icon, size: 32, color: DesignTokens.secondary),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title, style: Theme.of(context).textTheme.titleMedium),
+                    Text(
+                      subtitle,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: DesignTokens.neutralVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right_rounded),
+            ],
+          ),
         ),
       ),
     );

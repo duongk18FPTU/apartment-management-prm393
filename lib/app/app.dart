@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../providers/auth_provider.dart';
 import '../providers/complaint_provider.dart';
+import '../providers/request_provider.dart';
 import '../providers/user_provider.dart';
 import 'routes.dart';
 import 'theme.dart';
@@ -20,6 +21,9 @@ class ApartmentApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<UserProvider>(
           create: (context) => UserProvider(),
+        ),
+        ChangeNotifierProvider<RequestProvider>(
+          create: (context) => RequestProvider(),
         ),
         ChangeNotifierProvider<ComplaintProvider>(
           create: (context) => ComplaintProvider(),

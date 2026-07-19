@@ -35,8 +35,24 @@ class ResidentHomeScreen extends StatelessWidget {
               'Xin chào, ${user?.fullName ?? 'Cư dân'}',
               style: Theme.of(context).textTheme.headlineSmall,
             ),
+            if (user?.apartmentId != null) ...[
+              const SizedBox(height: AppSpacing.xs),
+              Text(
+                'Căn hộ: ${user!.apartmentId}',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: DesignTokens.neutralVariant,
+                ),
+              ),
+            ],
             const SizedBox(height: AppSpacing.xl),
-            _Tile(
+            _HomeActionTile(
+              icon: Icons.handyman_outlined,
+              title: 'Yêu cầu sửa chữa',
+              subtitle: 'Gửi và theo dõi yêu cầu của bạn',
+              onTap: () => context.push(AppRoutes.requestList),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            _HomeActionTile(
               icon: Icons.feedback_outlined,
               title: 'Khiếu nại / Góp ý',
               subtitle: 'Gửi và theo dõi phản hồi từ Ban quản lý',
@@ -49,8 +65,8 @@ class ResidentHomeScreen extends StatelessWidget {
   }
 }
 
-class _Tile extends StatelessWidget {
-  const _Tile({
+class _HomeActionTile extends StatelessWidget {
+  const _HomeActionTile({
     required this.icon,
     required this.title,
     required this.subtitle,
