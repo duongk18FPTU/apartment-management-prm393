@@ -2,10 +2,201 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // WARNING: Test mode - allow all reads/writes during development
-    // TODO: Replace with proper security rules before production
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function currentUser() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function isActive() {
+      return isSignedIn() && currentUser().status == 'active';
+    }
+
+    function hasRole(role) {
+      return isActive() && currentUser().role == role;
+    }
+
+    function isAdmin() {
+      return hasRole('admin');
+    }
+
+    function isStaff() {
+      return hasRole('staff');
+    }
+
+    function isResident() {
+      return hasRole('resident');
+    }
+
+    function isAdminOrStaff() {
+      return isAdmin() || isStaff();
+    }
+
+    function hasValidUserRole() {
+      return request.resource.data.role in ['admin', 'staff', 'resident'];
+    }
+
+    function hasValidUserStatus() {
+      return request.resource.data.status in ['active', 'inactive'];
+    }
+
+    function hasValidUserDocument() {
+      return request.resource.data.keys().hasAll([
+          'email',
+          'fullName',
+          'phone',
+          'role',
+          'apartmentId',
+          'nationalId',
+          'dateOfBirth',
+          'avatarUrl',
+          'status',
+          'createdAt',
+          'updatedAt'
+        ]) &&
+        request.resource.data.keys().hasOnly([
+          'email',
+          'fullName',
+          'phone',
+          'role',
+          'apartmentId',
+          'nationalId',
+          'dateOfBirth',
+          'avatarUrl',
+          'status',
+          'createdAt',
+          'updatedAt'
+        ]) &&
+        request.resource.data.email is string &&
+        request.resource.data.fullName is string &&
+        request.resource.data.phone is string &&
+        request.resource.data.nationalId is string &&
+        (request.resource.data.apartmentId == null ||
+          request.resource.data.apartmentId is string) &&
+        (request.resource.data.dateOfBirth == null ||
+          request.resource.data.dateOfBirth is timestamp) &&
+        (request.resource.data.avatarUrl == null ||
+          request.resource.data.avatarUrl is string) &&
+        hasValidUserRole() &&
+        hasValidUserStatus();
+    }
+
+    match /users/{userId} {
+      allow get: if isActive() &&
+        (request.auth.uid == userId || isAdminOrStaff());
+      allow list: if isAdminOrStaff();
+
+      // Spark-plan account provisioning creates Firebase Auth through a
+      // secondary app, then lets only an active Admin create the profile.
+      allow create: if isAdmin() &&
+        hasValidUserDocument() &&
+        request.resource.data.status == 'active' &&
+        request.resource.data.createdAt == request.time &&
+        request.resource.data.updatedAt == request.time;
+      allow delete: if false;
+
+      allow update: if
+        // Active Admins may manage profiles but cannot change immutable
+        // identity fields or remove their own Admin access.
+        (isAdmin() &&
+          hasValidUserDocument() &&
+          request.resource.data.email == resource.data.email &&
+          request.resource.data.createdAt == resource.data.createdAt &&
+          request.resource.data.updatedAt == request.time &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'fullName',
+            'phone',
+            'nationalId',
+            'role',
+            'apartmentId',
+            'status',
+            'updatedAt'
+          ]) &&
+          (request.auth.uid != userId ||
+            !request.resource.data.diff(resource.data).affectedKeys().hasAny([
+              'role',
+              'status'
+            ]))) ||
+        // Every active user may edit safe fields on their own profile.
+        (isActive() &&
+          request.auth.uid == userId &&
+          hasValidUserDocument() &&
+          request.resource.data.email == resource.data.email &&
+          request.resource.data.role == resource.data.role &&
+          request.resource.data.apartmentId == resource.data.apartmentId &&
+          request.resource.data.status == resource.data.status &&
+          request.resource.data.createdAt == resource.data.createdAt &&
+          request.resource.data.updatedAt == request.time &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'fullName',
+            'phone',
+            'nationalId',
+            'dateOfBirth',
+            'avatarUrl',
+            'updatedAt'
+          ]));
+    }
+
+    match /apartments/{apartmentId} {
+      allow read: if isActive();
+      allow create, update: if isAdminOrStaff();
+      allow delete: if isAdmin();
+    }
+
+    match /requests/{requestId} {
+      allow read: if isAdminOrStaff() ||
+        (isResident() && resource.data.residentId == request.auth.uid);
+      allow create: if isAdminOrStaff() ||
+        (isResident() && request.resource.data.residentId == request.auth.uid);
+      allow update: if isAdminOrStaff();
+      allow delete: if isAdmin();
+    }
+
+    match /bills/{billId} {
+      allow read: if isAdminOrStaff() ||
+        (isResident() && resource.data.residentId == request.auth.uid);
+      allow create, update: if isAdminOrStaff();
+      allow delete: if isAdmin();
+    }
+
+    match /payments/{paymentId} {
+      allow read: if isAdminOrStaff() ||
+        (isResident() && resource.data.residentId == request.auth.uid);
+      allow create, update: if isAdminOrStaff();
+      allow delete: if isAdmin();
+    }
+
+    match /notifications/{notificationId} {
+      allow read: if isActive() &&
+        (isAdminOrStaff() ||
+          resource.data.targetRoles.hasAny([currentUser().role]));
+      allow create, update, delete: if isAdminOrStaff();
+    }
+
+    match /visitors/{visitorId} {
+      allow read: if isAdminOrStaff() ||
+        (isResident() && resource.data.registeredBy == request.auth.uid);
+      allow create: if isAdminOrStaff() ||
+        (isResident() &&
+          request.resource.data.registeredBy == request.auth.uid);
+      allow update: if isAdminOrStaff();
+      allow delete: if isAdmin();
+    }
+
+    match /complaints/{complaintId} {
+      allow read: if isAdminOrStaff() ||
+        (isResident() && resource.data.residentId == request.auth.uid);
+      allow create: if isAdminOrStaff() ||
+        (isResident() &&
+          request.resource.data.residentId == request.auth.uid);
+      allow update: if isAdminOrStaff();
+      allow delete: if isAdmin();
+    }
+
     match /{document=**} {
-      allow read, write: if true;
+      allow read, write: if false;
     }
   }
 }

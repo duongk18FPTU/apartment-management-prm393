@@ -1,26 +1,28 @@
-import '../utils/firestore_value_parser.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-enum UserRole { admin, staff, resident }
+import '../utils/constants.dart';
 
-enum UserStatus { active, inactive }
-
+/// Represents a user document from Firestore `users` collection.
+///
+/// Implements the full schema defined in CHIA_VIEC.md.
+/// This class replaces the temporary `UserProfile` from Sprint 0.
 class UserModel {
   const UserModel({
-    required this.id,
+    required this.uid,
     required this.email,
     required this.fullName,
     required this.phone,
     required this.role,
-    this.apartmentId,
     required this.nationalId,
+    required this.status,
+    required this.createdAt,
+    required this.updatedAt,
+    this.apartmentId,
     this.dateOfBirth,
     this.avatarUrl,
-    required this.status,
-    this.createdAt,
-    this.updatedAt,
   });
 
-  final String id;
+  final String uid;
   final String email;
   final String fullName;
   final String phone;
@@ -30,78 +32,134 @@ class UserModel {
   final DateTime? dateOfBirth;
   final String? avatarUrl;
   final UserStatus status;
-  final DateTime? createdAt;
-  final DateTime? updatedAt;
+  final DateTime createdAt;
+  final DateTime updatedAt;
 
-  bool get isActive => status == UserStatus.active;
+  // ---------------------------------------------------------------------------
+  // Firestore serialisation
+  // ---------------------------------------------------------------------------
 
-  UserModel copyWith({
-    String? id,
-    String? email,
-    String? fullName,
-    String? phone,
-    UserRole? role,
-    String? apartmentId,
-    String? nationalId,
-    DateTime? dateOfBirth,
-    String? avatarUrl,
-    UserStatus? status,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-  }) {
+  /// Creates a [UserModel] from a Firestore document snapshot.
+  factory UserModel.fromFirestore(DocumentSnapshot<Map<String, dynamic>> doc) {
+    final data = doc.data()!;
     return UserModel(
-      id: id ?? this.id,
-      email: email ?? this.email,
-      fullName: fullName ?? this.fullName,
-      phone: phone ?? this.phone,
-      role: role ?? this.role,
-      apartmentId: apartmentId ?? this.apartmentId,
-      nationalId: nationalId ?? this.nationalId,
-      dateOfBirth: dateOfBirth ?? this.dateOfBirth,
-      avatarUrl: avatarUrl ?? this.avatarUrl,
-      status: status ?? this.status,
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
+      uid: doc.id,
+      email: data['email'] as String? ?? '',
+      fullName: data['fullName'] as String? ?? '',
+      phone: data['phone'] as String? ?? '',
+      role: UserRole.fromString(data['role'] as String? ?? ''),
+      apartmentId: data['apartmentId'] as String?,
+      nationalId: data['nationalId'] as String? ?? '',
+      dateOfBirth: (data['dateOfBirth'] as Timestamp?)?.toDate(),
+      avatarUrl: data['avatarUrl'] as String?,
+      status: UserStatus.fromString(data['status'] as String? ?? 'inactive'),
+      createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      updatedAt: (data['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }
 
-  factory UserModel.fromJson(Map<String, dynamic> json, {String? id}) {
+  /// Creates a [UserModel] from a raw Firestore data map + document ID.
+  ///
+  /// Useful when reading from query snapshots or [AuthProvider].
+  factory UserModel.fromMap(Map<String, dynamic> data, String uid) {
     return UserModel(
-      id: id ?? FirestoreValueParser.string(json['id']),
-      email: FirestoreValueParser.string(json['email']),
-      fullName: FirestoreValueParser.string(json['fullName']),
-      phone: FirestoreValueParser.string(json['phone']),
-      role: UserRole.values.firstWhere(
-        (value) => value.name == json['role'],
-        orElse: () => UserRole.resident,
-      ),
-      apartmentId: json['apartmentId'] as String?,
-      nationalId: FirestoreValueParser.string(json['nationalId']),
-      dateOfBirth: FirestoreValueParser.dateTime(json['dateOfBirth']),
-      avatarUrl: json['avatarUrl'] as String?,
-      status: UserStatus.values.firstWhere(
-        (value) => value.name == json['status'],
-        orElse: () => UserStatus.active,
-      ),
-      createdAt: FirestoreValueParser.dateTime(json['createdAt']),
-      updatedAt: FirestoreValueParser.dateTime(json['updatedAt']),
+      uid: uid,
+      email: data['email'] as String? ?? '',
+      fullName: data['fullName'] as String? ?? '',
+      phone: data['phone'] as String? ?? '',
+      role: UserRole.fromString(data['role'] as String? ?? ''),
+      apartmentId: data['apartmentId'] as String?,
+      nationalId: data['nationalId'] as String? ?? '',
+      dateOfBirth: (data['dateOfBirth'] as Timestamp?)?.toDate(),
+      avatarUrl: data['avatarUrl'] as String?,
+      status: UserStatus.fromString(data['status'] as String? ?? 'inactive'),
+      createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      updatedAt: (data['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }
 
-  Map<String, dynamic> toJson({bool includeId = false}) {
+  /// Converts this model to a Firestore-compatible map for write operations.
+  Map<String, dynamic> toMap() {
     return {
-      if (includeId) 'id': id,
       'email': email,
       'fullName': fullName,
       'phone': phone,
       'role': role.name,
       'apartmentId': apartmentId,
       'nationalId': nationalId,
-      'dateOfBirth': FirestoreValueParser.timestamp(dateOfBirth),
+      'dateOfBirth': dateOfBirth != null
+          ? Timestamp.fromDate(dateOfBirth!)
+          : null,
       'avatarUrl': avatarUrl,
       'status': status.name,
-      'createdAt': FirestoreValueParser.timestamp(createdAt),
-      'updatedAt': FirestoreValueParser.timestamp(updatedAt),
+      'createdAt': Timestamp.fromDate(createdAt),
+      'updatedAt': Timestamp.fromDate(updatedAt),
     };
+  }
+
+  // ---------------------------------------------------------------------------
+  // copyWith
+  // ---------------------------------------------------------------------------
+
+  UserModel copyWith({
+    String? email,
+    String? fullName,
+    String? phone,
+    UserRole? role,
+    String? apartmentId,
+    bool clearApartmentId = false,
+    String? nationalId,
+    DateTime? dateOfBirth,
+    String? avatarUrl,
+    UserStatus? status,
+    DateTime? updatedAt,
+  }) {
+    return UserModel(
+      uid: uid,
+      email: email ?? this.email,
+      fullName: fullName ?? this.fullName,
+      phone: phone ?? this.phone,
+      role: role ?? this.role,
+      apartmentId: clearApartmentId ? null : apartmentId ?? this.apartmentId,
+      nationalId: nationalId ?? this.nationalId,
+      dateOfBirth: dateOfBirth ?? this.dateOfBirth,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
+      status: status ?? this.status,
+      createdAt: createdAt,
+      updatedAt: updatedAt ?? DateTime.now(),
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Helpers
+  // ---------------------------------------------------------------------------
+
+  /// Display-friendly name: first name only, or full email prefix as fallback.
+  String get displayName {
+    if (fullName.isNotEmpty) return fullName.split(' ').first;
+    return email.split('@').first;
+  }
+
+  bool get isActive => status == UserStatus.active;
+
+  @override
+  String toString() =>
+      'UserModel(uid: $uid, email: $email, role: ${role.name})';
+}
+
+// ---------------------------------------------------------------------------
+// UserStatus enum
+// ---------------------------------------------------------------------------
+
+/// Account status for a user.
+enum UserStatus {
+  active,
+  inactive;
+
+  static UserStatus fromString(String value) {
+    return UserStatus.values.firstWhere(
+      (s) => s.name == value,
+      orElse: () => UserStatus.inactive,
+    );
   }
 }

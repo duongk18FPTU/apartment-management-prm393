@@ -118,7 +118,7 @@ lib/
 | Task | Người phụ trách | Mô tả |
 |------|----------------|-------|
 | Project setup + Firebase config | **Member 5** | Thêm Firebase dependencies, `firebase_core`, `firebase_auth`, `cloud_firestore`, `firebase_storage`, `firebase_messaging` vào `pubspec.yaml`. Config Firebase project. |
-| Theme & Design System | **Member 5** | Implement `ThemeData` + `ColorScheme` dựa trên DESIGN.md (Modern Haven). Fonts: Outfit + Inter. |
+| Theme & Design System | **Member 5** ~~→ Done by Member 1~~ | ✅ Implement `ThemeData` + `ColorScheme` dựa trên DESIGN.md (Modern Haven). Fonts: Outfit + Inter. |
 | Navigation & Routing | **Member 1** | Setup `go_router` hoặc named routes. Role-based navigation (Admin/Staff/Resident → different home screens). |
 | Models | **Member 2** | Tạo tất cả data models (`UserModel`, `ApartmentModel`, `RequestModel`, `BillModel`, `NotificationModel`, `VisitorModel`, `ComplaintModel`) với `fromJson`/`toJson`. |
 | Base Services | **Member 3** | Tạo base service class cho Firestore CRUD operations. Setup `AuthService` cơ bản. |
@@ -144,33 +144,45 @@ lib/
 **Vai trò**: Team Lead + Foundation + Authentication + User Management
 
 #### Sprint 0
-- [ ] Setup navigation & routing (GoRouter)
-- [ ] Role-based route guards (Admin/Staff/Resident)
-- [ ] Setup state management (Provider)
-- [ ] Tạo `AuthProvider`
+- [x] Setup navigation & routing (GoRouter)
+- [x] Role-based route guards (Admin/Staff/Resident)
+- [x] Setup state management (Provider)
+- [x] Tạo `AuthProvider`
 
 #### Sprint 1 — Authentication Module
-- [ ] `LoginScreen` — Email/Password login via Firebase Auth
-- [ ] `ChangePasswordScreen` — Đổi mật khẩu
-- [ ] `AuthService` — Login, Logout, Change Password, Listen auth state
-- [ ] `AuthProvider` — Quản lý trạng thái đăng nhập, current user, role
-- [ ] Splash screen + Auto-login (check saved session)
-- [ ] Role-based redirect sau login (Admin → Admin Home, Staff → Staff Home, Resident → Resident Home)
+- [x] `LoginScreen` — Email/Password login via Firebase Auth
+- [x] `ChangePasswordScreen` — Đổi mật khẩu
+- [x] `AuthService` — Login, Logout, Change Password, Listen auth state
+- [x] `AuthProvider` — Quản lý trạng thái đăng nhập, current user, role
+- [x] Splash screen + Auto-login (check saved session) *(done in Sprint 0)*
+- [x] Role-based redirect sau login (Admin → Admin Home, Staff → Staff Home, Resident → Resident Home) *(done in Sprint 0)*
 
 #### Sprint 2 — User Management (Admin only)
-- [ ] `UserListScreen` — Danh sách users, search, filter by role
-- [ ] `UserCreateScreen` — Form tạo user mới (name, email, role, apartment)
-- [ ] `UserEditScreen` — Cập nhật thông tin user
-- [ ] `UserService` — CRUD operations trên Firestore `users` collection
-- [ ] `UserProvider` — State management cho user list
-- [ ] Update/Disable user status (Active/Inactive)
-- [ ] Assign role cho user
+- [x] `UserListScreen` — Danh sách users, search, filter by role/status
+- [x] `UserCreateScreen` — Form tạo user mới (name, email, role, apartment)
+- [x] `UserEditScreen` — Cập nhật thông tin user
+- [x] `UserService` — CRUD profile trên Firestore `users` collection (dùng disable thay cho hard delete)
+- [x] `UserProvider` — State management cho user list
+- [x] Update/Disable user status (Active/Inactive)
+- [x] Assign role cho user
+
+> [!NOTE]
+> **Tồn đọng Sprint 2 đã được giải quyết trong code**:
+> - Kiến trúc chỉ dùng Firebase Spark miễn phí, không phụ thuộc Cloud Functions, Cloud Run hoặc billing account.
+> - `UserService` tạo tài khoản bằng Firebase Auth instance phụ để giữ nguyên phiên Admin, tạo profile Firestore và gửi email đặt mật khẩu; Auth account được rollback nếu tạo profile thất bại.
+> - Role và trạng thái được quản lý trong Firestore. Active Admin được phép tạo/cập nhật profile; người dùng inactive bị chặn dữ liệu bởi Security Rules và bị ứng dụng đăng xuất.
+> - Giới hạn của Spark: trạng thái inactive không đặt cờ disabled trong Firebase Auth và không dùng custom claims; quyền truy cập ứng dụng dựa trên Firestore profile/rules.
+> - Giao diện tuân thủ `DESIGN.md` và Material 3; taste skill được dùng để audit hierarchy, spacing, contrast và đầy đủ trạng thái loading/empty/error theo phạm vi phù hợp với Flutter admin mobile.
+> - Audit Sprint 2 đã bổ sung rollback có cảnh báo khi không xóa được Auth account, test trực tiếp vòng đời Firebase app phụ, trạng thái không hợp lệ mặc định inactive, refresh chờ dữ liệu mới và màn hình edit có lỗi kèm retry.
+> - Firestore self-update bắt buộc giữ đủ schema, không đổi trường phân quyền và dùng server timestamp cho `updatedAt`; các widget lớn đã được tách nhỏ, spacing dùng token từ `DESIGN.md`.
+> - Đã xác minh trên `main` mới nhất: `flutter analyze` **No issues found**, Flutter **36/36 tests pass**, Firestore rules emulator **7/7 tests pass** và `npm audit` **0 vulnerabilities**.
+> - Firestore rules Spark-compatible nền đã deploy production lên project `apartment-mgmt-prm393` ngày 19/07/2026; phần siết self-update của audit đã pass emulator và chờ review/merge trước khi deploy.
 
 #### Sprint 3
 - [ ] Widget tests cho Authentication screens
 - [ ] Unit tests cho `AuthService`
 - [ ] Code review toàn team
-- [ ] Fix bugs + polish
+- [x] Fix bugs + polish *(đã xử lý toàn bộ phát hiện audit Sprint 2 ngày 19/07/2026)*
 
 **Screens phụ trách**: Login, Change Password, User List, User Create/Edit
 **Firestore collections**: `users`
@@ -182,7 +194,8 @@ lib/
 **Vai trò**: Apartment Management + Resident Management
 
 #### Sprint 0
-- [ ] Tạo tất cả data models (`UserModel`, `ApartmentModel`, `RequestModel`, `BillModel`, `NotificationModel`, `VisitorModel`, `ComplaintModel`)
+- [x] Tạo `UserModel` (`lib/models/user_model.dart`) *(done by Member 1)*
+- [ ] Tạo các models còn lại (`ApartmentModel`, `RequestModel`, `BillModel`, `NotificationModel`, `VisitorModel`, `ComplaintModel`)
 - [ ] Implement `fromJson()` / `toJson()` cho mỗi model
 - [ ] Định nghĩa Firestore collection structure
 
@@ -218,8 +231,8 @@ lib/
 
 #### Sprint 0
 - [ ] Tạo base service class cho Firestore CRUD
-- [ ] Setup `AuthService` cơ bản
-- [ ] Helper functions (date formatting, validators)
+- [x] Setup `AuthService` (`lib/services/auth_service.dart`) *(done by Member 1)*
+- [x] Helper functions — `validators.dart` (`lib/utils/validators.dart`) *(done by Member 1)*
 
 #### Sprint 1 — Maintenance Request (Resident → Staff)
 - [ ] `RequestListScreen` (Resident) — Xem danh sách request đã gửi + trạng thái
@@ -254,13 +267,13 @@ lib/
 **Vai trò**: Bill & Invoice Management + Shared Widgets
 
 #### Sprint 0
-- [ ] Tạo tất cả shared widgets:
-  - `CustomTextField` — Styled text input theo Design System
-  - `LoadingIndicator` — Loading spinner/skeleton
-  - `StatusBadge` — Badge hiển thị trạng thái (Paid/Unpaid/Pending/...)
-  - `EmptyState` — Placeholder khi không có data
-  - `ErrorState` — Hiển thị lỗi + retry
-  - `ConfirmDialog` — Dialog xác nhận hành động nguy hiểm
+- [ ] Tạo các shared widgets còn lại:
+  - [x] `CustomTextField` — Styled text input theo Design System *(done by Member 1)*
+  - [x] `LoadingIndicator` — Loading spinner/skeleton *(done by Member 1)*
+  - [ ] `StatusBadge` — Badge hiển thị trạng thái (Paid/Unpaid/Pending/...)
+  - [ ] `EmptyState` — Placeholder khi không có data
+  - [ ] `ErrorState` — Hiển thị lỗi + retry
+  - [ ] `ConfirmDialog` — Dialog xác nhận hành động nguy hiểm
 
 #### Sprint 1 — Bill Management (Staff side)
 - [ ] `BillListScreen` (Staff) — Danh sách bills, filter by apartment/month/status
@@ -296,9 +309,9 @@ lib/
 #### Sprint 0
 - [ ] Firebase project creation & configuration
 - [ ] Add all Firebase dependencies to `pubspec.yaml`
-- [ ] Implement `ThemeData` + `ColorScheme` theo DESIGN.md
-- [ ] Setup Google Fonts (Outfit + Inter)
-- [ ] Create `app.dart`, `theme.dart`, `routes.dart`
+- [x] Implement `ThemeData` + `ColorScheme` theo DESIGN.md *(done by Member 1)*
+- [x] Setup Google Fonts (Outfit + Inter) *(done by Member 1)*
+- [ ] Create `app.dart`, `theme.dart`, `routes.dart` *(theme.dart + routes.dart done by Member 1)*
 - [ ] Resident Home Screen layout (bottom navigation)
 - [ ] Staff Home Screen layout
 - [ ] Admin Home Screen layout
