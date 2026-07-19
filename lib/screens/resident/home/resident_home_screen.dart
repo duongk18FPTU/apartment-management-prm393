@@ -174,6 +174,54 @@ class _ResidentHomeScreenState extends State<ResidentHomeScreen> {
             ),
             const SizedBox(height: AppSpacing.md),
 
+            Card(
+              child: InkWell(
+                borderRadius: AppRadius.borderMd,
+                onTap: () => context.push(AppRoutes.residentVisitorRegister),
+                child: Padding(
+                  padding: const EdgeInsets.all(AppSpacing.md),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(AppSpacing.sm),
+                        decoration: BoxDecoration(
+                          color: DesignTokens.secondary.withValues(alpha: 0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.badge_outlined,
+                          color: DesignTokens.secondary,
+                          size: 28,
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.md),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Đăng ký khách thăm',
+                              style: textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              'Đăng ký người thân / khách đến căn hộ của bạn.',
+                              style: textTheme.bodySmall?.copyWith(
+                                color: DesignTokens.neutralVariant,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Icon(Icons.chevron_right_rounded),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.md),
+
             // Quick Access card for Payment History
             Card(
               child: InkWell(
