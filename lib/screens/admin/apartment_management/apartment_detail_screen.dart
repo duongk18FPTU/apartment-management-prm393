@@ -8,9 +8,14 @@ import '../../../models/user_model.dart';
 import '../../../providers/apartment_provider.dart';
 
 class ApartmentDetailScreen extends StatefulWidget {
-  const ApartmentDetailScreen({super.key, required this.apartmentId});
+  const ApartmentDetailScreen({
+    super.key,
+    this.apartmentId,
+    this.apartment,
+  }) : assert(apartmentId != null || apartment != null, 'Either apartmentId or apartment must be provided.');
 
-  final String apartmentId;
+  final String? apartmentId;
+  final ApartmentModel? apartment;
 
   @override
   State<ApartmentDetailScreen> createState() => _ApartmentDetailScreenState();
@@ -21,7 +26,8 @@ class _ApartmentDetailScreenState extends State<ApartmentDetailScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ApartmentProvider>().selectApartment(widget.apartmentId);
+      final id = widget.apartmentId ?? widget.apartment!.id;
+      context.read<ApartmentProvider>().loadSelectedApartment(id);
     });
   }
 
@@ -43,7 +49,11 @@ class _ApartmentDetailScreenState extends State<ApartmentDetailScreen> {
           icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF091426)),
           onPressed: () {
             provider.clearSelection();
-            context.pop();
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go(AppRoutes.apartmentList);
+            }
           },
         ),
         title: Text(
@@ -140,7 +150,7 @@ class _ApartmentDetailScreenState extends State<ApartmentDetailScreen> {
             ElevatedButton(
               onPressed: () {
                 final area = double.tryParse(areaController.text) ?? apt.area;
-                provider.updateApartmentInfo(
+                provider.updateApartmentDetails(
                   area: area,
                   type: typeController.text,
                 );

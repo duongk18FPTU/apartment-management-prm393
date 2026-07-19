@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../utils/firestore_value_parser.dart';
 
-/// Represents an apartment document from Firestore `apartments` collection.
+enum ApartmentStatus { occupied, vacant }
+
 class ApartmentModel {
   const ApartmentModel({
     required this.id,
@@ -9,12 +11,12 @@ class ApartmentModel {
     required this.building,
     required this.area,
     required this.status,
-    required this.residentIds,
-    required this.createdAt,
-    required this.updatedAt,
+    this.residentIds = const [],
     this.ownerId,
     this.price,
     this.type,
+    this.createdAt,
+    this.updatedAt,
   });
 
   final String id;
@@ -23,14 +25,14 @@ class ApartmentModel {
   final String building;
   final double area;
   final String? ownerId;
-  final String status; // 'occupied' | 'vacant'
+  final ApartmentStatus status;
   final List<String> residentIds;
   final double? price; // Rent price in millions (VND)
   final String? type; // Room type e.g., '2PN - 2WC'
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
 
-  bool get isOccupied => status == 'occupied';
+  bool get isOccupied => status == ApartmentStatus.occupied;
 
   /// Helper to get calculated price if not present in Firestore
   double get displayPrice {
@@ -52,51 +54,27 @@ class ApartmentModel {
     DocumentSnapshot<Map<String, dynamic>> doc,
   ) {
     final data = doc.data()!;
-    return ApartmentModel.fromMap(data, doc.id);
+    return ApartmentModel.fromJson(data, id: doc.id);
   }
 
   /// Factory constructor to parse raw data map.
   factory ApartmentModel.fromMap(Map<String, dynamic> data, String id) {
-    return ApartmentModel(
-      id: id,
-      number: data['number'] as String? ?? '',
-      floor: (data['floor'] as num?)?.toInt() ?? 1,
-      building: data['building'] as String? ?? 'Horizon Tower',
-      area: (data['area'] as num?)?.toDouble() ?? 0.0,
-      ownerId: data['ownerId'] as String?,
-      status: data['status'] as String? ?? 'vacant',
-      residentIds: List<String>.from(data['residentIds'] ?? const []),
-      price: (data['price'] as num?)?.toDouble(),
-      type: data['type'] as String?,
-      createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      updatedAt: (data['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
-    );
+    return ApartmentModel.fromJson(data, id: id);
   }
 
   /// Converts this model to a Firestore map for write operations.
   Map<String, dynamic> toMap() {
-    return {
-      'number': number,
-      'floor': floor,
-      'building': building,
-      'area': area,
-      'ownerId': ownerId,
-      'status': status,
-      'residentIds': residentIds,
-      if (price != null) 'price': price,
-      if (type != null) 'type': type,
-      'createdAt': Timestamp.fromDate(createdAt),
-      'updatedAt': Timestamp.fromDate(updatedAt),
-    };
+    return toJson(includeId: false);
   }
 
   ApartmentModel copyWith({
+    String? id,
     String? number,
     int? floor,
     String? building,
     double? area,
     String? ownerId,
-    String? status,
+    ApartmentStatus? status,
     List<String>? residentIds,
     double? price,
     String? type,
@@ -104,7 +82,7 @@ class ApartmentModel {
     DateTime? updatedAt,
   }) {
     return ApartmentModel(
-      id: id,
+      id: id ?? this.id,
       number: number ?? this.number,
       floor: floor ?? this.floor,
       building: building ?? this.building,
@@ -117,5 +95,47 @@ class ApartmentModel {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
+  }
+
+  factory ApartmentModel.fromJson(Map<String, dynamic> json, {String? id}) {
+    final residentIdsList = json['residentIds'] != null
+        ? FirestoreValueParser.strings(json['residentIds'])
+        : <String>[];
+    return ApartmentModel(
+      id: id ?? FirestoreValueParser.string(json['id']),
+      number: FirestoreValueParser.string(json['number']),
+      floor: FirestoreValueParser.integer(json['floor']),
+      building: FirestoreValueParser.string(json['building']),
+      area: FirestoreValueParser.decimal(json['area']),
+      ownerId: json['ownerId'] as String?,
+      status: ApartmentStatus.values.firstWhere(
+        (value) => value.name == json['status'],
+        orElse: () => residentIdsList.isEmpty
+            ? ApartmentStatus.vacant
+            : ApartmentStatus.occupied,
+      ),
+      residentIds: residentIdsList,
+      price: json['price'] != null ? (json['price'] as num).toDouble() : null,
+      type: json['type'] as String?,
+      createdAt: FirestoreValueParser.dateTime(json['createdAt']),
+      updatedAt: FirestoreValueParser.dateTime(json['updatedAt']),
+    );
+  }
+
+  Map<String, dynamic> toJson({bool includeId = false}) {
+    return {
+      if (includeId) 'id': id,
+      'number': number,
+      'floor': floor,
+      'building': building,
+      'area': area,
+      'ownerId': ownerId,
+      'status': status.name,
+      'residentIds': residentIds,
+      if (price != null) 'price': price,
+      if (type != null) 'type': type,
+      'createdAt': FirestoreValueParser.timestamp(createdAt),
+      'updatedAt': FirestoreValueParser.timestamp(updatedAt),
+    };
   }
 }

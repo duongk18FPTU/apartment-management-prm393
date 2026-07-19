@@ -11,12 +11,12 @@ enum ApartmentFilterType { all, floor1to3, floor4to6, occupied, vacant }
 
 class ApartmentProvider extends ChangeNotifier {
   ApartmentProvider({
-    ApartmentRepository? apartmentService,
+    ApartmentService? apartmentService,
     UserRepository? userService,
   }) : _apartmentService = apartmentService ?? ApartmentService(),
        _userService = userService ?? UserService();
 
-  final ApartmentRepository _apartmentService;
+  final ApartmentService _apartmentService;
   final UserRepository _userService;
 
   StreamSubscription<List<ApartmentModel>>? _apartmentSubscription;
@@ -34,6 +34,10 @@ class ApartmentProvider extends ChangeNotifier {
   UserModel? _selectedOwner;
   List<UserModel> _selectedResidents = const [];
   bool _isLoadingDetail = false;
+
+  // Main branch compat filters
+  int? _floor;
+  ApartmentStatus? _status;
 
   List<ApartmentModel> get apartments => _apartments;
   Map<String, UserModel> get usersMap => _usersMap;
@@ -94,10 +98,32 @@ class ApartmentProvider extends ChangeNotifier {
     );
   }
 
+  /// Dummy to support old loadApartments calls
+  Future<void> loadApartments() async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      final list = await _apartmentService.getApartments();
+      _apartments = list;
+      _errorMessage = null;
+    } catch (e) {
+      _errorMessage = e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
   /// Get list after client-side filter and search
   List<ApartmentModel> get filteredApartments {
     final query = normalizeVietnameseForSearch(_searchQuery);
     return _apartments.where((apt) {
+      // Main branch floor filter compatibility
+      if (_floor != null && apt.floor != _floor) return false;
+
+      // Main branch status filter compatibility
+      if (_status != null && apt.status != _status) return false;
+
       // Filter Type logic
       bool matchesFilter = true;
       switch (_filterType) {
@@ -108,10 +134,10 @@ class ApartmentProvider extends ChangeNotifier {
           matchesFilter = apt.floor >= 4 && apt.floor <= 6;
           break;
         case ApartmentFilterType.occupied:
-          matchesFilter = apt.status == 'occupied';
+          matchesFilter = apt.status == ApartmentStatus.occupied;
           break;
         case ApartmentFilterType.vacant:
-          matchesFilter = apt.status == 'vacant';
+          matchesFilter = apt.status == ApartmentStatus.vacant;
           break;
         case ApartmentFilterType.all:
           matchesFilter = true;
@@ -141,125 +167,149 @@ class ApartmentProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setSearchQuery(String query) {
-    _searchQuery = query;
+  void setSearchQuery(String value) {
+    _searchQuery = value;
     notifyListeners();
   }
 
-  /// Loads full details (including resolving Owner and Residents) for a single apartment.
-  Future<void> selectApartment(String id) async {
+  void setFloor(int? value) {
+    _floor = value;
+    notifyListeners();
+  }
+
+  void setStatus(ApartmentStatus? value) {
+    _status = value;
+    notifyListeners();
+  }
+
+  /// Clear all filters
+  void clearFilters() {
+    _filterType = ApartmentFilterType.all;
+    _searchQuery = '';
+    _floor = null;
+    _status = null;
+    notifyListeners();
+  }
+
+  bool get hasActiveFilters =>
+      _filterType != ApartmentFilterType.all ||
+      _searchQuery.isNotEmpty ||
+      _floor != null ||
+      _status != null;
+
+  /// Loads details for a specific apartment
+  Future<void> loadSelectedApartment(String apartmentId) async {
     _isLoadingDetail = true;
     _errorMessage = null;
     notifyListeners();
 
     try {
-      final apt = await _apartmentService.getApartment(id);
-      if (apt == null) {
-        throw Exception('Không tìm thấy căn hộ');
+      final apt = await _apartmentService.getApartmentById(apartmentId);
+      if (apt != null) {
+        _selectedApartment = apt;
+        _resolveSelectedRelations();
+      } else {
+        _errorMessage = 'Căn hộ không tồn tại hoặc đã bị xóa';
       }
-
-      _selectedApartment = apt;
-      await _resolveSelectedRelations();
-      _isLoadingDetail = false;
-      notifyListeners();
     } catch (e) {
-      _isLoadingDetail = false;
       _errorMessage = e.toString();
+    } finally {
+      _isLoadingDetail = false;
       notifyListeners();
     }
   }
 
-  Future<void> _resolveSelectedRelations() async {
+  void _resolveSelectedRelations() {
     if (_selectedApartment == null) return;
 
-    final ownerId = _selectedApartment!.ownerId;
-    if (ownerId != null) {
-      _selectedOwner = await _userService.getUser(ownerId);
+    // Resolve owner
+    if (_selectedApartment!.ownerId != null) {
+      _selectedOwner = _usersMap[_selectedApartment!.ownerId];
     } else {
       _selectedOwner = null;
     }
 
-    final residents = <UserModel>[];
-    for (var rId in _selectedApartment!.residentIds) {
-      final user = await _userService.getUser(rId);
-      if (user != null) {
-        residents.add(user);
-      }
-    }
-    _selectedResidents = residents;
+    // Resolve residents
+    _selectedResidents = _selectedApartment!.residentIds
+        .map((id) => _usersMap[id])
+        .whereType<UserModel>()
+        .toList();
   }
 
+  // Selected apartment operations (uses selectedApartment state)
   Future<void> assignResident(String residentId) async {
     if (_selectedApartment == null) return;
-    _isLoadingDetail = true;
-    notifyListeners();
-
-    try {
-      await _apartmentService.assignResident(
-        _selectedApartment!.id,
-        residentId,
-      );
-      await selectApartment(_selectedApartment!.id); // reload
-    } catch (e) {
-      _errorMessage = e.toString();
-      _isLoadingDetail = false;
-      notifyListeners();
-    }
+    await _apartmentService.assignResident(
+      apartmentId: _selectedApartment!.id,
+      residentId: residentId,
+    );
   }
 
   Future<void> removeResident(String residentId) async {
     if (_selectedApartment == null) return;
-    _isLoadingDetail = true;
-    notifyListeners();
-
-    try {
-      await _apartmentService.removeResident(
-        _selectedApartment!.id,
-        residentId,
-      );
-      await selectApartment(_selectedApartment!.id); // reload
-    } catch (e) {
-      _errorMessage = e.toString();
-      _isLoadingDetail = false;
-      notifyListeners();
-    }
+    await _apartmentService.unassignResident(
+      apartmentId: _selectedApartment!.id,
+      residentId: residentId,
+    );
   }
 
   Future<void> assignOwner(String? ownerId) async {
     if (_selectedApartment == null) return;
-    _isLoadingDetail = true;
-    notifyListeners();
+    await _apartmentService.assignOwner(
+      apartmentId: _selectedApartment!.id,
+      ownerId: ownerId,
+    );
+  }
 
+  Future<void> updateApartmentDetails({required double area, required String type}) async {
+    if (_selectedApartment == null) return;
+    await _apartmentService.updateApartmentDetails(
+      apartmentId: _selectedApartment!.id,
+      area: area,
+      type: type,
+    );
+  }
+
+  // compatibility methods for main branch screens
+  Future<void> save(ApartmentModel apartment) async {
+    _isLoading = true;
+    notifyListeners();
     try {
-      await _apartmentService.assignOwner(_selectedApartment!.id, ownerId);
-      await selectApartment(_selectedApartment!.id); // reload
-    } catch (e) {
-      _errorMessage = e.toString();
-      _isLoadingDetail = false;
+      if (apartment.id.isEmpty) {
+        await _apartmentService.createApartment(apartment);
+      } else {
+        await _apartmentService.updateApartment(apartment);
+      }
+    } finally {
+      _isLoading = false;
       notifyListeners();
     }
   }
 
-  Future<void> updateApartmentInfo({
-    required double area,
-    required String type,
-  }) async {
-    if (_selectedApartment == null) return;
-    _isLoadingDetail = true;
-    notifyListeners();
+  Future<void> delete(String id) async {
+    await _apartmentService.deleteApartment(id);
+  }
 
-    try {
-      await _apartmentService.updateApartmentInfo(
-        _selectedApartment!.id,
-        area: area,
-        type: type,
-      );
-      await selectApartment(_selectedApartment!.id); // reload
-    } catch (e) {
-      _errorMessage = e.toString();
-      _isLoadingDetail = false;
-      notifyListeners();
-    }
+  Future<void> assignResidentToApartment({
+    required String apartmentId,
+    required String residentId,
+    bool asOwner = false,
+  }) async {
+    await _apartmentService.assignResident(
+      apartmentId: apartmentId,
+      residentId: residentId,
+      asOwner: asOwner,
+    );
+  }
+
+  Future<void> unassignResidentFromApartment({
+    required String apartmentId,
+    required String residentId,
+  }) async {
+    await _apartmentService.unassignResident(
+      apartmentId: apartmentId,
+      residentId: residentId,
+    );
   }
 
   Future<List<UserModel>> getUnassignedResidents() async {

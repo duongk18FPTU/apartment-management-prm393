@@ -7,14 +7,34 @@ import '../../../models/apartment_model.dart';
 import '../../../providers/apartment_provider.dart';
 import '../../../utils/constants.dart';
 
-class ApartmentListScreen extends StatefulWidget {
-  const ApartmentListScreen({super.key});
+class ApartmentListScreen extends StatelessWidget {
+  const ApartmentListScreen({super.key, this.provider});
+
+  final ApartmentProvider? provider;
 
   @override
-  State<ApartmentListScreen> createState() => _ApartmentListScreenState();
+  Widget build(BuildContext context) {
+    if (provider != null) {
+      return ChangeNotifierProvider<ApartmentProvider>.value(
+        value: provider!,
+        child: const _ApartmentListContent(),
+      );
+    }
+    return ChangeNotifierProvider(
+      create: (_) => ApartmentProvider()..initialize(),
+      child: const _ApartmentListContent(),
+    );
+  }
 }
 
-class _ApartmentListScreenState extends State<ApartmentListScreen> {
+class _ApartmentListContent extends StatefulWidget {
+  const _ApartmentListContent();
+
+  @override
+  State<_ApartmentListContent> createState() => _ApartmentListContentState();
+}
+
+class _ApartmentListContentState extends State<_ApartmentListContent> {
   final TextEditingController _searchController = TextEditingController();
 
   @override
@@ -51,11 +71,9 @@ class _ApartmentListScreenState extends State<ApartmentListScreen> {
           Expanded(
             child: provider.isLoading
                 ? const Center(child: CircularProgressIndicator())
-                : provider.errorMessage != null
-                ? Center(child: Text(provider.errorMessage!))
                 : list.isEmpty
-                ? const _EmptyState()
-                : _ApartmentGrid(apartments: list),
+                    ? const _EmptyState()
+                    : _ApartmentGrid(apartments: list),
           ),
         ],
       ),
@@ -77,8 +95,8 @@ class _AppBar extends StatelessWidget implements PreferredSizeWidget {
         bottom: BorderSide(color: Color(0xFFE2E8F0), width: 1),
       ),
       leading: IconButton(
-        icon: const Icon(Icons.menu_rounded, color: Color(0xFF091426)),
-        onPressed: () {},
+        icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF091426)),
+        onPressed: () => context.go(AppRoutes.adminHome),
       ),
       title: const Text(
         'Danh sách căn hộ',
@@ -191,7 +209,7 @@ class _SearchAndFilterBar extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 _FilterChip(
-                  label: 'Phòng trống',
+                  label: 'Trống',
                   isActive: activeFilter == ApartmentFilterType.vacant,
                   onTap: () => onFilterChanged(ApartmentFilterType.vacant),
                 ),
@@ -267,35 +285,28 @@ class _ApartmentCard extends StatelessWidget {
   final ApartmentModel apartment;
 
   String _getApartmentImageUrl(String number) {
-    final images = [
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuAzz_jQh3nSv4RTyioPKBlz6-TDSSSOfyC9iE7yejHiZ0at5nvfOTygiXWZOrBUJnynDyNTrapD5DMk8xNVXtP9tm5i4qE81mEBlLpUU8zdFhiCmt-PS0Nx3YjDw5l_lsC7DfJBrbpMwcwJrNww6iMkFwqWIydiQwLPizAjeupEW1Gt03sm_67tL3-Bo1cCZr42M8zv-JNYL06KTym_p5Q6OMwmgahn-geifcz_ST-FxkpS9ZbJ4WIoTA',
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuAJM8pHSPc37AkbZQRIw4Vjl2lzbd3CT-YPp1dBubDB-VpHCSytF1bUuC8jcsRf-hp4Xmk19b_mZNpaXWWxnlrFzH8xEfcF529NskRSnJhrTs1h3rUQsb6Ubs2h9m-9b1e75gV2zxoDj8syO882xIMrftHg5zY59BuuHznTCf43aU8uSinco5yZHJrlbtVo-rY7-OLoOEmjjoNt2S6NKE3i8yY50sziJSuMl1EcqawOY2LhofiNIp8dsA',
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuDJzTPMWJgElSteGV8OQASp0qIRu02K1cVmCwhT4Ei9JCjgLMCPd9UMKBW0j3ju5JMjoj9q3wvdAFkLwbtTDOu7rj0Vrz1O2HqO2HyXVhf6rSAXLONcBkVzNDe9_REGdi7ifx-NRZBCY0tPpxPJegtaYmhgovB4Q89fY8FT5sHHJ6hD08lx0V_mUIEhnigYTLzKLotgbW7gBUNUqGcy3J1LZX4J4Ypv4h2qWTogBdZ1u_NcJfNl6LMPQQ',
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuCD3ekhDfFsqMxLcv-B7GIiv7jqB7Rar5BxLPDf4SLKGtWZbwHkHBbaX7hCv8erP6o3nAD2Lgta_Ye4WBSzYDKNwvY3NLjba5a6PkMBGXX6jjK4F7lOPClIiYnSxTyB1rc8MY9MRhf8sdQl4Y1Rba8ppQb8MI74HrSjn0a8kUa6dLTdpn0JM6CZgcyIPLZkm-VEmoXuam4jfLx85vCbqGQaJsTRxeRaFzukLQfEzJgkwiNyBvupgvScuw',
-    ];
-    final hash = number.hashCode.abs();
-    return images[hash % images.length];
+    // Generate clean visual assets based on room numbers
+    final id = number.replaceAll(RegExp(r'\D'), '');
+    final typeId = (int.tryParse(id) ?? 0) % 3 + 1;
+    return 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=600&q=80&sig=$typeId';
   }
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.read<ApartmentProvider>();
     final ownerName = apartment.ownerId != null
-        ? provider.usersMap[apartment.ownerId]?.fullName ?? 'Đang tải...'
-        : 'Chưa có chủ hộ';
+        ? context.watch<ApartmentProvider>().usersMap[apartment.ownerId]?.fullName ?? 'Chưa đăng ký'
+        : 'Chưa đăng ký';
 
     return GestureDetector(
-      onTap: () {
-        context.push('${AppRoutes.apartmentList}/${apartment.id}');
-      },
+      onTap: () => context.push('/admin/apartments/${apartment.id}'),
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0x3375777D)),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: const Color(0xFFE2E8F0), width: 1),
           boxShadow: const [
             BoxShadow(
-              color: Color(0x0D1E293B),
+              color: Color(0x05091426),
               offset: Offset(0, 4),
               blurRadius: 12,
             ),

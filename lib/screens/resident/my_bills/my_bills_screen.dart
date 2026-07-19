@@ -80,7 +80,10 @@ class _MyBillsScreenState extends State<MyBillsScreen> {
           margin: const EdgeInsets.only(bottom: AppSpacing.md),
           child: InkWell(
             borderRadius: AppRadius.borderMd,
-            onTap: () => context.push('/resident/bills/${bill.billId}/pay'),
+            onTap: () async {
+              await context.push('/resident/bills/${bill.billId}/pay');
+              _fetchMyBills();
+            },
             child: Padding(
               padding: const EdgeInsets.all(AppSpacing.md),
               child: Row(
