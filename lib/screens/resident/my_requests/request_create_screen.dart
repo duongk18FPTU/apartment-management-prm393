@@ -113,10 +113,7 @@ class _RequestCreateScreenState extends State<RequestCreateScreen> {
                 prefixIcon: Icons.title_rounded,
               ),
               const SizedBox(height: AppSpacing.md),
-              Text(
-                'Loại sự cố',
-                style: Theme.of(context).textTheme.labelLarge,
-              ),
+              Text('Loại sự cố', style: Theme.of(context).textTheme.labelLarge),
               const SizedBox(height: AppSpacing.sm),
               Wrap(
                 spacing: AppSpacing.sm,

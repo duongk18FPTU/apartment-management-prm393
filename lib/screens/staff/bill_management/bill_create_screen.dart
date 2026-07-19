@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 
 import '../../../app/theme.dart';
 import '../../../models/bill_model.dart';
+import '../../../utils/vietnamese_formatters.dart';
 import '../../../providers/bill_provider.dart';
 import '../../../widgets/custom_text_field.dart';
 
@@ -175,7 +175,7 @@ class _BillCreateScreenState extends State<BillCreateScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        DateFormat('dd/MM/yyyy').format(_dueDate),
+                        VietnameseFormatters.date.format(_dueDate),
                         style: textTheme.bodyLarge,
                       ),
                       const Icon(

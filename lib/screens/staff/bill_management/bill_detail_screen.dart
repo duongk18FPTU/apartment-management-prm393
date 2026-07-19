@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
 
 import '../../../app/theme.dart';
 import '../../../widgets/status_badge.dart';
@@ -8,6 +7,7 @@ import '../../../widgets/confirm_dialog.dart';
 import '../../../providers/bill_provider.dart';
 import '../../../models/bill_model.dart';
 import '../../../models/payment_model.dart';
+import '../../../utils/vietnamese_formatters.dart';
 
 class BillDetailScreen extends StatefulWidget {
   final String billId;
@@ -180,11 +180,6 @@ class _BillDetailScreenState extends State<BillDetailScreen> {
       );
     }
 
-    final currencyFormatter = NumberFormat.currency(
-      locale: 'vi_VN',
-      symbol: '₫',
-    );
-
     return Scaffold(
       backgroundColor: DesignTokens.background,
       appBar: AppBar(title: const Text('Chi Tiết Hóa Đơn')),
@@ -225,25 +220,27 @@ class _BillDetailScreenState extends State<BillDetailScreen> {
                           ),
                           _buildDetailRow(
                             'Tháng:',
-                            'Tháng ${_bill!.billingMonth}',
+                            VietnameseFormatters.billingMonth(
+                              _bill!.billingMonth,
+                            ),
                             textTheme,
                           ),
                           _buildDetailRow(
                             'Hạn nộp:',
-                            DateFormat('dd/MM/yyyy').format(_bill!.dueDate),
+                            VietnameseFormatters.date.format(_bill!.dueDate),
                             textTheme,
                           ),
                           _buildDetailRow(
                             'Ngày tạo:',
-                            DateFormat('dd/MM/yyyy').format(_bill!.createdAt),
+                            VietnameseFormatters.date.format(_bill!.createdAt),
                             textTheme,
                           ),
                           if (_bill!.status == 'paid') ...[
                             _buildDetailRow(
                               'Ngày thanh toán:',
-                              DateFormat(
-                                'dd/MM/yyyy',
-                              ).format(_bill!.paidAt ?? DateTime.now()),
+                              VietnameseFormatters.date.format(
+                                _bill!.paidAt ?? DateTime.now(),
+                              ),
                               textTheme,
                             ),
                             _buildDetailRow(
@@ -265,11 +262,12 @@ class _BillDetailScreenState extends State<BillDetailScreen> {
                                 ),
                               ),
                               Text(
-                                currencyFormatter.format(_bill!.amount),
+                                VietnameseFormatters.currency.format(
+                                  _bill!.amount,
+                                ),
                                 style: textTheme.headlineMedium?.copyWith(
                                   color: DesignTokens.secondary,
                                   fontWeight: FontWeight.bold,
-                                  fontFamily: 'Outfit',
                                 ),
                               ),
                             ],
@@ -295,7 +293,9 @@ class _BillDetailScreenState extends State<BillDetailScreen> {
                             const Divider(height: AppSpacing.md),
                             _buildDetailRow(
                               'Số tiền gửi:',
-                              currencyFormatter.format(_pendingPayment!.amount),
+                              VietnameseFormatters.currency.format(
+                                _pendingPayment!.amount,
+                              ),
                               textTheme,
                             ),
                             _buildDetailRow(

@@ -17,7 +17,7 @@ class ResidentHomeScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: DesignTokens.background,
       appBar: AppBar(
-        title: const Text('My Home'),
+        title: const Text('Căn hộ của tôi'),
         actions: [
           IconButton(
             tooltip: 'Đăng xuất',

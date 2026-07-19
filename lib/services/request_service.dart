@@ -38,10 +38,8 @@ abstract class RequestRepository {
 
 /// CRUD + image upload for Firestore `requests` collection.
 class RequestService extends BaseFirestoreService implements RequestRepository {
-  RequestService({
-    super.firestore,
-    FirebaseStorage? storage,
-  }) : _storage = storage ?? FirebaseStorage.instance;
+  RequestService({super.firestore, FirebaseStorage? storage})
+    : _storage = storage ?? FirebaseStorage.instance;
 
   final FirebaseStorage _storage;
   final _uuid = const Uuid();
@@ -80,9 +78,10 @@ class RequestService extends BaseFirestoreService implements RequestRepository {
   }
 
   Stream<List<RequestModel>> streamRequestsByResident(String residentId) {
-    return streamWhere(field: 'residentId', isEqualTo: residentId).map(
-      (snap) => _sorted(snap.docs.map(RequestModel.fromFirestore)),
-    );
+    return streamWhere(
+      field: 'residentId',
+      isEqualTo: residentId,
+    ).map((snap) => _sorted(snap.docs.map(RequestModel.fromFirestore)));
   }
 
   Stream<List<RequestModel>> streamAllRequests({RequestStatus? status}) {
@@ -93,7 +92,8 @@ class RequestService extends BaseFirestoreService implements RequestRepository {
       ).map((snap) => _sorted(snap.docs.map(RequestModel.fromFirestore)));
     }
     return streamAll(orderBy: 'createdAt', descending: true).map(
-      (snap) => snap.docs.map(RequestModel.fromFirestore).toList(growable: false),
+      (snap) =>
+          snap.docs.map(RequestModel.fromFirestore).toList(growable: false),
     );
   }
 
@@ -119,7 +119,9 @@ class RequestService extends BaseFirestoreService implements RequestRepository {
   }) async {
     final imageUrls = <String>[];
     for (final file in imageFiles) {
-      imageUrls.add(await uploadRequestImage(residentId: residentId, file: file));
+      imageUrls.add(
+        await uploadRequestImage(residentId: residentId, file: file),
+      );
     }
 
     return create({
@@ -142,9 +144,7 @@ class RequestService extends BaseFirestoreService implements RequestRepository {
     String? staffId,
     String? resolutionNote,
   }) async {
-    final data = <String, dynamic>{
-      'status': status.firestoreValue,
-    };
+    final data = <String, dynamic>{'status': status.firestoreValue};
     if (staffId != null) {
       data['assignedStaffId'] = staffId;
     }

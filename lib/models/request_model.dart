@@ -48,9 +48,9 @@ class RequestModel {
         data['category'] as String? ?? 'general',
       ),
       imageUrls:
-          (data['imageUrls'] as List<dynamic>?)
-              ?.whereType<String>()
-              .toList(growable: false) ??
+          (data['imageUrls'] as List<dynamic>?)?.whereType<String>().toList(
+            growable: false,
+          ) ??
           const [],
       residentId: data['residentId'] as String? ?? '',
       apartmentId: data['apartmentId'] as String? ?? '',

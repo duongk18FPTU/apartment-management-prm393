@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../../app/theme.dart';
 import '../../../models/complaint_model.dart';
 import '../../../providers/complaint_provider.dart';
 import '../../../utils/constants.dart';
+import '../../../utils/vietnamese_formatters.dart';
 import '../../../widgets/complaint_status_chip.dart';
 import '../../../widgets/loading_indicator.dart';
 
@@ -39,7 +39,7 @@ class _ComplaintManageScreenState extends State<ComplaintManageScreen> {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<ComplaintProvider>();
-    final dateFmt = DateFormat('dd/MM/yyyy HH:mm');
+    final dateFmt = VietnameseFormatters.dateTime;
 
     return Scaffold(
       backgroundColor: DesignTokens.background,

@@ -8,6 +8,13 @@ import 'package:prm393_project/models/user_model.dart';
 import 'package:prm393_project/screens/admin/user_management/widgets/user_status_badge.dart';
 
 void main() {
+  test('uses the bundled Vietnamese typeface throughout the theme', () {
+    final theme = buildAppTheme();
+
+    expect(theme.textTheme.bodyMedium?.fontFamily, 'BeVietnamPro');
+    expect(theme.textTheme.titleLarge?.fontFamily, 'BeVietnamPro');
+  });
+
   testWidgets('Placeholder smoke test — Sprint 3 will add real tests', (
     WidgetTester tester,
   ) async {

@@ -23,10 +23,10 @@ void main() {
   test('filters users by search, role, and status', () async {
     provider.listenToUsers();
     repository.usersController.add([
-      _user(uid: '1', name: 'Nguyen Minh Anh', role: UserRole.resident),
+      _user(uid: '1', name: 'Nguyễn Minh Anh', role: UserRole.resident),
       _user(
         uid: '2',
-        name: 'Tran Bao Long',
+        name: 'Trần Bảo Long',
         role: UserRole.staff,
         status: UserStatus.inactive,
       ),
