@@ -6,6 +6,8 @@ import '../providers/bill_provider.dart';
 import '../providers/complaint_provider.dart';
 import '../providers/request_provider.dart';
 import '../providers/user_provider.dart';
+import '../providers/apartment_provider.dart';
+import '../providers/resident_provider.dart';
 import 'routes.dart';
 import 'theme.dart';
 
@@ -31,6 +33,12 @@ class ApartmentApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<ComplaintProvider>(
           create: (context) => ComplaintProvider(),
+        ),
+        ChangeNotifierProvider<ApartmentProvider>(
+          create: (context) => ApartmentProvider()..loadApartments(),
+        ),
+        ChangeNotifierProvider<ResidentProvider>(
+          create: (context) => ResidentProvider()..loadResidents(),
         ),
       ],
       child: Builder(

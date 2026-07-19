@@ -446,7 +446,6 @@ ThemeData buildAppTheme() {
     floatingActionButtonTheme: _buildFabTheme(),
     bottomNavigationBarTheme: _buildBottomNavTheme(textTheme),
     navigationBarTheme: _buildNavigationBarTheme(textTheme),
-
     // Page transitions — subtle fade for mobile feel
     pageTransitionsTheme: const PageTransitionsTheme(
       builders: {

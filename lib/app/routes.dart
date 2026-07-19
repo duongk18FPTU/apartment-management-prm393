@@ -26,6 +26,14 @@ import '../screens/staff/bill_management/bill_detail_screen.dart';
 import '../screens/resident/my_bills/my_bills_screen.dart';
 import '../screens/resident/my_bills/bill_payment_screen.dart';
 import '../screens/resident/my_bills/payment_history_screen.dart';
+import '../screens/admin/apartment_management/apartment_list_screen.dart';
+import '../screens/admin/apartment_management/apartment_form_screen.dart';
+import '../screens/admin/apartment_management/apartment_detail_screen.dart';
+import '../screens/admin/resident_management/resident_list_screen.dart';
+import '../screens/admin/resident_management/resident_form_screen.dart';
+import '../screens/admin/resident_management/resident_profile_screen.dart';
+import '../providers/apartment_provider.dart';
+import '../models/user_model.dart';
 import '../utils/constants.dart';
 
 /// Builds and returns the app-wide [GoRouter] instance.
@@ -125,6 +133,50 @@ final List<RouteBase> _routes = [
     name: 'userEdit',
     builder: (context, state) =>
         UserEditScreen(userId: state.pathParameters['id']!),
+  ),
+
+  // Member 2 — Apartment Management (Admin)
+  GoRoute(
+    path: AppRoutes.apartmentList,
+    name: 'apartmentList',
+    builder: (context, state) => const ApartmentListScreen(),
+  ),
+  GoRoute(
+    path: AppRoutes.apartmentForm,
+    name: 'apartmentForm',
+    builder: (context, state) => const ApartmentFormScreen(),
+  ),
+  GoRoute(
+    path: AppRoutes.apartmentDetail,
+    name: 'apartmentDetail',
+    builder: (context, state) {
+      final id = state.pathParameters['id']!;
+      final apartmentProvider = context.read<ApartmentProvider>();
+      final apartment = apartmentProvider.apartments.firstWhere(
+        (a) => a.id == id,
+      );
+      return ApartmentDetailScreen(apartment: apartment);
+    },
+  ),
+
+  // Member 2 — Resident Management (Admin)
+  GoRoute(
+    path: AppRoutes.residentList,
+    name: 'residentList',
+    builder: (context, state) => const ResidentListScreen(),
+  ),
+  GoRoute(
+    path: AppRoutes.residentForm,
+    name: 'residentForm',
+    builder: (context, state) => const ResidentFormScreen(),
+  ),
+  GoRoute(
+    path: AppRoutes.residentProfile,
+    name: 'residentProfile',
+    builder: (context, state) {
+      final resident = state.extra as UserModel;
+      return ResidentProfileScreen(resident: resident);
+    },
   ),
 
   GoRoute(

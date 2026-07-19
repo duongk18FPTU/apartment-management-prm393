@@ -402,6 +402,7 @@ class _BillDetailScreenState extends State<BillDetailScreen> {
       padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start, // Tránh lệch hàng
         children: [
           Text(
             label,
@@ -409,9 +410,13 @@ class _BillDetailScreenState extends State<BillDetailScreen> {
               color: DesignTokens.neutralVariant,
             ),
           ),
-          Text(
-            value,
-            style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
+          const SizedBox(width: AppSpacing.md),
+          Expanded(
+            child: Text(
+              value,
+              textAlign: TextAlign.end,
+              style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
+            ),
           ),
         ],
       ),

@@ -61,7 +61,10 @@ class _BillPaymentScreenState extends State<BillPaymentScreen> {
       if (success && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Yêu cầu thanh toán đã được gửi! Chờ BQL xác nhận.'),
+            content: Text(
+              'Yêu cầu thanh toán đã được gửi! Vui lòng chờ BQL đối soát và phê duyệt.',
+            ),
+            backgroundColor: DesignTokens.tertiary,
           ),
         );
         context.pop();
@@ -209,6 +212,8 @@ class _BillPaymentScreenState extends State<BillPaymentScreen> {
       padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment:
+            CrossAxisAlignment.start, // Tránh lệch hàng khi xuống dòng
         children: [
           Text(
             label,
@@ -216,14 +221,20 @@ class _BillPaymentScreenState extends State<BillPaymentScreen> {
               color: DesignTokens.neutralVariant,
             ),
           ),
-          Text(
-            val,
-            style: textTheme.bodyLarge?.copyWith(
-              fontWeight: (isBold || isPrice)
-                  ? FontWeight.bold
-                  : FontWeight.w600,
-              color: isPrice ? DesignTokens.secondary : null,
-              fontFamily: isPrice ? 'Outfit' : null,
+          const SizedBox(
+            width: AppSpacing.md,
+          ), // Tạo khoảng cách an toàn giữa cột trái và cột phải
+          Expanded(
+            child: Text(
+              val,
+              textAlign: TextAlign.end, // Canh đều lề phải cực đẹp
+              style: textTheme.bodyLarge?.copyWith(
+                fontWeight: (isBold || isPrice)
+                    ? FontWeight.bold
+                    : FontWeight.w600,
+                color: isPrice ? DesignTokens.secondary : null,
+                fontFamily: isPrice ? 'Outfit' : null,
+              ),
             ),
           ),
         ],

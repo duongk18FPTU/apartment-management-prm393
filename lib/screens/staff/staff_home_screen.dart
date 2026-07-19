@@ -1,114 +1,106 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../app/theme.dart';
 import '../../providers/auth_provider.dart';
-import '../../utils/constants.dart';
+import 'bill_management/bill_list_screen.dart';
+import 'request_management/request_manage_screen.dart';
+import 'complaint_management/complaint_manage_screen.dart';
 
-/// Staff Home — temporary hub until Member 5 lands bottom navigation.
-class StaffHomeScreen extends StatelessWidget {
+class StaffHomeScreen extends StatefulWidget {
   const StaffHomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final user = context.watch<AuthProvider>().userModel;
-
-    return Scaffold(
-      backgroundColor: DesignTokens.background,
-      appBar: AppBar(
-        title: const Text('Staff Portal'),
-        actions: [
-          IconButton(
-            tooltip: 'Đăng xuất',
-            onPressed: () => context.read<AuthProvider>().logout(),
-            icon: const Icon(Icons.logout_rounded),
-          ),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              'Xin chào, ${user?.fullName ?? 'Nhân viên'}',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            const SizedBox(height: AppSpacing.xl),
-            _StaffTile(
-              icon: Icons.assignment_outlined,
-              title: 'Quản lý yêu cầu',
-              subtitle: 'Xem và cập nhật trạng thái sửa chữa',
-              onTap: () => context.push(AppRoutes.requestManage),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-
-            // 2. Quản lý hóa đơn (Member 4 - Sprint 1)
-            _StaffTile(
-              icon: Icons.receipt_long_rounded,
-              title: 'Quản lý hóa đơn',
-              subtitle: 'Tạo hóa đơn, xem danh sách và thu tiền',
-              onTap: () => context.push(AppRoutes.staffBills),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-
-            // 3. Quản lý khiếu nại (Member 3)
-            _StaffTile(
-              icon: Icons.feedback_outlined,
-              title: 'Quản lý khiếu nại',
-              subtitle: 'Xem và phản hồi khiếu nại / góp ý',
-              onTap: () => context.push(AppRoutes.complaintManage),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  State<StaffHomeScreen> createState() => _StaffHomeScreenState();
 }
 
-class _StaffTile extends StatelessWidget {
-  const _StaffTile({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.onTap,
-  });
-
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final VoidCallback onTap;
+class _StaffHomeScreenState extends State<StaffHomeScreen> {
+  int _selectedIndex = 1; // Mặc định mở tab Hóa đơn
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: DesignTokens.surface,
-      borderRadius: BorderRadius.circular(AppRadius.md),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(AppRadius.md),
+    final List<Widget> tabs = [
+      const RequestManageScreen(),
+      const BillListScreen(),
+      _buildPlaceholderTab(
+        'Khách viếng thăm',
+        Icons.badge_outlined,
+        'BQL quản lý thông tin đăng ký, check-in, check-out khách viếng thăm (Member 5).',
+      ),
+      const ComplaintManageScreen(),
+    ];
+
+    return Scaffold(
+      backgroundColor: DesignTokens.background,
+      body: IndexedStack(index: _selectedIndex, children: tabs),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _selectedIndex,
+        onDestinationSelected: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.build_outlined),
+            selectedIcon: Icon(Icons.build_rounded),
+            label: 'Yêu cầu',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.receipt_long_outlined),
+            selectedIcon: Icon(Icons.receipt_long_rounded),
+            label: 'Hóa đơn',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.badge_outlined),
+            selectedIcon: Icon(Icons.badge_rounded),
+            label: 'Khách',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.campaign_outlined),
+            selectedIcon: Icon(Icons.campaign_rounded),
+            label: 'Khiếu nại',
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPlaceholderTab(String title, IconData icon, String desc) {
+    return Scaffold(
+      backgroundColor: DesignTokens.background,
+      appBar: AppBar(
+        title: Text(title),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout_rounded),
+            onPressed: () => context.read<AuthProvider>().logout(),
+            tooltip: 'Đăng xuất',
+          ),
+        ],
+      ),
+      body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.md),
-          child: Row(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 32, color: DesignTokens.tertiary),
-              const SizedBox(width: AppSpacing.md),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(title, style: Theme.of(context).textTheme.titleMedium),
-                    Text(
-                      subtitle,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: DesignTokens.neutralVariant,
-                      ),
-                    ),
-                  ],
-                ),
+              Icon(icon, size: 64, color: DesignTokens.neutralVariant),
+              const SizedBox(height: AppSpacing.md),
+              Text(
+                title,
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
               ),
-              const Icon(Icons.chevron_right_rounded),
+              const SizedBox(height: AppSpacing.sm),
+              Text(
+                desc,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: DesignTokens.neutralVariant,
+                ),
+                textAlign: TextAlign.center,
+              ),
             ],
           ),
         ),
