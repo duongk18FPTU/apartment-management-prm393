@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../providers/auth_provider.dart';
 import '../screens/admin/admin_home_screen.dart';
+import '../screens/auth/change_password_screen.dart';
 import '../screens/auth/login_screen.dart';
 import '../screens/auth/splash_screen.dart';
 import '../screens/resident/home/resident_home_screen.dart';
@@ -115,6 +116,13 @@ final List<RouteBase> _routes = [
     path: AppRoutes.login,
     name: 'login',
     builder: (context, state) => const LoginScreen(),
+  ),
+
+  // Change password — accessible to all authenticated roles
+  GoRoute(
+    path: AppRoutes.changePassword,
+    name: 'changePassword',
+    builder: (context, state) => const ChangePasswordScreen(),
   ),
 
   // Admin routes

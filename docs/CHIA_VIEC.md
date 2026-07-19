@@ -150,12 +150,12 @@ lib/
 - [x] Tạo `AuthProvider`
 
 #### Sprint 1 — Authentication Module
-- [ ] `LoginScreen` — Email/Password login via Firebase Auth
-- [ ] `ChangePasswordScreen` — Đổi mật khẩu
-- [ ] `AuthService` — Login, Logout, Change Password, Listen auth state
-- [ ] `AuthProvider` — Quản lý trạng thái đăng nhập, current user, role
-- [ ] Splash screen + Auto-login (check saved session)
-- [ ] Role-based redirect sau login (Admin → Admin Home, Staff → Staff Home, Resident → Resident Home)
+- [x] `LoginScreen` — Email/Password login via Firebase Auth
+- [x] `ChangePasswordScreen` — Đổi mật khẩu
+- [x] `AuthService` — Login, Logout, Change Password, Listen auth state
+- [x] `AuthProvider` — Quản lý trạng thái đăng nhập, current user, role
+- [x] Splash screen + Auto-login (check saved session) *(done in Sprint 0)*
+- [x] Role-based redirect sau login (Admin → Admin Home, Staff → Staff Home, Resident → Resident Home) *(done in Sprint 0)*
 
 #### Sprint 2 — User Management (Admin only)
 - [ ] `UserListScreen` — Danh sách users, search, filter by role
@@ -182,7 +182,8 @@ lib/
 **Vai trò**: Apartment Management + Resident Management
 
 #### Sprint 0
-- [ ] Tạo tất cả data models (`UserModel`, `ApartmentModel`, `RequestModel`, `BillModel`, `NotificationModel`, `VisitorModel`, `ComplaintModel`)
+- [x] Tạo `UserModel` (`lib/models/user_model.dart`) *(done by Member 1)*
+- [ ] Tạo các models còn lại (`ApartmentModel`, `RequestModel`, `BillModel`, `NotificationModel`, `VisitorModel`, `ComplaintModel`)
 - [ ] Implement `fromJson()` / `toJson()` cho mỗi model
 - [ ] Định nghĩa Firestore collection structure
 
@@ -218,8 +219,8 @@ lib/
 
 #### Sprint 0
 - [ ] Tạo base service class cho Firestore CRUD
-- [ ] Setup `AuthService` cơ bản
-- [ ] Helper functions (date formatting, validators)
+- [x] Setup `AuthService` (`lib/services/auth_service.dart`) *(done by Member 1)*
+- [x] Helper functions — `validators.dart` (`lib/utils/validators.dart`) *(done by Member 1)*
 
 #### Sprint 1 — Maintenance Request (Resident → Staff)
 - [ ] `RequestListScreen` (Resident) — Xem danh sách request đã gửi + trạng thái
@@ -254,13 +255,13 @@ lib/
 **Vai trò**: Bill & Invoice Management + Shared Widgets
 
 #### Sprint 0
-- [ ] Tạo tất cả shared widgets:
-  - `CustomTextField` — Styled text input theo Design System
-  - `LoadingIndicator` — Loading spinner/skeleton
-  - `StatusBadge` — Badge hiển thị trạng thái (Paid/Unpaid/Pending/...)
-  - `EmptyState` — Placeholder khi không có data
-  - `ErrorState` — Hiển thị lỗi + retry
-  - `ConfirmDialog` — Dialog xác nhận hành động nguy hiểm
+- [ ] Tạo các shared widgets còn lại:
+  - [x] `CustomTextField` — Styled text input theo Design System *(done by Member 1)*
+  - [x] `LoadingIndicator` — Loading spinner/skeleton *(done by Member 1)*
+  - [ ] `StatusBadge` — Badge hiển thị trạng thái (Paid/Unpaid/Pending/...)
+  - [ ] `EmptyState` — Placeholder khi không có data
+  - [ ] `ErrorState` — Hiển thị lỗi + retry
+  - [ ] `ConfirmDialog` — Dialog xác nhận hành động nguy hiểm
 
 #### Sprint 1 — Bill Management (Staff side)
 - [ ] `BillListScreen` (Staff) — Danh sách bills, filter by apartment/month/status
