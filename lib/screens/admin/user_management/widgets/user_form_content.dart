@@ -42,6 +42,43 @@ class UserFormContent extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(AppSpacing.md),
       children: [
+        if (!isEditing) ...[
+          const SizedBox(height: 16),
+          Column(
+            children: [
+              Container(
+                width: 80,
+                height: 80,
+                decoration: const BoxDecoration(
+                  color: Color(0xFFD8E3FB),
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color(0x0D1E293B),
+                      offset: Offset(0, 4),
+                      blurRadius: 12,
+                    ),
+                  ],
+                ),
+                child: const Icon(
+                  Icons.person_add_alt_1_rounded,
+                  color: Color(0xFF091426),
+                  size: 32,
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 24),
+                child: Text(
+                  'Điền thông tin bên dưới để cấp quyền truy cập hệ thống cho người dùng mới.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Color(0xFF45474C), fontSize: 14),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 32),
+        ],
         UserIdentityFields(
           fullNameController: controller.fullName,
           emailController: controller.email,

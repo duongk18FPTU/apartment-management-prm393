@@ -56,7 +56,9 @@ class ApartmentFormFields extends StatelessWidget {
               child: TextFormField(
                 controller: areaController,
                 decoration: const InputDecoration(labelText: 'Area (m²)'),
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 validator: (value) => double.tryParse(value ?? '') == null
                     ? 'Enter a valid area.'
                     : null,
@@ -69,7 +71,10 @@ class ApartmentFormFields extends StatelessWidget {
           initialValue: status,
           decoration: const InputDecoration(labelText: 'Status'),
           items: ApartmentStatus.values
-              .map((value) => DropdownMenuItem(value: value, child: Text(value.name)))
+              .map(
+                (value) =>
+                    DropdownMenuItem(value: value, child: Text(value.name)),
+              )
               .toList(),
           onChanged: onStatusChanged,
         ),

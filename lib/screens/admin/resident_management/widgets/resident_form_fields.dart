@@ -36,57 +36,57 @@ class ResidentFormFields extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Column(
-        children: [
-          TextFormField(
-            controller: idController,
-            enabled: idEnabled,
-            decoration: const InputDecoration(labelText: 'Firebase user ID'),
-            validator: _required,
-          ),
-          const SizedBox(height: 16),
-          TextFormField(
-            controller: nameController,
-            decoration: const InputDecoration(labelText: 'Full name'),
-            validator: _required,
-          ),
-          const SizedBox(height: 16),
-          TextFormField(
-            controller: emailController,
-            keyboardType: TextInputType.emailAddress,
-            decoration: const InputDecoration(labelText: 'Email'),
-            validator: (value) => value == null || !value.contains('@')
-                ? 'Enter a valid email.'
-                : null,
-          ),
-          const SizedBox(height: 16),
-          TextFormField(
-            controller: phoneController,
-            keyboardType: TextInputType.phone,
-            decoration: const InputDecoration(labelText: 'Phone'),
-            validator: _required,
-          ),
-          const SizedBox(height: 16),
-          TextFormField(
-            controller: nationalIdController,
-            decoration: const InputDecoration(labelText: 'National ID'),
-            validator: _required,
-          ),
-          const SizedBox(height: 16),
-          ApartmentDropdown(
-            provider: apartmentProvider,
-            value: apartmentId,
-            onChanged: onApartmentChanged,
-          ),
-          const SizedBox(height: 16),
-          DropdownButtonFormField<String>(
-            initialValue: status,
-            decoration: const InputDecoration(labelText: 'Status'),
-            items: const [
-              DropdownMenuItem(value: 'active', child: Text('Active')),
-              DropdownMenuItem(value: 'inactive', child: Text('Inactive')),
-            ],
-            onChanged: onStatusChanged,
-          ),
+    children: [
+      TextFormField(
+        controller: idController,
+        enabled: idEnabled,
+        decoration: const InputDecoration(labelText: 'Firebase user ID'),
+        validator: _required,
+      ),
+      const SizedBox(height: 16),
+      TextFormField(
+        controller: nameController,
+        decoration: const InputDecoration(labelText: 'Full name'),
+        validator: _required,
+      ),
+      const SizedBox(height: 16),
+      TextFormField(
+        controller: emailController,
+        keyboardType: TextInputType.emailAddress,
+        decoration: const InputDecoration(labelText: 'Email'),
+        validator: (value) => value == null || !value.contains('@')
+            ? 'Enter a valid email.'
+            : null,
+      ),
+      const SizedBox(height: 16),
+      TextFormField(
+        controller: phoneController,
+        keyboardType: TextInputType.phone,
+        decoration: const InputDecoration(labelText: 'Phone'),
+        validator: _required,
+      ),
+      const SizedBox(height: 16),
+      TextFormField(
+        controller: nationalIdController,
+        decoration: const InputDecoration(labelText: 'National ID'),
+        validator: _required,
+      ),
+      const SizedBox(height: 16),
+      ApartmentDropdown(
+        provider: apartmentProvider,
+        value: apartmentId,
+        onChanged: onApartmentChanged,
+      ),
+      const SizedBox(height: 16),
+      DropdownButtonFormField<String>(
+        initialValue: status,
+        decoration: const InputDecoration(labelText: 'Status'),
+        items: const [
+          DropdownMenuItem(value: 'active', child: Text('Active')),
+          DropdownMenuItem(value: 'inactive', child: Text('Inactive')),
         ],
-      );
+        onChanged: onStatusChanged,
+      ),
+    ],
+  );
 }

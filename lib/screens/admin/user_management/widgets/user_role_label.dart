@@ -10,7 +10,7 @@ class UserRoleLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final label = switch (role) {
-      UserRole.admin => 'Admin',
+      UserRole.admin => 'Quản trị viên',
       UserRole.staff => 'Nhân viên',
       UserRole.resident => 'Cư dân',
     };

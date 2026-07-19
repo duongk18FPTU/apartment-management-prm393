@@ -16,20 +16,17 @@ class ApartmentDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => DropdownButtonFormField<String?>(
-        initialValue: value,
-        decoration: const InputDecoration(labelText: 'Apartment'),
-        items: [
-          const DropdownMenuItem<String?>(
-            value: null,
-            child: Text('No apartment'),
-          ),
-          ...provider.apartments.map(
-            (apartment) => DropdownMenuItem<String?>(
-              value: apartment.id,
-              child: Text('${apartment.number} · ${apartment.building}'),
-            ),
-          ),
-        ],
-        onChanged: onChanged,
-      );
+    initialValue: value,
+    decoration: const InputDecoration(labelText: 'Apartment'),
+    items: [
+      const DropdownMenuItem<String?>(value: null, child: Text('No apartment')),
+      ...provider.apartments.map(
+        (apartment) => DropdownMenuItem<String?>(
+          value: apartment.id,
+          child: Text('${apartment.number} · ${apartment.building}'),
+        ),
+      ),
+    ],
+    onChanged: onChanged,
+  );
 }

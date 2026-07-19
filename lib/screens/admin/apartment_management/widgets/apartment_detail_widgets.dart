@@ -6,21 +6,33 @@ import '../../../../models/user_model.dart';
 import '../../../../providers/resident_provider.dart';
 
 class ApartmentDetailRow extends StatelessWidget {
-  const ApartmentDetailRow({super.key, required this.label, required this.value});
+  const ApartmentDetailRow({
+    super.key,
+    required this.label,
+    required this.value,
+  });
 
   final String label;
   final String value;
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(bottom: 12),
-        child: Row(
-          children: [
-            SizedBox(width: 100, child: Text(label, style: Theme.of(context).textTheme.bodySmall)),
-            Expanded(child: Text(value, style: const TextStyle(fontWeight: FontWeight.w600))),
-          ],
+    padding: const EdgeInsets.only(bottom: 12),
+    child: Row(
+      children: [
+        SizedBox(
+          width: 100,
+          child: Text(label, style: Theme.of(context).textTheme.bodySmall),
         ),
-      );
+        Expanded(
+          child: Text(
+            value,
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
 class ApartmentDetails extends StatelessWidget {
@@ -30,23 +42,32 @@ class ApartmentDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Card(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Apartment details', style: Theme.of(context).textTheme.titleLarge),
-              const SizedBox(height: 20),
-              ApartmentDetailRow(label: 'Number', value: apartment.number),
-              ApartmentDetailRow(label: 'Building', value: apartment.building),
-              ApartmentDetailRow(label: 'Floor', value: apartment.floor.toString()),
-              ApartmentDetailRow(label: 'Area', value: '${apartment.area.toStringAsFixed(1)} m²'),
-              ApartmentDetailRow(label: 'Status', value: apartment.status.name),
-              ApartmentDetailRow(label: 'Owner ID', value: apartment.ownerId ?? 'Not assigned'),
-            ],
+    child: Padding(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Apartment details',
+            style: Theme.of(context).textTheme.titleLarge,
           ),
-        ),
-      );
+          const SizedBox(height: 20),
+          ApartmentDetailRow(label: 'Number', value: apartment.number),
+          ApartmentDetailRow(label: 'Building', value: apartment.building),
+          ApartmentDetailRow(label: 'Floor', value: apartment.floor.toString()),
+          ApartmentDetailRow(
+            label: 'Area',
+            value: '${apartment.area.toStringAsFixed(1)} m²',
+          ),
+          ApartmentDetailRow(label: 'Status', value: apartment.status.name),
+          ApartmentDetailRow(
+            label: 'Owner ID',
+            value: apartment.ownerId ?? 'Not assigned',
+          ),
+        ],
+      ),
+    ),
+  );
 }
 
 class ResidentPickerDialog extends StatelessWidget {
@@ -72,7 +93,10 @@ class ResidentPickerDialog extends StatelessWidget {
       title: const Text('Assign resident'),
       content: SizedBox(width: 360, child: content),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
       ],
     );
   }

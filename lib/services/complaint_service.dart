@@ -29,7 +29,8 @@ abstract class ComplaintRepository {
 }
 
 /// CRUD for Firestore `complaints` collection.
-class ComplaintService extends BaseFirestoreService implements ComplaintRepository {
+class ComplaintService extends BaseFirestoreService
+    implements ComplaintRepository {
   ComplaintService({super.firestore});
 
   @override
@@ -43,13 +44,17 @@ class ComplaintService extends BaseFirestoreService implements ComplaintReposito
   }
 
   @override
-  Future<List<ComplaintModel>> getComplaintsByResident(String residentId) async {
+  Future<List<ComplaintModel>> getComplaintsByResident(
+    String residentId,
+  ) async {
     final snap = await where(field: 'residentId', isEqualTo: residentId);
     return _sorted(snap.docs.map(ComplaintModel.fromFirestore));
   }
 
   @override
-  Future<List<ComplaintModel>> getAllComplaints({ComplaintStatus? status}) async {
+  Future<List<ComplaintModel>> getAllComplaints({
+    ComplaintStatus? status,
+  }) async {
     if (status != null) {
       final snap = await where(
         field: 'status',
