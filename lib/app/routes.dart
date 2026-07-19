@@ -4,6 +4,9 @@ import 'package:provider/provider.dart';
 
 import '../providers/auth_provider.dart';
 import '../screens/admin/admin_home_screen.dart';
+import '../screens/admin/user_management/user_create_screen.dart';
+import '../screens/admin/user_management/user_edit_screen.dart';
+import '../screens/admin/user_management/user_list_screen.dart';
 import '../screens/auth/change_password_screen.dart';
 import '../screens/auth/login_screen.dart';
 import '../screens/auth/splash_screen.dart';
@@ -132,6 +135,23 @@ final List<RouteBase> _routes = [
     builder: (context, state) => const AdminHomeScreen(),
     // TODO(member1): Sprint 2 — add nested sub-routes for User Management.
     // e.g. routes: [ GoRoute(path: 'users', ...), GoRoute(path: 'users/create', ...) ]
+  ),
+
+  GoRoute(
+    path: AppRoutes.userList,
+    name: 'userList',
+    builder: (context, state) => const UserListScreen(),
+  ),
+  GoRoute(
+    path: AppRoutes.userCreate,
+    name: 'userCreate',
+    builder: (context, state) => const UserCreateScreen(),
+  ),
+  GoRoute(
+    path: AppRoutes.userEdit,
+    name: 'userEdit',
+    builder: (context, state) =>
+        UserEditScreen(userId: state.pathParameters['id']!),
   ),
 
   // Staff routes

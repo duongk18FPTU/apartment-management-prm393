@@ -39,6 +39,8 @@ migrate_working_dir/
 .pub/
 /build/
 /coverage/
+/firebase_tests/node_modules/
+/firebase_tests/coverage/
 
 # =========================
 # Symbolication related
