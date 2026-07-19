@@ -4,8 +4,32 @@ import '../models/complaint_model.dart';
 import '../utils/constants.dart';
 import 'base_firestore_service.dart';
 
+/// Contract for complaint data access (testable via fakes).
+abstract class ComplaintRepository {
+  Future<ComplaintModel?> getComplaint(String id);
+
+  Future<List<ComplaintModel>> getComplaintsByResident(String residentId);
+
+  Future<List<ComplaintModel>> getAllComplaints({ComplaintStatus? status});
+
+  Future<String> createComplaint({
+    required String content,
+    required String residentId,
+    required String apartmentId,
+  });
+
+  Future<void> respond({
+    required String complaintId,
+    required String response,
+    required String respondedBy,
+    ComplaintStatus status = ComplaintStatus.resolved,
+  });
+
+  Future<void> markInReview(String complaintId);
+}
+
 /// CRUD for Firestore `complaints` collection.
-class ComplaintService extends BaseFirestoreService {
+class ComplaintService extends BaseFirestoreService implements ComplaintRepository {
   ComplaintService({FirebaseFirestore? firestore}) : super(firestore: firestore);
 
   @override

@@ -6,10 +6,10 @@ import '../services/complaint_service.dart';
 
 /// State management for complaints / feedback (Member 3 — Sprint 2).
 class ComplaintProvider extends ChangeNotifier {
-  ComplaintProvider({ComplaintService? complaintService})
+  ComplaintProvider({ComplaintRepository? complaintService})
     : _service = complaintService ?? ComplaintService();
 
-  final ComplaintService _service;
+  final ComplaintRepository _service;
 
   List<ComplaintModel> _complaints = [];
   ComplaintModel? _selected;
