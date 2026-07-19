@@ -135,6 +135,13 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                   const Color(0xFF8B5CF6),
                   () => context.push(AppRoutes.complaintManage),
                 ),
+                _buildBentoCard(
+                  Icons.campaign_outlined,
+                  'Thông báo',
+                  'Tạo và quản lý thông báo chung.',
+                  DesignTokens.secondary,
+                  () => context.push(AppRoutes.announcementList),
+                ),
               ],
             ),
           ],

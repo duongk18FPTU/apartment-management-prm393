@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../app/theme.dart';
-import '../../providers/auth_provider.dart';
+import '../../utils/constants.dart';
 import '../profile/profile_screen.dart';
 import 'bill_management/bill_list_screen.dart';
-import 'request_management/request_manage_screen.dart';
 import 'complaint_management/complaint_manage_screen.dart';
+import 'request_management/request_manage_screen.dart';
+import 'visitor_management/visitor_list_screen.dart';
 
 class StaffHomeScreen extends StatefulWidget {
   const StaffHomeScreen({super.key});
@@ -16,18 +17,14 @@ class StaffHomeScreen extends StatefulWidget {
 }
 
 class _StaffHomeScreenState extends State<StaffHomeScreen> {
-  int _selectedIndex = 1; // Mặc định mở tab Hóa đơn
+  int _selectedIndex = 1;
 
   @override
   Widget build(BuildContext context) {
     final List<Widget> tabs = [
       const RequestManageScreen(),
       const BillListScreen(),
-      _buildPlaceholderTab(
-        'Khách viếng thăm',
-        Icons.badge_outlined,
-        'BQL quản lý thông tin đăng ký, check-in, check-out khách viếng thăm (Member 5).',
-      ),
+      const VisitorListScreen(),
       const ComplaintManageScreen(),
       const UserProfileScreen(),
     ];
@@ -35,6 +32,11 @@ class _StaffHomeScreenState extends State<StaffHomeScreen> {
     return Scaffold(
       backgroundColor: DesignTokens.background,
       body: IndexedStack(index: _selectedIndex, children: tabs),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => context.push(AppRoutes.announcementList),
+        icon: const Icon(Icons.campaign_outlined),
+        label: const Text('Thông báo'),
+      ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _selectedIndex,
         onDestinationSelected: (index) {
@@ -59,8 +61,8 @@ class _StaffHomeScreenState extends State<StaffHomeScreen> {
             label: 'Khách',
           ),
           NavigationDestination(
-            icon: Icon(Icons.campaign_outlined),
-            selectedIcon: Icon(Icons.campaign_rounded),
+            icon: Icon(Icons.feedback_outlined),
+            selectedIcon: Icon(Icons.feedback_rounded),
             label: 'Khiếu nại',
           ),
           NavigationDestination(
@@ -69,48 +71,6 @@ class _StaffHomeScreenState extends State<StaffHomeScreen> {
             label: 'Cá nhân',
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildPlaceholderTab(String title, IconData icon, String desc) {
-    return Scaffold(
-      backgroundColor: DesignTokens.background,
-      appBar: AppBar(
-        title: Text(title),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout_rounded),
-            onPressed: () => context.read<AuthProvider>().logout(),
-            tooltip: 'Đăng xuất',
-          ),
-        ],
-      ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, size: 64, color: DesignTokens.neutralVariant),
-              const SizedBox(height: AppSpacing.md),
-              Text(
-                title,
-                style: Theme.of(
-                  context,
-                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              Text(
-                desc,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: DesignTokens.neutralVariant,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
