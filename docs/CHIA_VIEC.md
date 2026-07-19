@@ -173,14 +173,16 @@ lib/
 > - Role và trạng thái được quản lý trong Firestore. Active Admin được phép tạo/cập nhật profile; người dùng inactive bị chặn dữ liệu bởi Security Rules và bị ứng dụng đăng xuất.
 > - Giới hạn của Spark: trạng thái inactive không đặt cờ disabled trong Firebase Auth và không dùng custom claims; quyền truy cập ứng dụng dựa trên Firestore profile/rules.
 > - Giao diện tuân thủ `DESIGN.md` và Material 3; taste skill được dùng để audit hierarchy, spacing, contrast và đầy đủ trạng thái loading/empty/error theo phạm vi phù hợp với Flutter admin mobile.
-> - Đã xác minh: `dart analyze` **No issues found**, Flutter **5/5 tests pass**, Firestore rules emulator **7/7 tests pass** và `npm audit` **0 vulnerabilities**.
-> - Firestore rules Spark-compatible đã deploy production lên project `apartment-mgmt-prm393` ngày 19/07/2026.
+> - Audit Sprint 2 đã bổ sung rollback có cảnh báo khi không xóa được Auth account, test trực tiếp vòng đời Firebase app phụ, trạng thái không hợp lệ mặc định inactive, refresh chờ dữ liệu mới và màn hình edit có lỗi kèm retry.
+> - Firestore self-update bắt buộc giữ đủ schema, không đổi trường phân quyền và dùng server timestamp cho `updatedAt`; các widget lớn đã được tách nhỏ, spacing dùng token từ `DESIGN.md`.
+> - Đã xác minh: `flutter analyze` **No issues found**, Flutter **16/16 tests pass**, Firestore rules emulator **7/7 tests pass** và `npm audit` **0 vulnerabilities**.
+> - Firestore rules Spark-compatible nền đã deploy production lên project `apartment-mgmt-prm393` ngày 19/07/2026; phần siết self-update của audit đã pass emulator và chờ review/merge trước khi deploy.
 
 #### Sprint 3
 - [ ] Widget tests cho Authentication screens
 - [ ] Unit tests cho `AuthService`
 - [ ] Code review toàn team
-- [ ] Fix bugs + polish
+- [x] Fix bugs + polish *(đã xử lý toàn bộ phát hiện audit Sprint 2 ngày 19/07/2026)*
 
 **Screens phụ trách**: Login, Change Password, User List, User Create/Edit
 **Firestore collections**: `users`

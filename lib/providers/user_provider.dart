@@ -13,6 +13,7 @@ class UserProvider extends ChangeNotifier {
 
   final UserRepository _userService;
   StreamSubscription<List<UserModel>>? _userSubscription;
+  Completer<void>? _refreshCompleter;
 
   List<UserModel> _users = const [];
   List<ApartmentOption> _apartments = const [];
@@ -61,22 +62,43 @@ class UserProvider extends ChangeNotifier {
       (users) {
         _users = users;
         _isLoading = false;
+        _errorMessage = null;
+        _completeRefresh();
         notifyListeners();
       },
       onError: (Object _) {
         _isLoading = false;
         _errorMessage = 'Không thể tải danh sách người dùng';
+        _completeRefresh();
         notifyListeners();
       },
     );
   }
 
   /// Restarts the Firestore stream after a recoverable loading failure.
-  void refreshUsers() {
-    _userSubscription?.cancel();
-    _userSubscription = null;
-    _hasStartedListening = false;
-    listenToUsers();
+  Future<void> refreshUsers() {
+    final activeRefresh = _refreshCompleter;
+    if (activeRefresh != null && !activeRefresh.isCompleted) {
+      return activeRefresh.future;
+    }
+    final completer = Completer<void>();
+    _refreshCompleter = completer;
+    unawaited(_restartUserStream(completer));
+    return completer.future;
+  }
+
+  Future<void> _restartUserStream(Completer<void> completer) async {
+    try {
+      await _userSubscription?.cancel();
+      if (!identical(_refreshCompleter, completer)) return;
+      _userSubscription = null;
+      _hasStartedListening = false;
+      listenToUsers();
+    } catch (error, stackTrace) {
+      if (!identical(_refreshCompleter, completer)) return;
+      _refreshCompleter = null;
+      completer.completeError(error, stackTrace);
+    }
   }
 
   Future<void> loadApartments() async {
@@ -91,6 +113,7 @@ class UserProvider extends ChangeNotifier {
   }
 
   Future<UserModel?> loadUser(String userId) async {
+    _errorMessage = null;
     for (final user in _users) {
       if (user.uid == userId) return user;
     }
@@ -210,8 +233,15 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void _completeRefresh() {
+    final completer = _refreshCompleter;
+    if (completer != null && !completer.isCompleted) completer.complete();
+    _refreshCompleter = null;
+  }
+
   @override
   void dispose() {
+    _completeRefresh();
     _userSubscription?.cancel();
     super.dispose();
   }

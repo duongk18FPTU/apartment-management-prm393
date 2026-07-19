@@ -122,6 +122,13 @@ service cloud.firestore {
         // Every active user may edit safe fields on their own profile.
         (isActive() &&
           request.auth.uid == userId &&
+          hasValidUserDocument() &&
+          request.resource.data.email == resource.data.email &&
+          request.resource.data.role == resource.data.role &&
+          request.resource.data.apartmentId == resource.data.apartmentId &&
+          request.resource.data.status == resource.data.status &&
+          request.resource.data.createdAt == resource.data.createdAt &&
+          request.resource.data.updatedAt == request.time &&
           request.resource.data.diff(resource.data).affectedKeys().hasOnly([
             'fullName',
             'phone',

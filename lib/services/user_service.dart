@@ -3,9 +3,183 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 
 import '../models/user_model.dart';
 import '../utils/constants.dart';
+
+typedef UserProfileCreator =
+    Future<void> Function({
+      required String uid,
+      required String email,
+      required String fullName,
+      required String phone,
+      required String nationalId,
+      required UserRole role,
+      required String? apartmentId,
+    });
+
+typedef InvitationSender = Future<bool> Function(String email);
+
+abstract interface class UserAccountProvisioner {
+  Future<ProvisionedUserAccount> createAccount({
+    required String email,
+    required String password,
+    required String displayName,
+  });
+}
+
+class ProvisionedUserAccount {
+  const ProvisionedUserAccount({
+    required this.uid,
+    required this.delete,
+    required this.dispose,
+  });
+
+  final String uid;
+  final Future<void> Function() delete;
+  final Future<void> Function() dispose;
+}
+
+abstract interface class UserProvisioningSession {
+  Future<UserProvisioningIdentity> createUser({
+    required String email,
+    required String password,
+  });
+  Future<void> dispose();
+}
+
+abstract interface class UserProvisioningIdentity {
+  String get uid;
+  Future<void> updateDisplayName(String displayName);
+  Future<void> delete();
+}
+
+typedef UserProvisioningSessionFactory =
+    Future<UserProvisioningSession> Function();
+
+class FirebaseUserAccountProvisioner implements UserAccountProvisioner {
+  FirebaseUserAccountProvisioner({
+    UserProvisioningSessionFactory? sessionFactory,
+  }) : _sessionFactory = sessionFactory ?? _openFirebaseSession;
+
+  final UserProvisioningSessionFactory _sessionFactory;
+
+  @override
+  Future<ProvisionedUserAccount> createAccount({
+    required String email,
+    required String password,
+    required String displayName,
+  }) async {
+    UserProvisioningSession? session;
+    UserProvisioningIdentity? user;
+
+    try {
+      session = await _sessionFactory();
+      user = await session.createUser(email: email, password: password);
+      await user.updateDisplayName(displayName);
+      return ProvisionedUserAccount(
+        uid: user.uid,
+        delete: user.delete,
+        dispose: session.dispose,
+      );
+    } catch (error, stackTrace) {
+      var rollbackFailed = false;
+      if (user != null) {
+        try {
+          await user.delete();
+        } catch (_) {
+          rollbackFailed = true;
+        }
+      }
+      if (session != null) {
+        try {
+          await session.dispose();
+        } catch (cleanupError) {
+          debugPrint(
+            '[UserService] Failed provisioning session cleanup: $cleanupError',
+          );
+        }
+      }
+      if (rollbackFailed) {
+        throw const UserServiceException(
+          'Không thể hoàn tác tài khoản Auth sau khi khởi tạo thất bại. '
+          'Vui lòng xóa tài khoản này trong Firebase Authentication trước khi thử lại.',
+        );
+      }
+      Error.throwWithStackTrace(error, stackTrace);
+    }
+  }
+
+  static Future<UserProvisioningSession> _openFirebaseSession() async {
+    final app = await Firebase.initializeApp(
+      name: 'userProvisioning${DateTime.now().microsecondsSinceEpoch}',
+      options: Firebase.app().options,
+    );
+    try {
+      return _FirebaseUserProvisioningSession(
+        app: app,
+        auth: FirebaseAuth.instanceFor(app: app),
+      );
+    } catch (error, stackTrace) {
+      await app.delete();
+      Error.throwWithStackTrace(error, stackTrace);
+    }
+  }
+}
+
+class _FirebaseUserProvisioningSession implements UserProvisioningSession {
+  const _FirebaseUserProvisioningSession({
+    required FirebaseApp app,
+    required FirebaseAuth auth,
+  }) : _app = app,
+       _auth = auth;
+
+  final FirebaseApp _app;
+  final FirebaseAuth _auth;
+
+  @override
+  Future<UserProvisioningIdentity> createUser({
+    required String email,
+    required String password,
+  }) async {
+    final credential = await _auth.createUserWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+    final user = credential.user;
+    if (user == null) {
+      throw const UserServiceException('Không thể tạo tài khoản người dùng');
+    }
+    return _FirebaseUserProvisioningIdentity(user);
+  }
+
+  @override
+  Future<void> dispose() async {
+    try {
+      await _auth.signOut();
+    } finally {
+      await _app.delete();
+    }
+  }
+}
+
+class _FirebaseUserProvisioningIdentity implements UserProvisioningIdentity {
+  const _FirebaseUserProvisioningIdentity(this._user);
+
+  final User _user;
+
+  @override
+  String get uid => _user.uid;
+
+  @override
+  Future<void> delete() => _user.delete();
+
+  @override
+  Future<void> updateDisplayName(String displayName) {
+    return _user.updateDisplayName(displayName);
+  }
+}
 
 /// Provides Firestore operations for the admin-only user management module.
 ///
@@ -31,12 +205,29 @@ abstract interface class UserRepository {
 }
 
 class UserService implements UserRepository {
-  UserService({FirebaseFirestore? firestore, FirebaseAuth? auth})
-    : _firestore = firestore ?? FirebaseFirestore.instance,
-      _auth = auth ?? FirebaseAuth.instance;
+  UserService({
+    FirebaseFirestore? firestore,
+    FirebaseAuth? auth,
+    UserAccountProvisioner? accountProvisioner,
+    UserProfileCreator? profileCreator,
+    InvitationSender? invitationSender,
+  }) : _firestoreOverride = firestore,
+       _authOverride = auth,
+       _accountProvisioner =
+           accountProvisioner ?? FirebaseUserAccountProvisioner(),
+       _profileCreator = profileCreator,
+       _invitationSender = invitationSender;
 
-  final FirebaseFirestore _firestore;
-  final FirebaseAuth _auth;
+  final FirebaseFirestore? _firestoreOverride;
+  final FirebaseAuth? _authOverride;
+  final UserAccountProvisioner _accountProvisioner;
+  final UserProfileCreator? _profileCreator;
+  final InvitationSender? _invitationSender;
+
+  FirebaseFirestore get _firestore =>
+      _firestoreOverride ?? FirebaseFirestore.instance;
+
+  FirebaseAuth get _auth => _authOverride ?? FirebaseAuth.instance;
 
   CollectionReference<UserModel> get _users => _firestore
       .collection(AppCollections.users)
@@ -78,53 +269,41 @@ class UserService implements UserRepository {
     String? apartmentId,
   }) async {
     final normalizedEmail = email.trim().toLowerCase();
-    FirebaseApp? secondaryApp;
-    User? createdUser;
-    var profileCreated = false;
+    ProvisionedUserAccount? account;
 
     try {
-      secondaryApp = await Firebase.initializeApp(
-        name: 'userProvisioning${DateTime.now().microsecondsSinceEpoch}',
-        options: Firebase.app().options,
-      );
-      final secondaryAuth = FirebaseAuth.instanceFor(app: secondaryApp);
-      final credential = await secondaryAuth.createUserWithEmailAndPassword(
+      account = await _accountProvisioner.createAccount(
         email: normalizedEmail,
         password: _temporaryPassword(),
+        displayName: fullName.trim(),
       );
-      createdUser = credential.user;
-      if (createdUser == null) {
-        throw const UserServiceException('Không thể tạo tài khoản người dùng');
-      }
-
-      await createdUser.updateDisplayName(fullName.trim());
-      await _firestore
-          .collection(AppCollections.users)
-          .doc(createdUser.uid)
-          .set({
-            'email': normalizedEmail,
-            'fullName': fullName.trim(),
-            'phone': phone.trim(),
-            'role': role.name,
-            'apartmentId': apartmentId,
-            'nationalId': nationalId.trim(),
-            'dateOfBirth': null,
-            'avatarUrl': null,
-            'status': UserStatus.active.name,
-            'createdAt': FieldValue.serverTimestamp(),
-            'updatedAt': FieldValue.serverTimestamp(),
-          });
-      profileCreated = true;
-
-      await secondaryAuth.signOut();
-      var invitationSent = true;
       try {
-        await _auth.sendPasswordResetEmail(email: normalizedEmail);
-      } on FirebaseAuthException {
-        invitationSent = false;
+        await (_profileCreator ?? _createProfile)(
+          uid: account.uid,
+          email: normalizedEmail,
+          fullName: fullName.trim(),
+          phone: phone.trim(),
+          nationalId: nationalId.trim(),
+          role: role,
+          apartmentId: apartmentId,
+        );
+      } catch (profileError, stackTrace) {
+        try {
+          await account.delete();
+        } catch (_) {
+          throw const UserServiceException(
+            'Không thể hoàn tác tài khoản Auth sau khi tạo hồ sơ thất bại. '
+            'Vui lòng xóa tài khoản này trong Firebase Authentication trước khi thử lại.',
+          );
+        }
+        Error.throwWithStackTrace(profileError, stackTrace);
       }
+
+      final invitationSent = await (_invitationSender ?? _sendInvitation)(
+        normalizedEmail,
+      );
       return UserCreationResult(
-        uid: createdUser.uid,
+        uid: account.uid,
         email: normalizedEmail,
         invitationSent: invitationSent,
       );
@@ -133,10 +312,48 @@ class UserService implements UserRepository {
     } on FirebaseException catch (exception) {
       throw UserServiceException.fromFirebase(exception);
     } finally {
-      if (createdUser != null && !profileCreated) {
-        await createdUser.delete().catchError((_) {});
+      if (account != null) {
+        try {
+          await account.dispose();
+        } catch (error) {
+          debugPrint(
+            '[UserService] Secondary Firebase app cleanup failed: $error',
+          );
+        }
       }
-      await secondaryApp?.delete();
+    }
+  }
+
+  Future<void> _createProfile({
+    required String uid,
+    required String email,
+    required String fullName,
+    required String phone,
+    required String nationalId,
+    required UserRole role,
+    required String? apartmentId,
+  }) {
+    return _firestore.collection(AppCollections.users).doc(uid).set({
+      'email': email,
+      'fullName': fullName,
+      'phone': phone,
+      'role': role.name,
+      'apartmentId': apartmentId,
+      'nationalId': nationalId,
+      'dateOfBirth': null,
+      'avatarUrl': null,
+      'status': UserStatus.active.name,
+      'createdAt': FieldValue.serverTimestamp(),
+      'updatedAt': FieldValue.serverTimestamp(),
+    });
+  }
+
+  Future<bool> _sendInvitation(String email) async {
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+      return true;
+    } on FirebaseAuthException {
+      return false;
     }
   }
 

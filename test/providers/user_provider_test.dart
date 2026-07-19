@@ -70,6 +70,37 @@ void main() {
     expect(succeeded, isFalse);
     expect(repository.statusUpdateCalls, 0);
   });
+
+  test('refresh waits until the replacement stream emits', () async {
+    provider.listenToUsers();
+    repository.usersController.add([
+      _user(uid: '1', name: 'Initial User', role: UserRole.resident),
+    ]);
+    await Future<void>.delayed(Duration.zero);
+
+    var completed = false;
+    final refresh = provider.refreshUsers()..then((_) => completed = true);
+    final duplicateRefresh = provider.refreshUsers();
+    await Future<void>.delayed(Duration.zero);
+    expect(completed, isFalse);
+
+    repository.usersController.add([
+      _user(uid: '2', name: 'Refreshed User', role: UserRole.staff),
+    ]);
+    await Future.wait([refresh, duplicateRefresh]);
+
+    expect(completed, isTrue);
+    expect(provider.users.single.uid, '2');
+  });
+
+  test('loadUser exposes repository errors for the edit error state', () async {
+    repository.getUserError = const UserServiceException('Load failed');
+
+    final user = await provider.loadUser('missing-user');
+
+    expect(user, isNull);
+    expect(provider.errorMessage, 'Load failed');
+  });
 }
 
 UserModel _user({
@@ -100,12 +131,16 @@ class FakeUserRepository implements UserRepository {
     invitationSent: true,
   );
   int statusUpdateCalls = 0;
+  UserServiceException? getUserError;
 
   @override
   Stream<List<UserModel>> watchUsers() => usersController.stream;
 
   @override
-  Future<UserModel?> getUser(String userId) async => null;
+  Future<UserModel?> getUser(String userId) async {
+    if (getUserError case final error?) throw error;
+    return null;
+  }
 
   @override
   Future<List<ApartmentOption>> getApartmentOptions() async => const [];
