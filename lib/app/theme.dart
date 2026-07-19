@@ -455,3 +455,68 @@ ThemeData buildAppTheme() {
     ),
   );
 }
+
+/// Returns the complete dark [ThemeData] for the app.
+ThemeData buildAppDarkTheme() {
+  final textTheme = _buildTextTheme().apply(
+    bodyColor: Colors.white,
+    displayColor: Colors.white,
+  );
+
+  const darkColorScheme = ColorScheme(
+    brightness: Brightness.dark,
+    primary: DesignTokens.secondary, // Accent Amber on Dark
+    onPrimary: Colors.black,
+    secondary: DesignTokens.secondary,
+    onSecondary: Colors.black,
+    tertiary: DesignTokens.tertiary,
+    onTertiary: Colors.black,
+    surface: Color(0xFF1E293B), // Slate-800 Card
+    onSurface: Color(0xFFF1F5F9), // Slate-100 Text
+    error: DesignTokens.error,
+    onError: Colors.white,
+    outline: Color(0xFF475569), // Slate-600 Border
+    scrim: Colors.black,
+    shadow: Colors.black,
+  );
+
+  return ThemeData(
+    useMaterial3: true,
+    brightness: Brightness.dark,
+    colorScheme: darkColorScheme,
+    textTheme: textTheme,
+    scaffoldBackgroundColor: const Color(0xFF0F172A), // Slate-900 Background
+    // Simple Card Theme override
+    cardTheme: CardThemeData(
+      color: const Color(0xFF1E293B),
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.md),
+      ),
+    ),
+
+    // InputDecoration override for Dark mode
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: const Color(0xFF1E293B),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(AppRadius.sm),
+        borderSide: const BorderSide(color: Color(0xFF334155)),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(AppRadius.sm),
+        borderSide: const BorderSide(color: Color(0xFF334155)),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(AppRadius.sm),
+        borderSide: const BorderSide(color: DesignTokens.secondary, width: 2),
+      ),
+    ),
+
+    // NavigationBar override for Dark mode
+    navigationBarTheme: NavigationBarThemeData(
+      backgroundColor: const Color(0xFF1E293B),
+      indicatorColor: DesignTokens.secondary.withValues(alpha: 0.2),
+    ),
+  );
+}

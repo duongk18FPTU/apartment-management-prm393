@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../../../app/theme.dart';
 import '../../../providers/auth_provider.dart';
+import '../../../providers/theme_provider.dart';
 import '../../../widgets/custom_text_field.dart';
 
 class ResidentProfileScreen extends StatefulWidget {
@@ -101,6 +102,10 @@ class _ResidentProfileScreenState extends State<ResidentProfileScreen> {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
     final authProvider = context.watch<AuthProvider>();
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final authProvider = context.watch<AuthProvider>();
+    final themeProvider = context.watch<ThemeProvider>();
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -198,8 +203,14 @@ class _ResidentProfileScreenState extends State<ResidentProfileScreen> {
                 child: Container(
                   padding: const EdgeInsets.all(AppSpacing.md),
                   decoration: BoxDecoration(
-                    color: DesignTokens.surface,
-                    border: Border.all(color: const Color(0xFFE2E8F0)),
+                    color: theme.brightness == Brightness.dark
+                        ? const Color(0xFF1E293B)
+                        : DesignTokens.surface,
+                    border: Border.all(
+                      color: theme.brightness == Brightness.dark
+                          ? const Color(0xFF334155)
+                          : const Color(0xFFE2E8F0),
+                    ),
                     borderRadius: AppRadius.borderSm,
                   ),
                   child: Row(
@@ -230,6 +241,27 @@ class _ResidentProfileScreenState extends State<ResidentProfileScreen> {
               ),
               const SizedBox(height: AppSpacing.xl),
 
+              // Theme Settings Card
+              Card(
+                child: SwitchListTile(
+                  title: Text(
+                    'Chế độ tối (Dark Mode)',
+                    style: textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  subtitle: Text(
+                    'Chuyển đổi giao diện sang nền tối dịu mắt',
+                    style: textTheme.bodySmall,
+                  ),
+                  value: themeProvider.isDarkMode,
+                  activeColor: DesignTokens.secondary,
+                  onChanged: (val) {
+                    themeProvider.toggleTheme(val);
+                  },
+                ),
+              ),
+              const SizedBox(height: AppSpacing.xl),
               // Save button
               ElevatedButton(
                 onPressed: authProvider.isLoading ? null : _submit,
