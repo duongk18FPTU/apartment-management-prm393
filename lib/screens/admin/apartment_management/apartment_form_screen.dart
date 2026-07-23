@@ -20,6 +20,8 @@ class _ApartmentFormScreenState extends State<ApartmentFormScreen> {
   late final TextEditingController _buildingController;
   late final TextEditingController _floorController;
   late final TextEditingController _areaController;
+  late final TextEditingController _typeController;
+  late final TextEditingController _priceController;
   late ApartmentStatus _status;
 
   @override
@@ -32,6 +34,12 @@ class _ApartmentFormScreenState extends State<ApartmentFormScreen> {
     );
     _floorController = TextEditingController(text: apartment?.floor.toString());
     _areaController = TextEditingController(text: apartment?.area.toString());
+    _typeController = TextEditingController(
+      text: apartment == null ? '' : apartment.displayType,
+    );
+    _priceController = TextEditingController(
+      text: apartment == null ? '' : apartment.displayPrice.toString(),
+    );
     _status = apartment?.status ?? ApartmentStatus.vacant;
   }
 
@@ -41,6 +49,8 @@ class _ApartmentFormScreenState extends State<ApartmentFormScreen> {
     _buildingController.dispose();
     _floorController.dispose();
     _areaController.dispose();
+    _typeController.dispose();
+    _priceController.dispose();
     super.dispose();
   }
 
@@ -53,6 +63,8 @@ class _ApartmentFormScreenState extends State<ApartmentFormScreen> {
       floor: int.parse(_floorController.text),
       building: _buildingController.text.trim(),
       area: double.parse(_areaController.text),
+      type: _typeController.text.trim(),
+      price: double.parse(_priceController.text),
       ownerId: old?.ownerId,
       status: _status,
       residentIds: old?.residentIds ?? const [],
@@ -90,6 +102,8 @@ class _ApartmentFormScreenState extends State<ApartmentFormScreen> {
               buildingController: _buildingController,
               floorController: _floorController,
               areaController: _areaController,
+              typeController: _typeController,
+              priceController: _priceController,
               status: _status,
               onStatusChanged: (value) =>
                   setState(() => _status = value ?? _status),

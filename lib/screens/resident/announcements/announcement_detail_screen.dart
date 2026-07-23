@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../../app/theme.dart';
+import '../../../models/notification_model.dart';
 import '../../../providers/announcement_provider.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../utils/constants.dart';
@@ -74,9 +75,8 @@ class _AnnouncementDetailScreenState extends State<AnnouncementDetailScreen> {
           if (canManage && item != null) ...[
             IconButton(
               tooltip: 'Sửa',
-              onPressed: () => context.push(
-                '${AppRoutes.announcementCreate}?id=${item.id}',
-              ),
+              onPressed: () =>
+                  context.push('${AppRoutes.announcementCreate}?id=${item.id}'),
               icon: const Icon(Icons.edit_outlined),
             ),
             IconButton(
@@ -97,6 +97,21 @@ class _AnnouncementDetailScreenState extends State<AnnouncementDetailScreen> {
                 Text(
                   item.title,
                   style: Theme.of(context).textTheme.headlineSmall,
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                Wrap(
+                  spacing: AppSpacing.sm,
+                  runSpacing: AppSpacing.xs,
+                  children: [
+                    Chip(
+                      avatar: const Icon(Icons.category_outlined, size: 18),
+                      label: Text(AnnouncementType.fromValue(item.type).label),
+                    ),
+                    Chip(
+                      avatar: const Icon(Icons.person_outline, size: 18),
+                      label: Text('Creator: ${item.createdBy}'),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 if (item.createdAt != null)

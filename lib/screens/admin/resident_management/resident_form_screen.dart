@@ -75,10 +75,11 @@ class _ResidentFormScreenState extends State<ResidentFormScreen> {
       await _syncApartment(oldApartmentId, resident.uid);
       if (mounted) Navigator.of(context).pop();
     } catch (error) {
-      if (mounted)
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Unable to save resident profile.')),
         );
+      }
     }
   }
 

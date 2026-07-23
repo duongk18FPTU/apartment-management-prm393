@@ -59,6 +59,11 @@ class ApartmentDetails extends StatelessWidget {
             label: 'Area',
             value: '${apartment.area.toStringAsFixed(1)} m²',
           ),
+          ApartmentDetailRow(label: 'Type', value: apartment.displayType),
+          ApartmentDetailRow(
+            label: 'Price',
+            value: '${apartment.displayPrice.toStringAsFixed(1)} million VND',
+          ),
           ApartmentDetailRow(label: 'Status', value: apartment.status.name),
           ApartmentDetailRow(
             label: 'Owner ID',

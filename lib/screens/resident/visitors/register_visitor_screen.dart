@@ -190,7 +190,7 @@ class _RegisterVisitorScreenState extends State<RegisterVisitorScreen> {
                   ),
                 ),
                 child: Container(
-                  color: Colors.black.withOpacity(0.4),
+                  color: Colors.black.withValues(alpha: 0.4),
                   padding: const EdgeInsets.all(20.0),
                   alignment: Alignment.bottomLeft,
                   child: const Column(
@@ -342,7 +342,7 @@ class _RegisterVisitorScreenState extends State<RegisterVisitorScreen> {
                       ),
                       const SizedBox(height: 8),
                       DropdownButtonFormField<String>(
-                        value: _selectedPurpose,
+                        initialValue: _selectedPurpose,
                         style: const TextStyle(
                           color: Color(0xFF091426),
                           fontSize: 14,

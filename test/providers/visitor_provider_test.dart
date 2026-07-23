@@ -93,7 +93,7 @@ void main() {
 
 VisitorModel _visitor({
   required String id,
-  String name = 'Khách $id',
+  String? name,
   String phone = '0900000000',
   String apt = 'A-101',
   String status = VisitorStatus.registered,
@@ -101,7 +101,7 @@ VisitorModel _visitor({
   final now = DateTime(2026, 7, 1);
   return VisitorModel(
     id: id,
-    visitorName: name,
+    visitorName: name ?? 'Khách $id',
     visitorPhone: phone,
     purpose: 'Thăm',
     registeredBy: 'res-1',

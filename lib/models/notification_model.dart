@@ -1,5 +1,25 @@
 import '../utils/firestore_value_parser.dart';
 
+enum AnnouncementType {
+  general('announcement', 'General'),
+  maintenance('maintenance', 'Maintenance'),
+  event('event', 'Event'),
+  emergency('emergency', 'Emergency'),
+  system('system', 'System');
+
+  const AnnouncementType(this.value, this.label);
+
+  final String value;
+  final String label;
+
+  static AnnouncementType fromValue(String value) {
+    return AnnouncementType.values.firstWhere(
+      (type) => type.value == value,
+      orElse: () => AnnouncementType.general,
+    );
+  }
+}
+
 class NotificationModel {
   const NotificationModel({
     required this.id,

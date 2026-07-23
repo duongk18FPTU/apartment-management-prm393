@@ -118,9 +118,6 @@ class _LoginScreenState extends State<LoginScreen>
                       const SizedBox(height: 32),
 
                       _SubmitButton(onSubmit: _submit),
-                      const SizedBox(height: 24),
-
-                      const _ForgotPasswordButton(),
                       const SizedBox(height: 48),
 
                       const _FooterSection(),
@@ -323,41 +320,6 @@ class _SubmitButton extends StatelessWidget {
           ),
         );
       },
-    );
-  }
-}
-
-class _ForgotPasswordButton extends StatelessWidget {
-  const _ForgotPasswordButton();
-
-  @override
-  Widget build(BuildContext context) {
-    return TextButton(
-      onPressed: () {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Quên mật khẩu'),
-            content: const Text(
-              'Vui lòng liên hệ Ban quản trị qua hotline để được cấp lại mật khẩu.',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Đóng'),
-              ),
-            ],
-          ),
-        );
-      },
-      child: const Text(
-        'Quên mật khẩu?',
-        style: TextStyle(
-          color: DesignTokens.neutralVariant,
-          fontWeight: FontWeight.w500,
-          fontSize: 14,
-        ),
-      ),
     );
   }
 }

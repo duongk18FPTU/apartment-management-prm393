@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
 import '../../app/theme.dart';
 import '../../providers/auth_provider.dart';
+import '../../utils/constants.dart';
 import '../../widgets/custom_text_field.dart';
 
 class UserProfileScreen extends StatefulWidget {
@@ -249,6 +251,16 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         ),
                       )
                     : const Text('LƯU THAY ĐỔI'),
+              ),
+              const SizedBox(height: AppSpacing.md),
+
+              OutlinedButton.icon(
+                onPressed: () => context.push(AppRoutes.changePassword),
+                icon: const Icon(Icons.lock_reset_rounded),
+                label: const Text('ĐỔI MẬT KHẨU'),
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 52),
+                ),
               ),
               const SizedBox(height: AppSpacing.md),
 

@@ -32,7 +32,9 @@ void main() {
 
   test('loadAnnouncements falls back when type filter empty', () async {
     repository.byType['announcement'] = [];
-    repository.all = [_announcement(id: 'sys', title: 'Hệ thống', type: 'system')];
+    repository.all = [
+      _announcement(id: 'sys', title: 'Hệ thống', type: 'system'),
+    ];
 
     await provider.loadAnnouncements();
 
@@ -49,10 +51,14 @@ void main() {
       title: 'Mới',
       content: 'Nội dung',
       createdBy: 'admin-1',
+      type: 'event',
+      targetRoles: const ['resident', 'staff'],
     );
 
     expect(ok, isTrue);
     expect(repository.createCalls, 1);
+    expect(repository.lastCreatedType, 'event');
+    expect(repository.lastCreatedTargetRoles, ['resident', 'staff']);
     expect(provider.items, hasLength(1));
   });
 
@@ -98,6 +104,8 @@ class FakeAnnouncementRepository implements AnnouncementRepository {
   List<NotificationModel> all = [];
   NotificationModel? detail;
   int createCalls = 0;
+  String? lastCreatedType;
+  List<String>? lastCreatedTargetRoles;
   final List<String?> getCallsWithType = [];
   FirestoreException? throwOnDelete;
 
@@ -122,6 +130,8 @@ class FakeAnnouncementRepository implements AnnouncementRepository {
     List<String> targetRoles = const ['resident', 'staff', 'admin'],
   }) async {
     createCalls++;
+    lastCreatedType = type;
+    lastCreatedTargetRoles = List.from(targetRoles);
     return 'new-id';
   }
 

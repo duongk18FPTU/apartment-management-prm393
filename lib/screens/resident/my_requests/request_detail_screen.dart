@@ -241,10 +241,10 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
                               child: CachedNetworkImage(
                                 imageUrl: request.imageUrls.first,
                                 fit: BoxFit.cover,
-                                placeholder: (_, __) => const Center(
+                                placeholder: (_, _) => const Center(
                                   child: CircularProgressIndicator(),
                                 ),
-                                errorWidget: (_, __, ___) => const Center(
+                                errorWidget: (_, _, _) => const Center(
                                   child: Icon(
                                     Icons.broken_image_outlined,
                                     size: 48,
@@ -350,7 +350,7 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
                                 ),
                                 child: DropdownButtonHideUnderline(
                                   child: DropdownButtonFormField<RequestStatus>(
-                                    value: _selectedStatus,
+                                    initialValue: _selectedStatus,
                                     decoration: const InputDecoration(
                                       border: InputBorder.none,
                                     ),

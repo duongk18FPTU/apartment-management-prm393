@@ -31,5 +31,13 @@ void main() {
 
       expect(model.type, 'announcement');
     });
+
+    test('maps supported announcement types with a safe fallback', () {
+      expect(
+        AnnouncementType.fromValue('emergency'),
+        AnnouncementType.emergency,
+      );
+      expect(AnnouncementType.fromValue('unknown'), AnnouncementType.general);
+    });
   });
 }

@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../../app/theme.dart';
+import '../../../models/notification_model.dart';
 import '../../../providers/announcement_provider.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../utils/constants.dart';
@@ -128,6 +129,13 @@ class _AnnouncementListScreenState extends State<AnnouncementListScreen> {
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                   ),
+                                ),
+                                const SizedBox(width: AppSpacing.sm),
+                                Chip(
+                                  label: Text(
+                                    AnnouncementType.fromValue(item.type).label,
+                                  ),
+                                  visualDensity: VisualDensity.compact,
                                 ),
                               ],
                             ),

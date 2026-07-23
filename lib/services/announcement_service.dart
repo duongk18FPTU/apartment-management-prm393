@@ -95,8 +95,8 @@ class AnnouncementService extends BaseFirestoreService
     return update(id, {
       'title': title.trim(),
       'content': content.trim(),
-      if (type != null) 'type': type,
-      if (targetRoles != null) 'targetRoles': targetRoles,
+      'type': ?type,
+      'targetRoles': ?targetRoles,
     });
   }
 

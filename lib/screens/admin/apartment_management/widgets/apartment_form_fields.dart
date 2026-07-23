@@ -9,6 +9,8 @@ class ApartmentFormFields extends StatelessWidget {
     required this.buildingController,
     required this.floorController,
     required this.areaController,
+    required this.typeController,
+    required this.priceController,
     required this.status,
     required this.onStatusChanged,
   });
@@ -17,6 +19,8 @@ class ApartmentFormFields extends StatelessWidget {
   final TextEditingController buildingController;
   final TextEditingController floorController;
   final TextEditingController areaController;
+  final TextEditingController typeController;
+  final TextEditingController priceController;
   final ApartmentStatus status;
   final ValueChanged<ApartmentStatus?> onStatusChanged;
 
@@ -65,6 +69,28 @@ class ApartmentFormFields extends StatelessWidget {
               ),
             ),
           ],
+        ),
+        const SizedBox(height: 16),
+        TextFormField(
+          controller: typeController,
+          decoration: const InputDecoration(
+            labelText: 'Apartment type',
+            hintText: 'Example: 2BR - 2BA',
+          ),
+          validator: _required,
+        ),
+        const SizedBox(height: 16),
+        TextFormField(
+          controller: priceController,
+          decoration: const InputDecoration(labelText: 'Price (million VND)'),
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          validator: (value) {
+            final price = double.tryParse(value ?? '');
+            if (price == null || price <= 0) {
+              return 'Enter a valid positive price.';
+            }
+            return null;
+          },
         ),
         const SizedBox(height: 16),
         DropdownButtonFormField<ApartmentStatus>(

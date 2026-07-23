@@ -3,11 +3,14 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../../app/theme.dart';
+import '../../../models/notification_model.dart';
 import '../../../providers/announcement_provider.dart';
 import '../../../providers/auth_provider.dart';
+import '../../../utils/constants.dart';
 import '../../../utils/validators.dart';
 import '../../../widgets/custom_text_field.dart';
 import '../../../widgets/loading_indicator.dart';
+import 'widgets/announcement_metadata_fields.dart';
 
 /// Admin/Staff — create or edit an announcement.
 class AnnouncementCreateScreen extends StatefulWidget {
@@ -26,6 +29,8 @@ class _AnnouncementCreateScreenState extends State<AnnouncementCreateScreen> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _contentController = TextEditingController();
+  AnnouncementType _selectedType = AnnouncementType.general;
+  final Set<UserRole> _selectedRoles = Set.of(UserRole.values);
   bool _prefilled = false;
 
   @override
@@ -40,6 +45,17 @@ class _AnnouncementCreateScreenState extends State<AnnouncementCreateScreen> {
         if (item != null && !_prefilled) {
           _titleController.text = item.title;
           _contentController.text = item.content;
+          _selectedType = AnnouncementType.fromValue(item.type);
+          _selectedRoles
+            ..clear()
+            ..addAll(
+              UserRole.values.where(
+                (role) => item.targetRoles.contains(role.name),
+              ),
+            );
+          if (_selectedRoles.isEmpty) {
+            _selectedRoles.addAll(UserRole.values);
+          }
           _prefilled = true;
           setState(() {});
         }
@@ -56,22 +72,37 @@ class _AnnouncementCreateScreenState extends State<AnnouncementCreateScreen> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
+    if (_selectedRoles.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Vui lòng chọn ít nhất một đối tượng nhận.'),
+        ),
+      );
+      return;
+    }
 
     final auth = context.read<AuthProvider>();
     final provider = context.read<AnnouncementProvider>();
     final bool ok;
+    final targetRoles = _selectedRoles
+        .map((role) => role.name)
+        .toList(growable: false);
 
     if (widget.isEditing) {
       ok = await provider.updateAnnouncement(
         id: widget.editId!,
         title: _titleController.text,
         content: _contentController.text,
+        type: _selectedType.value,
+        targetRoles: targetRoles,
       );
     } else {
       ok = await provider.createAnnouncement(
         title: _titleController.text,
         content: _contentController.text,
         createdBy: auth.userModel?.uid ?? '',
+        type: _selectedType.value,
+        targetRoles: targetRoles,
       );
     }
 
@@ -112,7 +143,7 @@ class _AnnouncementCreateScreenState extends State<AnnouncementCreateScreen> {
             padding: const EdgeInsets.all(AppSpacing.md),
             children: [
               Text(
-                'Thông báo sẽ hiển thị cho cư dân, nhân viên và quản trị (theo targetRoles mặc định).',
+                'Chọn loại thông báo và các vai trò được phép nhận thông báo.',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: DesignTokens.neutralVariant,
                 ),
@@ -135,6 +166,25 @@ class _AnnouncementCreateScreenState extends State<AnnouncementCreateScreen> {
                 validator: (v) =>
                     AppValidators.validateRequired(v, fieldName: 'Nội dung'),
               ),
+              const SizedBox(height: AppSpacing.md),
+              AnnouncementMetadataFields(
+                selectedType: _selectedType,
+                selectedRoles: _selectedRoles,
+                onTypeChanged: (value) {
+                  if (value != null) {
+                    setState(() => _selectedType = value);
+                  }
+                },
+                onRoleToggled: (role) {
+                  setState(() {
+                    if (_selectedRoles.contains(role)) {
+                      _selectedRoles.remove(role);
+                    } else {
+                      _selectedRoles.add(role);
+                    }
+                  });
+                },
+              ),
               const SizedBox(height: AppSpacing.xl),
               SizedBox(
                 width: double.infinity,
@@ -143,7 +193,9 @@ class _AnnouncementCreateScreenState extends State<AnnouncementCreateScreen> {
                   onPressed: isSubmitting ? null : _submit,
                   child: isSubmitting
                       ? const LoadingIndicator.circular(size: 24)
-                      : Text(widget.isEditing ? 'Lưu thay đổi' : 'Đăng thông báo'),
+                      : Text(
+                          widget.isEditing ? 'Lưu thay đổi' : 'Đăng thông báo',
+                        ),
                 ),
               ),
             ],

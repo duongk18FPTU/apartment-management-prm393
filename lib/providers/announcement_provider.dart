@@ -27,10 +27,15 @@ class AnnouncementProvider extends ChangeNotifier {
     _setLoading(true);
     _clearError();
     try {
-      _items = await _repository.getAnnouncements(type: 'announcement');
-      // Also include empty-type fallbacks from seed ("system" etc.) — load all if none
+      final allItems = await _repository.getAnnouncements();
+      final supportedTypes = AnnouncementType.values
+          .map((type) => type.value)
+          .toSet();
+      _items = allItems
+          .where((item) => supportedTypes.contains(item.type))
+          .toList(growable: false);
       if (_items.isEmpty) {
-        _items = await _repository.getAnnouncements();
+        _items = await _repository.getAnnouncements(type: 'announcement');
       }
     } on FirestoreException catch (e) {
       _errorMessage = e.message;
@@ -64,6 +69,7 @@ class AnnouncementProvider extends ChangeNotifier {
     required String title,
     required String content,
     required String createdBy,
+    String type = 'announcement',
     List<String> targetRoles = const ['resident', 'staff', 'admin'],
   }) async {
     _setSubmitting(true);
@@ -73,6 +79,7 @@ class AnnouncementProvider extends ChangeNotifier {
         title: title,
         content: content,
         createdBy: createdBy,
+        type: type,
         targetRoles: targetRoles,
       );
       await loadAnnouncements();
@@ -93,6 +100,8 @@ class AnnouncementProvider extends ChangeNotifier {
     required String id,
     required String title,
     required String content,
+    required String type,
+    required List<String> targetRoles,
   }) async {
     _setSubmitting(true);
     _clearError();
@@ -101,6 +110,8 @@ class AnnouncementProvider extends ChangeNotifier {
         id: id,
         title: title,
         content: content,
+        type: type,
+        targetRoles: targetRoles,
       );
       await loadDetail(id);
       await loadAnnouncements();
