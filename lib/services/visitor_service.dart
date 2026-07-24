@@ -39,10 +39,7 @@ abstract class VisitorRepository {
     required DateTime expectedTime,
   });
 
-  Future<void> checkIn({
-    required String visitorId,
-    required String staffId,
-  });
+  Future<void> checkIn({required String visitorId, required String staffId});
 
   Future<void> checkOut({required String visitorId});
 }
@@ -110,10 +107,7 @@ class VisitorService extends BaseFirestoreService implements VisitorRepository {
   }
 
   @override
-  Future<void> checkIn({
-    required String visitorId,
-    required String staffId,
-  }) {
+  Future<void> checkIn({required String visitorId, required String staffId}) {
     return update(visitorId, {
       'status': VisitorStatus.checkedIn,
       'checkInTime': FieldValue.serverTimestamp(),

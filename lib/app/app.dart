@@ -48,7 +48,7 @@ class ApartmentApp extends StatelessWidget {
           create: (context) => DashboardProvider(),
         ),
         ChangeNotifierProvider<ApartmentProvider>(
-          create: (context) => ApartmentProvider()..loadApartments(),
+          create: (context) => ApartmentProvider()..initialize(),
         ),
         ChangeNotifierProvider<ResidentProvider>(
           create: (context) => ResidentProvider()..loadResidents(),

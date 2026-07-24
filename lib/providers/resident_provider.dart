@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 
 import '../models/user_model.dart';
@@ -16,6 +18,7 @@ class ResidentProvider extends ChangeNotifier {
   String? _errorMessage;
   String _searchQuery = '';
   UserStatus? _status;
+  StreamSubscription<List<UserModel>>? _subscription;
 
   List<UserModel> get residents => List.unmodifiable(_residents);
   bool get isLoading => _isLoading;
@@ -33,6 +36,25 @@ class ResidentProvider extends ChangeNotifier {
           (resident.apartmentId ?? '').toLowerCase().contains(query);
       return matchesQuery && (_status == null || resident.status == _status);
     }).toList();
+  }
+
+  void listenToResidents() {
+    _isLoading = true;
+    notifyListeners();
+    _subscription?.cancel();
+    _subscription = _dataService.watchResidents().listen(
+      (items) {
+        _residents = items;
+        _isLoading = false;
+        _errorMessage = null;
+        notifyListeners();
+      },
+      onError: (error) {
+        _isLoading = false;
+        _errorMessage = 'Unable to load residents. Please try again.';
+        notifyListeners();
+      },
+    );
   }
 
   Future<void> loadResidents() async {
@@ -80,5 +102,11 @@ class ResidentProvider extends ChangeNotifier {
       resident.isActive ? UserStatus.inactive : UserStatus.active,
     );
     await loadResidents();
+  }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    super.dispose();
   }
 }

@@ -43,6 +43,7 @@ class _RequestListScreenState extends State<RequestListScreen> {
       backgroundColor: DesignTokens.background,
       appBar: AppBar(title: const Text('Yêu cầu của tôi')),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: 'request_list_fab',
         onPressed: () => context.push(AppRoutes.requestCreate),
         icon: const Icon(Icons.add_rounded),
         label: const Text('Gửi yêu cầu'),

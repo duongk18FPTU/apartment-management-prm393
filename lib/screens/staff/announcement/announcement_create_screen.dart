@@ -143,7 +143,9 @@ class _AnnouncementCreateScreenState extends State<AnnouncementCreateScreen> {
                   onPressed: isSubmitting ? null : _submit,
                   child: isSubmitting
                       ? const LoadingIndicator.circular(size: 24)
-                      : Text(widget.isEditing ? 'Lưu thay đổi' : 'Đăng thông báo'),
+                      : Text(
+                          widget.isEditing ? 'Lưu thay đổi' : 'Đăng thông báo',
+                        ),
                 ),
               ),
             ],

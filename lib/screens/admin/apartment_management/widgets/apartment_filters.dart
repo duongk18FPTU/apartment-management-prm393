@@ -40,15 +40,19 @@ class _FloorFilter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<int?>(
+      isExpanded: true,
       initialValue: null,
       decoration: const InputDecoration(labelText: 'Floor'),
       items: [
-        const DropdownMenuItem<int?>(value: null, child: Text('All floors')),
+        const DropdownMenuItem<int?>(
+          value: null,
+          child: Text('All floors', overflow: TextOverflow.ellipsis),
+        ),
         ...List.generate(
           12,
           (index) => DropdownMenuItem<int?>(
             value: index + 1,
-            child: Text('Floor ${index + 1}'),
+            child: Text('Floor ${index + 1}', overflow: TextOverflow.ellipsis),
           ),
         ),
       ],
@@ -65,18 +69,22 @@ class _StatusFilter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<ApartmentStatus?>(
+      isExpanded: true,
       initialValue: null,
       decoration: const InputDecoration(labelText: 'Status'),
       items: const [
         DropdownMenuItem<ApartmentStatus?>(
           value: null,
-          child: Text('All statuses'),
+          child: Text('All statuses', overflow: TextOverflow.ellipsis),
         ),
         DropdownMenuItem(
           value: ApartmentStatus.occupied,
-          child: Text('Occupied'),
+          child: Text('Occupied', overflow: TextOverflow.ellipsis),
         ),
-        DropdownMenuItem(value: ApartmentStatus.vacant, child: Text('Vacant')),
+        DropdownMenuItem(
+          value: ApartmentStatus.vacant,
+          child: Text('Vacant', overflow: TextOverflow.ellipsis),
+        ),
       ],
       onChanged: provider.setStatus,
     );

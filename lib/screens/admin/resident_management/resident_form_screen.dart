@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../app/theme.dart';
 import '../../../models/user_model.dart';
 import '../../../providers/apartment_provider.dart';
 import '../../../providers/resident_provider.dart';
@@ -25,6 +26,7 @@ class _ResidentFormScreenState extends State<ResidentFormScreen> {
   late final TextEditingController _nationalIdController;
   String _status = 'active';
   String? _selectedApartmentId;
+  bool _isSaving = false;
 
   @override
   void initState() {
@@ -54,15 +56,21 @@ class _ResidentFormScreenState extends State<ResidentFormScreen> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
+    setState(() => _isSaving = true);
     final old = widget.resident;
     final oldApartmentId = old?.apartmentId;
+
+    final uid = _idController.text.trim().isNotEmpty
+        ? _idController.text.trim()
+        : (old?.uid ?? 'res_${DateTime.now().millisecondsSinceEpoch}');
+
     final resident = UserModel(
-      uid: _idController.text.trim(),
+      uid: uid,
       email: _emailController.text.trim(),
       fullName: _nameController.text.trim(),
       phone: _phoneController.text.trim(),
       role: UserRole.resident,
-      apartmentId: oldApartmentId,
+      apartmentId: _selectedApartmentId,
       nationalId: _nationalIdController.text.trim(),
       dateOfBirth: old?.dateOfBirth,
       avatarUrl: old?.avatarUrl,
@@ -70,15 +78,32 @@ class _ResidentFormScreenState extends State<ResidentFormScreen> {
       createdAt: old?.createdAt ?? DateTime.now(),
       updatedAt: DateTime.now(),
     );
+
     try {
       await _saveResident(resident);
       await _syncApartment(oldApartmentId, resident.uid);
-      if (mounted) Navigator.of(context).pop();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            widget.resident == null
+                ? 'Đã thêm cư dân ${resident.fullName} thành công'
+                : 'Đã cập nhật thông tin cư dân ${resident.fullName}',
+          ),
+          backgroundColor: const Color(0xFF0D9488),
+        ),
+      );
+      Navigator.of(context).pop();
     } catch (error) {
-      if (mounted)
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Unable to save resident profile.')),
-        );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Không thể lưu hồ sơ cư dân: $error'),
+          backgroundColor: DesignTokens.error,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
     }
   }
 
@@ -135,10 +160,21 @@ class _ResidentFormScreenState extends State<ResidentFormScreen> {
             ),
             const SizedBox(height: 32),
             FilledButton(
-              onPressed: apartments.isLoading ? null : _submit,
-              child: Text(
-                widget.resident == null ? 'Create profile' : 'Save changes',
-              ),
+              onPressed: (_isSaving || apartments.isLoading) ? null : _submit,
+              child: _isSaving
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : Text(
+                      widget.resident == null
+                          ? 'Create profile'
+                          : 'Save changes',
+                    ),
             ),
           ],
         ),
