@@ -38,6 +38,7 @@ import '../screens/admin/resident_management/resident_list_screen.dart';
 import '../screens/admin/resident_management/resident_form_screen.dart';
 import '../screens/admin/resident_management/resident_profile_screen.dart';
 import '../providers/apartment_provider.dart';
+import '../models/apartment_model.dart';
 import '../models/user_model.dart';
 import '../utils/constants.dart';
 
@@ -149,7 +150,10 @@ final List<RouteBase> _routes = [
   GoRoute(
     path: AppRoutes.apartmentForm,
     name: 'apartmentForm',
-    builder: (context, state) => const ApartmentFormScreen(),
+    builder: (context, state) {
+      final apartment = state.extra as ApartmentModel?;
+      return ApartmentFormScreen(apartment: apartment);
+    },
   ),
   GoRoute(
     path: AppRoutes.apartmentDetail,
@@ -157,10 +161,13 @@ final List<RouteBase> _routes = [
     builder: (context, state) {
       final id = state.pathParameters['id']!;
       final apartmentProvider = context.read<ApartmentProvider>();
-      final apartment = apartmentProvider.apartments.firstWhere(
-        (a) => a.id == id,
+      final apartment = apartmentProvider.apartments
+          .cast<ApartmentModel?>()
+          .firstWhere((a) => a?.id == id, orElse: () => null);
+      return ApartmentDetailScreen(
+        apartmentId: id,
+        initialApartment: apartment,
       );
-      return ApartmentDetailScreen(apartment: apartment);
     },
   ),
 

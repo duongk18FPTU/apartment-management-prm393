@@ -74,9 +74,8 @@ class _AnnouncementDetailScreenState extends State<AnnouncementDetailScreen> {
           if (canManage && item != null) ...[
             IconButton(
               tooltip: 'Sửa',
-              onPressed: () => context.push(
-                '${AppRoutes.announcementCreate}?id=${item.id}',
-              ),
+              onPressed: () =>
+                  context.push('${AppRoutes.announcementCreate}?id=${item.id}'),
               icon: const Icon(Icons.edit_outlined),
             ),
             IconButton(

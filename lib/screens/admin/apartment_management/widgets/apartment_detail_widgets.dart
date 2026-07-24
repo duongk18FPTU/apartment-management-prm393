@@ -36,9 +36,14 @@ class ApartmentDetailRow extends StatelessWidget {
 }
 
 class ApartmentDetails extends StatelessWidget {
-  const ApartmentDetails({super.key, required this.apartment});
+  const ApartmentDetails({
+    super.key,
+    required this.apartment,
+    required this.ownerName,
+  });
 
   final ApartmentModel apartment;
+  final String ownerName;
 
   @override
   Widget build(BuildContext context) => Card(
@@ -59,11 +64,13 @@ class ApartmentDetails extends StatelessWidget {
             label: 'Area',
             value: '${apartment.area.toStringAsFixed(1)} m²',
           ),
-          ApartmentDetailRow(label: 'Status', value: apartment.status.name),
           ApartmentDetailRow(
-            label: 'Owner ID',
-            value: apartment.ownerId ?? 'Not assigned',
+            label: 'Rent price',
+            value: '${apartment.displayPrice} mil VND / month',
           ),
+          ApartmentDetailRow(label: 'Room type', value: apartment.displayType),
+          ApartmentDetailRow(label: 'Status', value: apartment.status.name),
+          ApartmentDetailRow(label: 'Owner', value: ownerName),
         ],
       ),
     ),

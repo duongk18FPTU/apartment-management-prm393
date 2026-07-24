@@ -17,7 +17,7 @@ class ResidentListScreen extends StatelessWidget {
     final view = const _ResidentListView();
     final residentScope = provider == null
         ? ChangeNotifierProvider(
-            create: (_) => ResidentProvider()..loadResidents(),
+            create: (_) => ResidentProvider()..listenToResidents(),
             child: view,
           )
         : ChangeNotifierProvider<ResidentProvider>.value(
@@ -119,6 +119,7 @@ class _ResidentListView extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: 'resident_list_fab',
         onPressed: () => Navigator.of(
           context,
         ).push(MaterialPageRoute(builder: (_) => const ResidentFormScreen())),

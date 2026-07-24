@@ -42,10 +42,7 @@ class _VisitorListScreenState extends State<VisitorListScreen> {
   Future<void> _checkIn(VisitorModel visitor) async {
     final staffId = context.read<AuthProvider>().userModel?.uid ?? '';
     final provider = context.read<VisitorProvider>();
-    final ok = await provider.checkIn(
-      visitorId: visitor.id,
-      staffId: staffId,
-    );
+    final ok = await provider.checkIn(visitorId: visitor.id, staffId: staffId);
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

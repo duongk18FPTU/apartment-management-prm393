@@ -42,6 +42,7 @@ class _ComplaintListScreenState extends State<ComplaintListScreen> {
       backgroundColor: DesignTokens.background,
       appBar: AppBar(title: const Text('Khiếu nại / Góp ý')),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: 'complaint_list_fab',
         onPressed: () => context.push(AppRoutes.complaintCreate),
         icon: const Icon(Icons.add_rounded),
         label: const Text('Gửi mới'),

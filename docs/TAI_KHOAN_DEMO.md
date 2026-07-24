@@ -8,3 +8,4 @@ resident2@apartment.com - Resident@123 - resident - 302
 resident3@apartment.com - Resident@123 - resident - 501
 resident4@apartment.com - Resident@123 - resident - 702
 resident5@apartment.com - Resident@123 - resident - 1001
+

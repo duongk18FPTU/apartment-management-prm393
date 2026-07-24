@@ -44,13 +44,10 @@ class ApartmentService extends BaseFirestoreService
     ApartmentModel apartment, {
     DateTime? now,
   }) {
-    final timestamp = now ?? DateTime.now();
-    return apartment
-        .copyWith(
-          createdAt: apartment.createdAt ?? timestamp,
-          updatedAt: timestamp,
-        )
-        .toJson();
+    final map = apartment.toJson();
+    map['createdAt'] = FieldValue.serverTimestamp();
+    map['updatedAt'] = FieldValue.serverTimestamp();
+    return map;
   }
 
   @override
@@ -99,9 +96,9 @@ class ApartmentService extends BaseFirestoreService
 
   @override
   Future<void> updateApartment(ApartmentModel apartment) {
-    return _collection
-        .doc(apartment.id)
-        .update(apartment.copyWith(updatedAt: DateTime.now()).toJson());
+    final map = apartment.toJson();
+    map['updatedAt'] = FieldValue.serverTimestamp();
+    return _collection.doc(apartment.id).update(map);
   }
 
   @override
@@ -141,7 +138,7 @@ class ApartmentService extends BaseFirestoreService
         transaction.update(oldApartmentRef, {
           'residentIds': FieldValue.arrayRemove([residentId]),
           if (residentId == apartment.ownerId) 'ownerId': null,
-          'updatedAt': Timestamp.now(),
+          'updatedAt': FieldValue.serverTimestamp(),
         });
       }
 
@@ -150,11 +147,11 @@ class ApartmentService extends BaseFirestoreService
         'residentIds': residentIds,
         if (asOwner) 'ownerId': residentId,
         'status': ApartmentStatus.occupied.name,
-        'updatedAt': Timestamp.now(),
+        'updatedAt': FieldValue.serverTimestamp(),
       });
       transaction.update(residentRef, {
         'apartmentId': apartmentId,
-        'updatedAt': Timestamp.now(),
+        'updatedAt': FieldValue.serverTimestamp(),
       });
     });
   }
@@ -187,11 +184,11 @@ class ApartmentService extends BaseFirestoreService
         'status': remainingResidents.isEmpty
             ? ApartmentStatus.vacant.name
             : ApartmentStatus.occupied.name,
-        'updatedAt': Timestamp.now(),
+        'updatedAt': FieldValue.serverTimestamp(),
       });
       transaction.update(residentRef, {
         'apartmentId': null,
-        'updatedAt': Timestamp.now(),
+        'updatedAt': FieldValue.serverTimestamp(),
       });
     });
   }
@@ -218,14 +215,14 @@ class ApartmentService extends BaseFirestoreService
       transaction.update(aptRef, {
         'ownerId': ownerId,
         'status': newStatus,
-        'updatedAt': Timestamp.now(),
+        'updatedAt': FieldValue.serverTimestamp(),
       });
 
       if (ownerId != null) {
         final userRef = firestore.collection(AppCollections.users).doc(ownerId);
         transaction.update(userRef, {
           'apartmentId': apartmentId,
-          'updatedAt': Timestamp.now(),
+          'updatedAt': FieldValue.serverTimestamp(),
         });
       }
     });

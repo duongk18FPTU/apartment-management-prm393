@@ -12,14 +12,22 @@ class ResidentService {
   CollectionReference<Map<String, dynamic>> get _collection =>
       _firestore.collection('users');
 
-  static Map<String, dynamic> toDocumentData(
-    UserModel resident, {
-    DateTime? now,
-  }) {
-    final timestamp = now ?? DateTime.now();
-    return resident
-        .copyWith(role: UserRole.resident, updatedAt: timestamp)
-        .toMap();
+  static Map<String, dynamic> toDocumentData(UserModel resident) {
+    return {
+      'email': resident.email,
+      'fullName': resident.fullName,
+      'phone': resident.phone,
+      'role': UserRole.resident.name,
+      'apartmentId': resident.apartmentId,
+      'nationalId': resident.nationalId,
+      'dateOfBirth': resident.dateOfBirth != null
+          ? Timestamp.fromDate(resident.dateOfBirth!)
+          : null,
+      'avatarUrl': resident.avatarUrl,
+      'status': resident.status.name,
+      'createdAt': FieldValue.serverTimestamp(),
+      'updatedAt': FieldValue.serverTimestamp(),
+    };
   }
 
   Stream<List<UserModel>> watchResidents() {
@@ -52,16 +60,16 @@ class ResidentService {
     await _collection.doc(resident.uid).set(toDocumentData(resident));
   }
 
-  Future<void> updateResident(UserModel resident) {
-    return _collection
-        .doc(resident.uid)
-        .update(resident.copyWith(updatedAt: DateTime.now()).toMap());
+  Future<void> updateResident(UserModel resident) async {
+    final data = resident.toMap();
+    data['updatedAt'] = FieldValue.serverTimestamp();
+    await _collection.doc(resident.uid).update(data);
   }
 
   Future<void> setResidentStatus(String residentId, UserStatus status) {
     return _collection.doc(residentId).update({
       'status': status.name,
-      'updatedAt': Timestamp.now(),
+      'updatedAt': FieldValue.serverTimestamp(),
     });
   }
 }

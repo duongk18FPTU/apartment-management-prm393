@@ -48,7 +48,10 @@ class DashboardProvider extends ChangeNotifier {
     _errorMessage = null;
     notifyListeners();
     try {
-      final apartments = await _db.collection(AppCollections.apartments).count().get();
+      final apartments = await _db
+          .collection(AppCollections.apartments)
+          .count()
+          .get();
       final residents = await _db
           .collection(AppCollections.users)
           .where('role', isEqualTo: 'resident')

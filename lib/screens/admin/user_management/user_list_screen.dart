@@ -77,6 +77,7 @@ class _UserListScreenState extends State<UserListScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: 'user_list_fab',
         backgroundColor: const Color(0xFFFE932C),
         foregroundColor: Colors.white,
         onPressed: () => context.push(AppRoutes.userCreate),

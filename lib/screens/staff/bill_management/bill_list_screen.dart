@@ -105,6 +105,7 @@ class _BillListScreenState extends State<BillListScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'bill_list_fab',
         backgroundColor: const Color(0xFF091426),
         foregroundColor: Colors.white,
         onPressed: () async {

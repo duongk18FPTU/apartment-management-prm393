@@ -32,7 +32,9 @@ void main() {
 
   test('loadAnnouncements falls back when type filter empty', () async {
     repository.byType['announcement'] = [];
-    repository.all = [_announcement(id: 'sys', title: 'Hệ thống', type: 'system')];
+    repository.all = [
+      _announcement(id: 'sys', title: 'Hệ thống', type: 'system'),
+    ];
 
     await provider.loadAnnouncements();
 

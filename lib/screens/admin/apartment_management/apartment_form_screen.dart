@@ -20,6 +20,8 @@ class _ApartmentFormScreenState extends State<ApartmentFormScreen> {
   late final TextEditingController _buildingController;
   late final TextEditingController _floorController;
   late final TextEditingController _areaController;
+  late final TextEditingController _priceController;
+  late String _type;
   late ApartmentStatus _status;
 
   @override
@@ -30,8 +32,16 @@ class _ApartmentFormScreenState extends State<ApartmentFormScreen> {
     _buildingController = TextEditingController(
       text: apartment?.building ?? 'Building A',
     );
-    _floorController = TextEditingController(text: apartment?.floor.toString());
-    _areaController = TextEditingController(text: apartment?.area.toString());
+    _floorController = TextEditingController(
+      text: apartment != null ? apartment.floor.toString() : '',
+    );
+    _areaController = TextEditingController(
+      text: apartment != null ? apartment.area.toString() : '',
+    );
+    _priceController = TextEditingController(
+      text: apartment?.price != null ? apartment!.price.toString() : '',
+    );
+    _type = apartment?.displayType ?? '2PN - 2WC';
     _status = apartment?.status ?? ApartmentStatus.vacant;
   }
 
@@ -41,6 +51,7 @@ class _ApartmentFormScreenState extends State<ApartmentFormScreen> {
     _buildingController.dispose();
     _floorController.dispose();
     _areaController.dispose();
+    _priceController.dispose();
     super.dispose();
   }
 
@@ -50,15 +61,20 @@ class _ApartmentFormScreenState extends State<ApartmentFormScreen> {
     final apartment = ApartmentModel(
       id: old?.id ?? '',
       number: _numberController.text.trim(),
-      floor: int.parse(_floorController.text),
+      floor: int.parse(_floorController.text.trim()),
       building: _buildingController.text.trim(),
-      area: double.parse(_areaController.text),
+      area: double.parse(_areaController.text.trim()),
+      price: _priceController.text.trim().isNotEmpty
+          ? double.tryParse(_priceController.text.trim())
+          : null,
+      type: _type,
       ownerId: old?.ownerId,
       status: _status,
       residentIds: old?.residentIds ?? const [],
       createdAt: old?.createdAt,
-      updatedAt: old?.updatedAt,
+      updatedAt: DateTime.now(),
     );
+
     try {
       await context.read<ApartmentProvider>().save(apartment);
       if (mounted) Navigator.of(context).pop();
@@ -90,9 +106,15 @@ class _ApartmentFormScreenState extends State<ApartmentFormScreen> {
               buildingController: _buildingController,
               floorController: _floorController,
               areaController: _areaController,
+              priceController: _priceController,
+              type: _type,
+              onTypeChanged: (val) {
+                if (val != null) setState(() => _type = val);
+              },
               status: _status,
-              onStatusChanged: (value) =>
-                  setState(() => _status = value ?? _status),
+              onStatusChanged: (val) {
+                if (val != null) setState(() => _status = val);
+              },
             ),
             const SizedBox(height: 32),
             FilledButton(

@@ -33,6 +33,7 @@ class _StaffHomeScreenState extends State<StaffHomeScreen> {
       backgroundColor: DesignTokens.background,
       body: IndexedStack(index: _selectedIndex, children: tabs),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: 'staff_home_fab',
         onPressed: () => context.push(AppRoutes.announcementList),
         icon: const Icon(Icons.campaign_outlined),
         label: const Text('Thông báo'),

@@ -33,7 +33,12 @@ void main() {
 
   test('filteredVisitors matches name phone apartment', () async {
     repository.all = [
-      _visitor(id: '1', name: 'Nguyen Van A', phone: '0901111111', apt: 'A-101'),
+      _visitor(
+        id: '1',
+        name: 'Nguyen Van A',
+        phone: '0901111111',
+        apt: 'A-101',
+      ),
       _visitor(id: '2', name: 'Tran Thi B', phone: '0902222222', apt: 'B-202'),
     ];
     await provider.loadAll();
@@ -64,14 +69,10 @@ void main() {
   });
 
   test('checkIn reloads list and maps status', () async {
-    repository.all = [
-      _visitor(id: '1', status: VisitorStatus.registered),
-    ];
+    repository.all = [_visitor(id: '1', status: VisitorStatus.registered)];
     await provider.loadAll();
 
-    repository.all = [
-      _visitor(id: '1', status: VisitorStatus.checkedIn),
-    ];
+    repository.all = [_visitor(id: '1', status: VisitorStatus.checkedIn)];
 
     final ok = await provider.checkIn(visitorId: '1', staffId: 'staff-1');
 
@@ -82,7 +83,9 @@ void main() {
   });
 
   test('checkOut surfaces FirestoreException', () async {
-    repository.throwOnCheckOut = const FirestoreException('Khách chưa check-in');
+    repository.throwOnCheckOut = const FirestoreException(
+      'Khách chưa check-in',
+    );
 
     final ok = await provider.checkOut('1');
 
@@ -93,7 +96,7 @@ void main() {
 
 VisitorModel _visitor({
   required String id,
-  String name = 'Khách $id',
+  String? name,
   String phone = '0900000000',
   String apt = 'A-101',
   String status = VisitorStatus.registered,
@@ -101,7 +104,7 @@ VisitorModel _visitor({
   final now = DateTime(2026, 7, 1);
   return VisitorModel(
     id: id,
-    visitorName: name,
+    visitorName: name ?? 'Khách $id',
     visitorPhone: phone,
     purpose: 'Thăm',
     registeredBy: 'res-1',

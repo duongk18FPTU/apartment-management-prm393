@@ -43,6 +43,7 @@ class _AnnouncementListScreenState extends State<AnnouncementListScreen> {
       appBar: AppBar(title: const Text('Thông báo')),
       floatingActionButton: canCreate
           ? FloatingActionButton.extended(
+              heroTag: 'announcement_list_fab',
               onPressed: () => context.push(AppRoutes.announcementCreate),
               icon: const Icon(Icons.add_rounded),
               label: const Text('Tạo thông báo'),
